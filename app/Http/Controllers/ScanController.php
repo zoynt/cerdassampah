@@ -16,7 +16,7 @@ class ScanController extends Controller
 public function scan(Request $request)
 {
     $request->validate([
-        'image' => 'required|image|max:2048'
+        'image' => 'required|image'
     ]);
 
     // 1. Simpan file di Laravel
@@ -24,13 +24,27 @@ public function scan(Request $request)
     $fullPath = storage_path('app/public/' . $path);
 
     // 2. Kirim salinan ke Flask
-    $response = Http::attach(
-        'image', file_get_contents($fullPath), $request->file('image')->getClientOriginalName()
-    )->post(env('FLASK_URL') . '/predict');
+    // $response = Http::attach(
+    //     'image', file_get_contents($fullPath), $request->file('image')->getClientOriginalName()
+    // )->post(env('FLASK_URL') . '/predict');
+
+    $response = Http::timeout(30) // kasih waktu lebih lama
+    // ->withoutVerifying()     // skip verifikasi SSL
+    ->attach(
+        'image',
+        file_get_contents($fullPath),
+        $request->file('image')->getClientOriginalName()
+    )
+    ->post(env('FLASK_URL') . '/predict');
+
+    // if ($response->failed()) {
+    //     return back()->with('error', 'Gagal menghubungi server AI.');
+    // }
 
     if ($response->failed()) {
-        return back()->with('error', 'Gagal menghubungi server AI.');
+    return back()->with('error', 'Error: ' . $response->status() . ' - ' . $response->body());
     }
+
 
     $label = $response->json()['label'] ?? null;
     // $confidence = $response->json()['confidence'] ?? null;

@@ -14,7 +14,18 @@ return new class extends Migration
         Schema::create('locations', function (Blueprint $table) {
             $table->id();
             $table->string('location_name');
-            $table->enum('location_type', ['tps', 'bank_sampah', 'surung_sintak']);
+            $table->enum('location_type', ['tps', 'bank sampah', 'surung sintak']);
+            $table->string('location_longitude');
+            $table->string('location_latitude');
+            $table->enum('location_status', ['legal', 'ilegal'])->nullable();
+            $table->text('description')->nullable();
+            $table->enum('kecamatan', [
+                'banjarmasin utara',
+                'banjarmasin selatan',
+                'banjarmasin tengah',
+                'banjarmasin barat',
+                'banjarmasin timur'
+            ]);
             $table->timestamps();
         });
     }

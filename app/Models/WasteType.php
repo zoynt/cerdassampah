@@ -10,6 +10,9 @@ class WasteType extends Model
     /** @use HasFactory<\Database\Factories\WasteTypeFactory> */
     use HasFactory;
 
+    protected $guarded = ['id'];
+
+
     public function materials()
     {
         return $this->hasMany(Material::class);

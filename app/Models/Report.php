@@ -9,4 +9,7 @@ class Report extends Model
 {
     /** @use HasFactory<\Database\Factories\ReportFactory> */
     use HasFactory;
+
+    protected $guarded = ['id'];
+
 }

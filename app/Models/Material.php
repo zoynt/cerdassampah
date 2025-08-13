@@ -9,12 +9,7 @@ class Material extends Model
 {
     /** @use HasFactory<\Database\Factories\MaterialFactory> */
     use HasFactory;
-    protected $fillable = [
-        'name',
-        'description',
-        'weight',
-        'waste_types_id',
-    ];
+    protected $guarded = ['id'];
 
     public function wasteType()
     {

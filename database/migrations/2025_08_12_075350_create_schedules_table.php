@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('locations_id')->constrained('locations')->onDelete('cascade');
-            $table->date('hari');
-            $table->time('jam_mulai');
-            $table->time('jam_selesai');
-            $table->longText('keterangan')->nullable();
+            $table->string('day');
+            $table->time('start_time');
+            $table->time('end_time');
+            $table->longText('description')->nullable();
             $table->timestamps();
         });
     }

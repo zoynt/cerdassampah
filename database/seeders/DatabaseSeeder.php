@@ -17,6 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             WasteTypeSeeder::class,
             // LocationSeeder::class,
+            LocationAndScheduleSeeder::class,
             // ScheduleSeeder::class,
             // Add other seeders here as needed
         ]);

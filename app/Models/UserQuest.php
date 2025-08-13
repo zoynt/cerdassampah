@@ -9,4 +9,6 @@ class UserQuest extends Model
 {
     /** @use HasFactory<\Database\Factories\UserQuestFactory> */
     use HasFactory;
+
+    protected $guarded = ['id'];
 }

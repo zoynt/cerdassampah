@@ -10,6 +10,8 @@ class Location extends Model
     /** @use HasFactory<\Database\Factories\LocationFactory> */
     use HasFactory;
 
+    protected $guarded = ['id'];
+
     protected $fillable = [
         'location_name',
         'location_type',
