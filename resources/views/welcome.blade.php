@@ -5,7 +5,7 @@
 @section('content')
   @include('landing.hero')
   @include('landing.peta')
-  @include('landing.scan')
+  @include('scan.scan')
   @include('landing.game')
   @include('landing.edukasi')
   @include('landing.faq')
