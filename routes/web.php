@@ -30,11 +30,10 @@ Route::get('/pemetaan-tps', function () {
     return view('landing/lokasi-tps');
 });
 
-
-Route::get('/scan-sampah', function () {
-    return view('landing/scan-sampah');
+Route::get('/scan', function () {
+    return view('scan/scan');
 })->name('scan.form');
-Route::post('/scan-sampah', [ScanController::class, 'scan'])->name('scan.scan');
+Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
 Route::get('/lapor', [LaporController::class, 'index'])->name('lapor.form');
 Route::post('/lapor', [LaporController::class, 'store'])->name('lapor.store');
