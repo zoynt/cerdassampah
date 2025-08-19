@@ -103,7 +103,7 @@
     });
     targets.forEach(target => observer.observe(target));
 
-    const map = L.map('leaflet-map').setView([-6.914744, 107.60981], 13);
+    const map = L.map('leaflet-map').setView([-3.2910732404474583, 114.59812756610306], 13);
 
     const baseOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors', maxZoom: 18,
@@ -122,9 +122,9 @@
     const layerTPSLiar = L.layerGroup();
 
     const dummyTPS = [
-      { lat: -6.914, lng: 107.609, name: 'TPS' },
-      { lat: -6.915, lng: 107.61, name: 'TPS-T3R' },
-      { lat: -6.916, lng: 107.611, name: 'TPS Liar' },
+      { lat: -3.2910732404474583, lng: 114.59812756610306, name: 'TPS' },
+      { lat: -3.291075, lng: 114.6, name: 'TPS-T3R' },
+      { lat: -3.291072, lng: 114.58, name: 'TPS Liar' },
     ];
 
     dummyTPS.forEach(loc => {

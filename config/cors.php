@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'paths' => ['api/*'], // Atur untuk rute API
+    'paths' => ['api/*', 'scan'], // Atur untuk rute API
 
     'allowed_methods' => ['*'], // Mengizinkan semua metode HTTP (GET, POST, PUT, DELETE, dll.)
 

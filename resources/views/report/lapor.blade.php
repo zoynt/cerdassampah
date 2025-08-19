@@ -146,41 +146,41 @@
 }
 
 
-        /* Leaflet map container */
-        #mapid {
-            width: 100%;
-            height: 350px;
-            border-radius: 10px;
-        }
+/* Leaflet map container */
+#mapid {
+    width: 100%;
+    height: 350px;
+    border-radius: 10px;
+}
 
-        /* For the border and dashed style on file upload */
-        .border-2 {
-            border-width: 2px;
-        }
+/* For the border and dashed style on file upload */
+.border-2 {
+    border-width: 2px;
+}
 
-        .border-dashed {
-            border-style: dashed;
-        }
+.border-dashed {
+    border-style: dashed;
+}
 
-        .border-gray-300 {
-            border-color: #D1D5DB;
-        }
+.border-gray-300 {
+    border-color: #D1D5DB;
+}
 
-        /* Mengatur warna teks untuk setiap span */
-        .text-green {
-            color: #38A169; /* Warna hijau Tailwind */
-            font-weight: 600; /* Untuk membuat teks tebal */
-        }
+/* Mengatur warna teks untuk setiap span */
+.text-green {
+    color: #38A169; /* Warna hijau Tailwind */
+    font-weight: 600; /* Untuk membuat teks tebal */
+}
 
-        .text-yellow {
-            color: #F59E0B; /* Warna kuning Tailwind */
-            font-weight: 600; /* Untuk membuat teks tebal */
-        }
+.text-yellow {
+    color: #F59E0B; /* Warna kuning Tailwind */
+    font-weight: 600; /* Untuk membuat teks tebal */
+}
 
-        .text-red {
-            color: #EF4444; /* Warna merah Tailwind */
-            font-weight: 600; /* Untuk membuat teks tebal */
-        }
+.text-red {
+    color: #EF4444; /* Warna merah Tailwind */
+    font-weight: 600; /* Untuk membuat teks tebal */
+}
 
         /* Agar kontrol layer tetap rata kiri */
 .leaflet-control-layers {
@@ -330,7 +330,7 @@
         });
         targets.forEach(target => observer.observe(target));
 
-        const map = L.map('mapid').setView([-6.914744, 107.60981], 13);
+        const map = L.map('mapid').setView([-3.2910732404474583, 114.59812756610306], 13);
 
         const baseOSM = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '© OpenStreetMap contributors', maxZoom: 18,
