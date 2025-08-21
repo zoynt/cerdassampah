@@ -11,8 +11,7 @@ class LaporController extends Controller
 {
     public function index()
     {
-        return view('report.lapor'); // ✅ View berada di resources/views/landing/lapor.blade.php
-
+        return view('pages.report.lapor'); // ✅ View berada di resources/views/landing/lapor.blade.php
     }
 
     public function store(Request $request)

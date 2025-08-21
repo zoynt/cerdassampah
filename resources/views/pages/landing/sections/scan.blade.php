@@ -111,7 +111,7 @@
         <p class="text-gray-600 mt-0 mb-8 text-lg md:text-xl leading-normal">
           Kenali jenis sampah hanya dengan satu kali pindai. Fitur Scan Sampah memanfaatkan teknologi machine learning untuk mengidentifikasi sampah organik, anorganik, dan berbahaya (B3) secara otomatis dan akurat.
         </p>
-        <a href="#masuk" class="inline-block bg-green-700 text-white font-semibold px-6 py-3 rounded-md shadow hover:bg-green-800 transition duration-300">
+        <a href="{{ route('scan.form') }}" class="inline-block bg-green-700 text-white font-semibold px-6 py-3 rounded-md shadow hover:bg-green-800 transition duration-300">
           Pindai Sekarang!
         </a>
       </div>

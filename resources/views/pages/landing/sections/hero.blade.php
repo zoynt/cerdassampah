@@ -15,7 +15,7 @@
       <p class="text-sm sm:text-base md:text-lg mb-8 text-white/90">
         CerdasSampah.id adalah aplikasi website berbasis Smart Environment yang mendukung pilar Smart City melalui pengelolaan sampah yang inovatif dan partisipatif. Dirancang untuk meningkatkan kesadaran serta keterlibatan masyarakat.
       </p>
-      <a href="#masuk" class="inline-block bg-white text-green-700 font-semibold px-6 py-3 rounded-md shadow hover:bg-green-100 transition duration-300">
+      <a href="{{ route('register') }}" class="inline-block bg-white text-green-700 font-semibold px-6 py-3 rounded-md shadow hover:bg-green-100 transition duration-300">
         Masuk
       </a>
     </div>

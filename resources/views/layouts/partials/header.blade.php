@@ -45,9 +45,9 @@
           <a href="/#faq" class="block px-6 py-2 hover:bg-green-100">FAQ's</a>
           </div>
         </div>
-        <a href="informasi" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Informasi</a>
-        <a href="tentang" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Tentang</a>
-        <a href="lapor" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
+        <a href="{{ route('informasi') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Informasi</a>
+        <a href="{{ route('tentang') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Tentang</a>
+        <a href="{{ route('lapor') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
         <div class="h-6 w-px bg-white/70"></div>
         <a href="{{ route('register') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a>
       </nav>
