@@ -49,7 +49,7 @@
         <a href="tentang" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Tentang</a>
         <a href="lapor" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
         <div class="h-6 w-px bg-white/70"></div>
-        <a href="admin" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a>
+        <a href="{{ route('register') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a>
       </nav>
 
 
