@@ -45,8 +45,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 
-
-
+// Admin
+// Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 Route::get('/admin', function () {
     return view('admin');
 });
