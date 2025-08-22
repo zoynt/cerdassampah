@@ -23,8 +23,8 @@ Route::get('/reverse-geocode', ReverseGeocodeController::class);
 
 // Fitur Scan 
 Route::get('/scan', function () {
-return view('pages.scan.scan');
-    })->name('scan.form');
+    return view('pages.scan.scan');
+})->name('scan.form');
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
 // Route Fitur Lapor
