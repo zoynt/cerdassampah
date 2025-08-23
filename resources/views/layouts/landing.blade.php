@@ -108,7 +108,7 @@
   @include('layouts.partials.header')
 
   <main>
-    @yield('content')
+      @yield('content')
   </main>
 
   @include('layouts.partials.footer')
@@ -222,7 +222,22 @@
     </script>
 @endif
 
-
+@if (session('error'))
+    <script>
+      Swal.fire({
+        icon: 'error',
+        {{-- title: 'Laporan Gagal Dikirim', --}}
+        text: '{{ session('error') }}',
+        confirmButtonText: 'OK',
+        customClass: {
+            confirmButton: 'btn-custom'  // Kelas khusus untuk tombol
+        }
+    });
+{{-- <div class="alert alert-danger" role="alert">
+    {{ session('error') }}
+</div> --}}
+</script>
+@endif
 
   <script>AOS.init();</script>
   @stack('scripts')

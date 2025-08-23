@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             WasteTypeSeeder::class,
             // LocationSeeder::class,
             LocationAndScheduleSeeder::class,
+            RolePermissionSeeder::class,
             // ScheduleSeeder::class,
             // Add other seeders here as needed
         ]);

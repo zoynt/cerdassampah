@@ -1,8 +1,12 @@
 <?php
 
+use Illuminate\Http\Request;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Spatie\Permission\Exceptions\UnauthorizedException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -17,7 +21,27 @@ return Application::configure(basePath: dirname(__DIR__))
             'scan',
             'scan/*'
         ]);
+        $middleware->alias([
+        'role' => \Spatie\Permission\Middleware\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
+        $exceptions->renderable(function (NotFoundHttpException $e, Request $request) {
+        return redirect()->back()
+            ->with('error', 'Data yang Anda cari tidak dapat ditemukan.');
+        });
+
+        $exceptions->renderable(function (ModelNotFoundException $e, Request $request) {
+        return redirect()->back()
+            ->with('error', 'Data yang Anda cari tidak dapat ditemukan.');
+        });
+
+        $exceptions->renderable(function (UnauthorizedException $e, Request $request) {
+            return redirect()->back()
+            ->with('error', 'Anda tidak memiliki izin untuk mengakses halaman tersebut.');
+        });
+
     })->create();

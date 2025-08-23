@@ -27,13 +27,13 @@ Route::get('/scan', function () {
 })->name('scan.form');
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
-// Route Fitur Lapor
-Route::get('/lapor', [LaporController::class, 'index'])->name('lapor');
-Route::post('/lapor', [LaporController::class, 'store'])->name('lapor.store');
+
 
 
 // Auth
-Route::middleware(['auth', 'verified'])->group(function () {
+// Route::middleware(middleware: ['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'role:admin|warga'])->group(function () {
+
     // Dashboard
     Route::get('/dashboard', function () {
         return view('dashboard');
@@ -42,13 +42,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // Route Fitur Lapor
+    Route::get('/lapor', [LaporController::class, 'index'])->name('lapor');
+    Route::post('/lapor', [LaporController::class, 'store'])->name('lapor.store');
 });
 
 
 // Admin
-// Route::middleware(['auth', 'verified', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-Route::get('/admin', function () {
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::get('/', function () {
     return view('admin');
+    });
 });
 
 // Route::get('/pemetaan-tps', function () {
