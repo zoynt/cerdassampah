@@ -4,62 +4,51 @@ namespace App\Http\Controllers;
 
 use App\Models\Report;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ReportController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan form laporan untuk pengguna yang sudah login.
      */
     public function index()
     {
-        //
+        return view('laporan');
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Menyimpan laporan baru dari pengguna yang sudah login.
      */
     public function store(Request $request)
     {
-        //
-    }
+        // 1. Validasi input dari form
+        $validatedData = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'latitude' => 'required|numeric',
+            'longitude' => 'required|numeric',
+            'address' => 'required|string',
+            'file' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+        ]);
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Report $report)
-    {
-        //
-    }
+        // 2. Proses upload file gambar
+        $imagePath = $request->file('file')->store('report-images', 'public');
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Report $report)
-    {
-        //
-    }
+        // 3. Buat laporan baru di database, user_id pasti ada.
+        Report::create([
+            'user_id' => Auth::id(),
+            'name' => $validatedData['name'],
+            'email' => $validatedData['email'],
+            'latitude' => $validatedData['latitude'],
+            'longitude' => $validatedData['longitude'],
+            'address' => $validatedData['address'],
+            'image' => $imagePath,
+            'status' => 'pending',
+            'waktu_lapor' => now(),
+        ]);
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Report $report)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Report $report)
-    {
-        //
+        // 4. Arahkan kembali ke halaman laporan di dalam dasbor dengan pesan sukses
+        return redirect()->route('laporan.index')->with('success', 'Laporan Anda berhasil dikirim!');
     }
 }

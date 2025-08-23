@@ -5,6 +5,10 @@ use App\Http\Controllers\ScanController;
 use App\Http\Controllers\LaporController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ReverseGeocodeController;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
+use App\Http\Controllers\ReportController;
+use App\Http\Controllers\AuthController;
 
 // Landing Page
 Route::get('/', function () {
@@ -26,9 +30,6 @@ Route::get('/scan', function () {
     return view('pages.scan.scan');
 })->name('scan.form');
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
-
-
-
 
 // Auth
 // Route::middleware(middleware: ['auth', 'verified'])->group(function () {
@@ -60,4 +61,32 @@ Route::get('/', function () {
     //     return view('landing/lokasi-tps');
     // });
     
-require __DIR__.'/auth.php';
+    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+    Route::post('/register', [AuthController::class, 'storeUser'])->name('register.store');
+    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
+    Route::post('/login', [AuthController::class, 'loginUser'])->name('login.store');
+    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+    require __DIR__.'/auth.php';
+
+
+
+Route::middleware('auth')->group(function () {
+    // Rute ini akan mengarahkan ke halaman dasbor setelah login berhasil
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
+
+    Route::get('/laporan', function () {
+    return view('laporan');
+    })->name('laporan.index');
+    Route::get('/lokasi-tps', function () {
+        return view('lokasi-tps');
+    })->name('lokasi-tps.index');
+    Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
+    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
+    Route::post('/laporan', [ReportController::class, 'store'])->name('laporan.store.user');
+  
+});
+

@@ -1,47 +1,71 @@
-<x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+@extends('layouts.guest')
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+@section('title', 'Login - CerdasSampah.id')
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+@section('content')
+    <div class="bg-white p-8 rounded-2xl shadow-xl w-full">
+
+        <div class="flex justify-center mb-4">
+            {{-- Ganti 'img/logo-maskot.png' dengan path ke logo robot Anda --}}
+            <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-20">
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Masuk ke Akun Anda</h2>
 
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
+        <form action="{{ route('login.store') }}" method="POST" class="space-y-6">
+            @csrf
 
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+            <div>
+                <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Email</label>
+                <div class="flex items-center bg-slate-100 rounded-lg focus-within:ring-2 focus-within:ring-green-500">
+                    <input type="email" id="email" name="email" value="{{ old('email') }}"
+                        placeholder="Masukkan email anda"
+                        class="bg-transparent border-none w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none"
+                        required>
+                    <span class="p-3">
+                        <i class="fa fa-envelope text-gray-400"></i>
+                    </span>
+                </div>
+                @error('email')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded dark:bg-gray-900 border-gray-300 dark:border-gray-700 text-indigo-600 shadow-sm focus:ring-indigo-500 dark:focus:ring-indigo-600 dark:focus:ring-offset-gray-800" name="remember">
-                <span class="ms-2 text-sm text-gray-600 dark:text-gray-400">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 dark:focus:ring-offset-gray-800" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
+            <div>
+                <label for="password" class="block text-gray-700 text-sm font-semibold mb-2">Kata sandi</label>
+                <div class="flex items-center bg-slate-100 rounded-lg focus-within:ring-2 focus-within:ring-green-500">
+                    <input type="password" id="password" name="password" placeholder="Masukkan kata sandi anda"
+                        class="bg-transparent border-none w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none"
+                        required>
+                    <span class="p-3">
+                        <i class="fa fa-lock text-gray-400"></i>
+                    </span>
+                </div>
+                <a href="#"
+                    class="mt-2 inline-block align-baseline float-right text-sm text-green-700 hover:text-green-800 font-semibold">
+                    Lupa kata sandi?
                 </a>
-            @endif
+            </div>
 
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
-</x-guest-layout>
+            <div class="pt-2">
+                <button type="submit"
+                    class="w-full bg-[#6D936C] text-white font-bold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:bg-opacity-90 transition-colors">
+                    Masuk
+                </button>
+            </div>
+
+            <div class="flex items-center justify-center">
+                <hr class="w-full border-gray-300">
+                <span class="px-2 text-gray-500 text-sm">atau</span>
+                <hr class="w-full border-gray-300">
+            </div>
+
+            <div>
+                <a href="{{ route('register') }}"
+                    class="w-full block text-center border border-gray-300 text-gray-700 font-semibold py-3 px-4 rounded-lg focus:outline-none focus:shadow-outline hover:bg-gray-100 transition-colors">
+                    Daftar
+                </a>
+            </div>
+        </form>
+    </div>
+@endsection

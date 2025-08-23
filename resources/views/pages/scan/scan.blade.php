@@ -2,7 +2,7 @@
 
 @section('content')
 
-    <div class="absolute top-0 left-0 w-full overflow-hidden leading-[0] z-[-999]">
+<div class="absolute top-0 left-0 w-full overflow-hidden leading-[0] z-[-999]">
         <svg width="100%" height="100%" id="svg" viewBox="0 0 1440 490" xmlns="http://www.w3.org/2000/svg" class="transition duration-300 ease-in-out delay-150">
             <path d="M 0,500 L 0,187 C 257.5,150.5 515,114 755,114 C 995,114 1217.5,150.5 1440,187 L 1440,500 L 0,500 Z" stroke="none" stroke-width="0" fill="#60cb83" fill-opacity="1" class="transition-all duration-300 ease-in-out delay-150 path-0" transform="rotate(-180 720 250)"></path>
         </svg>
@@ -47,24 +47,37 @@
 
 </div>
 
-<!-- Card Hasil Scan Sampah -->
-<div id="scan-result" class="bg-white rounded-xl shadow-md mt-8 p-8 hidden">
-    <h2 class="text-2xl font-bold text-center mb-4">Hasil Scan</h2>
-    <div class="flex items-center justify-between">
-        <img id="result-image" src="" alt="Hasil Scan" class="w-24 h-24 object-cover rounded-lg mr-4">
-        <div class="ml-4 flex flex-col">
-            <h3 id="scan-title" class="font-bold text-xl"></h3>
-            <p id="scan-type" class="text-gray-600 text-sm"></p>
-        </div>
+<div id="scan-result" class="scan-card hidden" data-aos="fade-up">
+  <h2 class="scan-card__title text-center">Hasil Scan</h2>
+
+  <div class="scan-card__grid">
+    <div class="scan-card__photo">
+      <img id="result-image" src="" alt="Hasil Scan">
     </div>
-    <div class="mt-6">
-        <h4 class="font-bold">Saran Penanganan:</h4>
-        <ul id="handling-tips" class="list-disc pl-5 text-gray-600"></ul>
+
+    <div class="scan-card__info text-left">  <!-- tambahkan text-left -->
+      <div class="mb-4">
+        <span class="badge badge--solid" id="scan-title">—</span>
+      </div>
+
+      <p class="scan-card__type text-left"> <!-- tambahkan text-left -->
+        <span class="font-semibold">Jenis Sampah</span>
+        <span class="badge badge--soft" id="scan-type">—</span>
+      </p>
+
+      <p id="scan-desc" class="scan-card__desc hidden"></p>
+
+      <div class="scan-card__section mb-4">
+        <span class="section-chip">Saran Penanganan :</span>
+        <ol id="handling-tips" class="scan-card__list list-decimal pl-5 text-left"></ol>
+      </div>
+
+      <div class="scan-card__section mb-4">
+        <span class="section-chip">Daur ulang :</span>
+        <ol id="recycling-tips" class="scan-card__list list-decimal pl-5 text-left"></ol>
+      </div>
     </div>
-    <div class="mt-6">
-        <h4 class="font-bold">Daur Ulang:</h4>
-        <ul id="recycling-tips" class="list-disc pl-5 text-gray-600"></ul>
-    </div>
+  </div>
 </div>
 
         <!-- Popup Langkah -->
@@ -97,11 +110,10 @@
                 </div>
             </div>
 
-
-
             <button id="close-popup" class="btn btn-secondary">Tutup</button>
         </div>
     </div>
+
 
 <style>
     html, body {
@@ -454,140 +466,258 @@ color: #555;
             max-width: 120px;
         }
     }
+
+    <!-- Styles khusus card baru (override style lama) -->
+<>
+/* Pastikan selector diawali #scan-result agar override id lama */
+#scan-result.scan-card{
+  background:#5E936C;
+  border-radius:16px;
+  box-shadow:0 8px 24px rgba(0,0,0,.15);
+  padding:24px;
+  color:#fff;
+  margin-top:2rem;
+}
+#scan-result .scan-card__title{
+  text-align:center;
+  font-weight:800;
+  font-size:1.75rem;
+  margin:0 0 16px 0;
+}
+#scan-result .scan-card__grid{
+  display:grid;
+  grid-template-columns: 1fr 1.6fr;
+  gap:24px;
+  align-items:stretch;
+}
+#scan-result .scan-card__photo{
+  background:#fff;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+}
+#scan-result .scan-card__photo img{
+  width:100%;
+  max-width:360px;
+  aspect-ratio:1/1;
+  object-fit:contain;
+  border-radius:12px;
+}
+#scan-result .scan-card__info{
+  background:#fff;
+  color:#374151;
+  border-radius:16px;
+  padding:20px 24px;
+}
+#scan-result .badge{
+  display:inline-block;
+  border-radius:8px;
+  padding:8px 14px;
+  font-weight:700;
+  line-height:1;
+}
+#scan-result .badge--solid{ background:#5E936C; color:#fff; }
+#scan-result .badge--soft{ background:#E6F4EA; color:#2E6141; padding:6px 12px; }
+
+#scan-result .scan-card__type{ margin:10px 0 14px; }
+#scan-result .scan-card__desc{ color:#374151; line-height:1.6; margin:0 0 12px 0; }
+
+#scan-result .section-chip{
+  display:inline-block;
+  background:#5E936C;
+  color:#fff;
+  border-radius:8px;
+  padding:6px 12px;
+  font-weight:700;
+}
+#scan-result .scan-card__list{
+  margin:10px 0 0 22px;
+  color:#374151;
+  list-style:decimal;
+}
+#scan-result .scan-card__list li{ margin:4px 0; }
+
+@media (max-width: 1024px){
+  #scan-result .scan-card__grid{ grid-template-columns: 1fr; }
+  #scan-result .scan-card__photo img{ max-width:100%; }
+}
 </style>
 
 
 
 <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function () {
-    // ================== SCAN SCRIPT ==================
-    const scanForm = document.getElementById('scan-form');
-    const fileInput = document.getElementById('file');
-    const uploadedImage = document.getElementById('uploaded-image');
-    const uploadArea = document.getElementById('upload-area');
-    const uploadText = document.getElementById('upload-text');
-    const uploadIcon = document.getElementById('upload-icon');
-    const scanButton = document.getElementById('scan-sampah-btn');
+  const MOCK_MODE = @json(app()->environment(['local','testing'])); // true di local/testing
+  const API_URL   = @json(route('scan.scan')); // endpoint nyata untuk production
 
-    fileInput.addEventListener('change', function() {
-        if (fileInput.files.length > 0) {
-            const reader = new FileReader();
-            reader.onload = function (e) {
-                uploadedImage.src = e.target.result;
-                uploadedImage.classList.remove('hidden');
-                uploadText.classList.add('hidden');
-                uploadIcon.classList.add('hidden');
-            };
-            reader.readAsDataURL(fileInput.files[0]);
-            uploadArea.classList.add('border-green-500');
-        }
-    });
+  const scanForm      = document.getElementById('scan-form');
+  const fileInput     = document.getElementById('file');
+  const uploadedImage = document.getElementById('uploaded-image');
+  const uploadArea    = document.getElementById('upload-area');
+  const uploadText    = document.getElementById('upload-text');
+  const uploadIcon    = document.getElementById('upload-icon');
+  const scanButton    = document.getElementById('scan-sampah-btn');
 
-    scanButton.addEventListener('click', function (e) {
-        e.preventDefault();
-        if (!fileInput.files.length) {
-            alert('Silakan pilih gambar terlebih dahulu!');
-            return;
-        }
+  // Preview gambar saat dipilih
+  fileInput.addEventListener('change', function() {
+    if (fileInput.files.length > 0) {
+      const reader = new FileReader();
+      reader.onload = function (e) {
+        uploadedImage.src = e.target.result;
+        uploadedImage.classList.remove('hidden');
+        uploadText.classList.add('hidden');
+        uploadIcon.classList.add('hidden');
+      };
+      reader.readAsDataURL(fileInput.files[0]);
+      uploadArea.classList.add('border-green-500', 'file-selected');
+    }
+  });
 
-        scanButton.disabled = true;
-        scanButton.textContent = 'Menganalisis...';
-
-        const formData = new FormData(scanForm);
-
-        fetch("{{ secure_url(path: route('scan.scan', [], false)) }}", {
-        // fetch("{{ route('scan.scan') }}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Accept': 'application/json',
-            }
-        })
-        .then(res => res.json())
-        .then(data => showScanResult(data))
-        .catch(err => alert('Gagal memproses scan: ' + err.message))
-        .finally(() => {
-            scanButton.disabled = false;
-            scanButton.textContent = 'Scan Sampah';
-        });
-    });
-
-    function showScanResult(data) {
-        const resultContainer = document.getElementById('scan-result');
-
-        document.getElementById('result-image').src = data.imageUrl;
-        document.getElementById('scan-title').textContent = data.label;
-        document.getElementById('scan-type').textContent = data.description;
-        // dst...
-            // Tampilkan container hasil
-        resultContainer.classList.remove('hidden');
-        resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Klik Scan
+  scanButton.addEventListener('click', function (e) {
+    e.preventDefault();
+    if (!fileInput.files.length) {
+      alert('Silakan pilih gambar terlebih dahulu!');
+      return;
     }
 
-    // ================== POPUP SCRIPT ==================
-    const stepsPopup = document.getElementById('steps-popup');
-    const closePopupButton = document.getElementById('close-popup');
-    const nextStepButton = document.getElementById('next-step');
-    const prevStepButton = document.getElementById('prev-step');
-    const steps = document.querySelectorAll('.steps-popup-step');
-    const paginationNumbers = document.querySelectorAll('.pagination-number');
-    let currentStep = 0;
+    setBusy(true);
 
-    if (stepsPopup) { // <--- CEK dulu biar gak error
-        setTimeout(() => {
-            stepsPopup.style.display = 'flex';
-        }, 50);
+    // --- Jalur nyata (production) ---
+    const formData = new FormData(scanForm);
+    fetch(API_URL, {
+      method: 'POST',
+      body: formData,
+      headers: {
+        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+        'Accept': 'application/json',
+      },
+      credentials: 'same-origin'
+    })
+    .then(async (res) => {
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error(text || ('HTTP ' + res.status));
+      }
+      const contentType = res.headers.get('content-type') || '';
+      if (!contentType.includes('application/json')) {
+        throw new Error('Response bukan JSON');
+      }
+      return res.json();
+    })
+    .then(data => showScanResult(data)) // Menampilkan hasil dari server
+    .catch(err => alert('Gagal memproses scan: ' + err.message))
+    .finally(() => setBusy(false));
+  });
 
-        function showStep(step) {
-            steps.forEach((el, i) => {
-                el.classList.toggle('active', i === step);
-            });
-            paginationNumbers.forEach((num, i) => {
-                num.classList.toggle('active', i === step);
-            });
-        }
+  function setBusy(state) {
+    scanButton.disabled = state;
+    scanButton.textContent = state ? 'Menganalisis...' : 'Scan Sampah';
+  }
 
-        paginationNumbers.forEach((num, i) => {
-            num.addEventListener('click', () => {
-                currentStep = i;
-                showStep(currentStep);
-            });
-        });
+  // ---- Render hasil (mendukung data nyata) ----
+  function showScanResult(data) {
+    const resultContainer = document.getElementById('scan-result');
 
-        if (nextStepButton) {
-            nextStepButton.addEventListener('click', () => {
-                if (currentStep < steps.length - 1) {
-                    currentStep++;
-                    showStep(currentStep);
-                }
-            });
-        }
+    document.getElementById('result-image').src =
+      data.imageUrl || uploadedImage.src || '';
 
-        if (prevStepButton) {
-            prevStepButton.addEventListener('click', () => {
-                if (currentStep > 0) {
-                    currentStep--;
-                    showStep(currentStep);
-                }
-            });
-        }
+    document.getElementById('scan-title').textContent =
+      data.label || 'Tidak diketahui';
 
-        if (closePopupButton) {
-            closePopupButton.addEventListener('click', () => {
-                stepsPopup.style.display = 'none';
-            });
-        }
+    document.getElementById('scan-type').textContent =
+      data.description || data.type || '';
 
-        showStep(currentStep);
+    // === Deskripsi panjang (opsional) ===
+    const descEl = document.getElementById('scan-desc');
+    const longDesc = data.description || data.longDescription || '';
+    if (descEl) {
+      if (longDesc) {
+        descEl.textContent = longDesc;
+        descEl.classList.remove('hidden');
+      } else {
+        descEl.classList.add('hidden');
+      }
     }
+
+    fillList('handling-tips', data.handlingTips || data.handling || []);
+    fillList('recycling-tips', data.recyclingTips || data.recycling || []);
+
+    resultContainer.classList.remove('hidden');
+    resultContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+
+  function fillList(id, items) {
+    const ul = document.getElementById(id);
+    ul.innerHTML = '';
+    (items || []).forEach(text => {
+      const li = document.createElement('li');
+      li.textContent = text;
+      ul.appendChild(li);
+    });
+  }
 });
+
+// ================== POPUP SCRIPT (tidak diubah) ==================
+  const stepsPopup = document.getElementById('steps-popup');
+  const closePopupButton = document.getElementById('close-popup');
+  const nextStepButton = document.getElementById('next-step');
+  const prevStepButton = document.getElementById('prev-step');
+  const steps = document.querySelectorAll('.steps-popup-step');
+  const paginationNumbers = document.querySelectorAll('.pagination-number');
+  let currentStep = 0;
+
+  if (stepsPopup) {
+    setTimeout(() => {
+      stepsPopup.style.display = 'flex';
+    }, 50);
+
+    function showStep(step) {
+      steps.forEach((el, i) => {
+        el.classList.toggle('active', i === step);
+      });
+      paginationNumbers.forEach((num, i) => {
+        num.classList.toggle('active', i === step);
+      });
+    }
+
+    paginationNumbers.forEach((num, i) => {
+      num.addEventListener('click', () => {
+        currentStep = i;
+        showStep(currentStep);
+      });
+    });
+
+    if (nextStepButton) {
+      nextStepButton.addEventListener('click', () => {
+        if (currentStep < steps.length - 1) {
+          currentStep++;
+          showStep(currentStep);
+        }
+      });
+    }
+
+    if (prevStepButton) {
+      prevStepButton.addEventListener('click', () => {
+        if (currentStep > 0) {
+          currentStep--;
+          showStep(currentStep);
+        }
+      });
+    }
+
+    if (closePopupButton) {
+      closePopupButton.addEventListener('click', () => {
+        stepsPopup.style.display = 'none';
+      });
+    }
+
+    showStep(currentStep);
+  }
+  // ================== END POPUP SCRIPT ==================
 </script>
-
-
-
-
 @endsection
