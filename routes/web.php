@@ -24,7 +24,6 @@ Route::get('/tentang', function () {
 })->name('tentang');
 Route::get('/reverse-geocode', ReverseGeocodeController::class);
 
-
 // Fitur Scan 
 Route::get('/scan', function () {
     return view('pages.scan.scan');
@@ -32,52 +31,15 @@ Route::get('/scan', function () {
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
 // Auth
-// Route::middleware(middleware: ['auth', 'verified'])->group(function () {
-Route::middleware(['auth', 'role:admin|warga'])->group(function () {
+Route::middleware(['auth', 'verified'])->group(function () {
+// Route::middleware(['auth', 'role:admin|warga'])->group(function () {
 
     // Dashboard
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    // Route Fitur Lapor
-    Route::get('/lapor', [LaporController::class, 'index'])->name('lapor');
-    Route::post('/lapor', [LaporController::class, 'store'])->name('lapor.store');
-});
-
-
-// Admin
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-Route::get('/', function () {
-    return view('admin');
-    });
-});
-
-// Route::get('/pemetaan-tps', function () {
-    //     return view('landing/lokasi-tps');
-    // });
-    
-    Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-    Route::post('/register', [AuthController::class, 'storeUser'])->name('register.store');
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login.show');
-    Route::post('/login', [AuthController::class, 'loginUser'])->name('login.store');
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
-
-    require __DIR__.'/auth.php';
-
-
-
-Route::middleware('auth')->group(function () {
-    // Rute ini akan mengarahkan ke halaman dasbor setelah login berhasil
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->name('dashboard');
-
-    Route::get('/laporan', function () {
+        Route::get('/laporan', function () {
     return view('laporan');
     })->name('laporan.index');
     Route::get('/lokasi-tps', function () {
@@ -85,8 +47,31 @@ Route::middleware('auth')->group(function () {
     })->name('lokasi-tps.index');
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
+
+
+    // Route Fitur Lapor
+    Route::get('/lapor', [LaporController::class, 'index'])->name('lapor');
+    Route::post('/lapor', [LaporController::class, 'store'])->name('lapor.store');
+    
     Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
     Route::post('/laporan', [ReportController::class, 'store'])->name('laporan.store.user');
-  
+
 });
 
+
+// Admin
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+// Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
+Route::get('/', function () {
+    return view('admin');
+    });
+});
+   
+
+require __DIR__.'/auth.php';
+
+// Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
+// Route::post('/register', [AuthController::class, 'storeUser'])->name('register.store');
+// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+// Route::post('/login', [AuthController::class, 'loginUser'])->name('login.store');
+// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');

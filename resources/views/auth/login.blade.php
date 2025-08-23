@@ -12,7 +12,7 @@
 
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Masuk ke Akun Anda</h2>
 
-        <form action="{{ route('login.store') }}" method="POST" class="space-y-6">
+        <form action="{{ route('login') }}" method="POST" class="space-y-6">
             @csrf
 
             <div>

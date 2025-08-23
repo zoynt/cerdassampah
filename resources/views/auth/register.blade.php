@@ -12,7 +12,7 @@
 
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Buat Akun Baru</h2>
 
-        <form action="{{ route('register.store') }}" method="POST" class="space-y-5">
+        <form action="{{ route('register') }}" method="POST" class="space-y-5">
             @csrf
 
             <div>
@@ -85,7 +85,7 @@
 
             <p class="text-center text-gray-600 text-sm pt-2">
                 Sudah punya akun?
-                <a href="{{ route('login.show') }}" class="text-green-700 hover:text-green-800 font-bold">Masuk</a>
+                <a href="{{ route('login') }}" class="text-green-700 hover:text-green-800 font-bold">Masuk</a>
             </p>
         </form>
     </div>
