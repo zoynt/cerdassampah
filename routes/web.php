@@ -41,7 +41,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('dashboard');
 
     Route::get('/lokasi-tps', function () {
-        return view('lokasi-tps');
+        return view('pages.dashboard.lokasi-tps');
     })->name('lokasi-tps.index');
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
@@ -58,17 +58,10 @@ Route::middleware(['auth'])->group(function () {
 
 // Admin
 Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-// Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-Route::get('/', function () {
-    return view('admin');
-    });
+    Route::get('/', function () {
+        return view('admin');
+        });
 });
    
 
 require __DIR__.'/auth.php';
-
-// Route::get('/register', [AuthController::class, 'showRegisterForm'])->name('register');
-// Route::post('/register', [AuthController::class, 'storeUser'])->name('register.store');
-// Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-// Route::post('/login', [AuthController::class, 'loginUser'])->name('login.store');
-// Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
