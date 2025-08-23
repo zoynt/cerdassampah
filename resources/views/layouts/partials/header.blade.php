@@ -46,7 +46,14 @@
         </div>
         <a href="{{ route('informasi') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Informasi</a>
         <a href="{{ route('tentang') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Tentang</a>
-        <a href="{{ route('lapor') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
+        
+        {{-- lapor --}}
+        @auth
+            <a href="{{ route('lapor.index') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
+        @else
+            <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
+        @endauth
+
         <div class="h-6 w-px bg-white/70"></div>
         <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a>
       </nav>
@@ -83,10 +90,14 @@
             </div>
 
             <div class="border-t border-gray-200"></div>
-            <a href="informasi" class="block px-4 py-2 hover:bg-green-100 rounded">Informasi</a>
-            <a href="tentang" class="block px-4 py-2 hover:bg-green-100 rounded">Tentang</a>
-            <a href="lapor" class="block px-4 py-2 hover:bg-green-100 font-bold rounded">Ayo Laporkan!</a>
-            <a href="login" class="block px-4 py-2 hover:bg-green-100 rounded">Masuk</a>
+            <a href="{{ route('informasi') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Informasi</a>
+            <a href="{{ route('tentang') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Tentang</a>
+            @auth
+                <a href="{{ route('lapor.index') }}" class="block px-4 py-2 hover:bg-green-100 font-bold rounded">Ayo Laporkan!</a>
+            @else
+                <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Ayo Laporkan!</a>
+            @endauth
+            <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Masuk</a>
         </div>
     </div>
 </header>

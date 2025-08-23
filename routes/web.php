@@ -30,18 +30,16 @@ Route::get('/scan', function () {
 })->name('scan.form');
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
-// Auth
-Route::middleware(['auth', 'verified'])->group(function () {
-// Route::middleware(['auth', 'role:admin|warga'])->group(function () {
 
+
+// Auth
+Route::middleware(['auth'])->group(function () {
+// Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
-        return view('dashboard');
+        return view('pages.dashboard.dashboard');
     })->name('dashboard');
 
-        Route::get('/laporan', function () {
-    return view('laporan');
-    })->name('laporan.index');
     Route::get('/lokasi-tps', function () {
         return view('lokasi-tps');
     })->name('lokasi-tps.index');
@@ -50,12 +48,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     // Route Fitur Lapor
-    Route::get('/lapor', [LaporController::class, 'index'])->name('lapor');
-    Route::post('/lapor', [LaporController::class, 'store'])->name('lapor.store');
-    
-    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
-    Route::post('/laporan', [ReportController::class, 'store'])->name('laporan.store.user');
-
+    Route::get('/lapor', function () {
+        return view('pages.report.lapor');
+    })->name('lapor');
+    Route::get('/lapor', [ReportController::class, 'index'])->name('lapor.index');
+    Route::post('/lapor', [ReportController::class, 'store'])->name('lapor.store.user');
 });
 
 

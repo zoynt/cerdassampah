@@ -72,7 +72,7 @@ public function run(): void
 
     // ===== Buat User contoh =====
     $admin = User::firstOrCreate(
-        ['email' => 'admin@smartwaste.test'],
+        ['email' => 'admin@mail.test'],
         [
             'name' => 'Super Admin',
             'password' => bcrypt('password123'),
@@ -81,7 +81,7 @@ public function run(): void
     $admin->assignRole($adminRole);
 
     $warga = User::firstOrCreate(
-        ['email' => 'warga@smartwaste.test'],
+        ['email' => 'warga@mail.test'],
         [
             'name' => 'User Warga',
             'password' => bcrypt('password123'),

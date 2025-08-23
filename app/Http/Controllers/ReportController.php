@@ -14,7 +14,7 @@ class ReportController extends Controller
      */
     public function index()
     {
-        return view('laporan');
+        return view('pages.report.lapor');
     }
 
     /**
@@ -49,6 +49,6 @@ class ReportController extends Controller
         ]);
 
         // 4. Arahkan kembali ke halaman laporan di dalam dasbor dengan pesan sukses
-        return redirect()->route('laporan.index')->with('success', 'Laporan Anda berhasil dikirim!');
+        return redirect()->route('lapor.index')->with('success', 'Laporan Anda berhasil dikirim!');
     }
 }
