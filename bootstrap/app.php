@@ -26,6 +26,16 @@ return Application::configure(basePath: dirname(__DIR__))
         'permission' => \Spatie\Permission\Middleware\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middleware\RoleOrPermissionMiddleware::class,
         ]);
+                $middleware->redirectUsersTo(function (Request $request) {
+            // Jika pengguna yang login punya peran 'admin'
+            if ($request->user()->hasRole('admin')) {
+                // Arahkan ke panel admin
+                return '/admin';
+            }
+
+            // Jika tidak, arahkan ke dashboard biasa
+            return '/dashboard';
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
