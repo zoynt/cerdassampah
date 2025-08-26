@@ -18,6 +18,10 @@ class WasteTypeResource extends Resource
     protected static ?string $model = WasteType::class;
 
     protected static ?string $navigationIcon = 'heroicon-s-archive-box';
+    protected static ?string $navigationLabel = 'Jenis Sampah';
+    protected static ?int $navigationSort = 1;
+    protected static ?string $navigationGroup = 'TPS';
+
 
     public static function form(Form $form): Form
     {
@@ -32,12 +36,17 @@ class WasteTypeResource extends Resource
     }
 
     public static function table(Table $table): Table
-    {
+    {   
         return $table
             ->columns([
-                Tables\Columns\TextColumn::make('type_name')->searchable(),
-                Tables\Columns\TextColumn::make('waste_description'),
+                Tables\Columns\TextColumn::make('type_name')->searchable()
+                ->sortable()
+                ->label('Jenis Sampah'),
+                // ->description(fn (WasteType $record): string => $record->waste_description),
+                Tables\Columns\TextColumn::make('waste_description')
+                ->label('Deskripsi Sampah'),
             ])
+            
             ->filters([
                 //
             ])
@@ -48,7 +57,9 @@ class WasteTypeResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->searchPlaceholder('Search (Jenis Sampah)')
+            ->searchOnBlur();
     }
 
     public static function getRelations(): array
