@@ -20,8 +20,8 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-c-user-group';
     protected static ?string $navigationLabel = 'Pengguna';
-    protected static ?int $navigationSort = 0;
     protected static ?string $pluralModelLabel = 'Pengguna'; // Nama di semua tempat
+    protected static ?int $navigationSort = 0;
 
     public static function form(Form $form): Form
     {

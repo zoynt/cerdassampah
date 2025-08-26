@@ -18,6 +18,7 @@ class DatabaseSeeder extends Seeder
             WasteTypeSeeder::class,
             RolePermissionSeeder::class,
             TpsSeeder::class,
+            SurungSeeder::class,
             // Add other seeders here as needed
         ]);
 

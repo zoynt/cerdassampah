@@ -20,8 +20,6 @@ class WasteTypeResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-s-archive-box';
     protected static ?string $navigationLabel = 'Jenis Sampah';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationGroup = 'TPS';
-
 
     public static function form(Form $form): Form
     {
