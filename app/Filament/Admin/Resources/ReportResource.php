@@ -23,7 +23,6 @@ class ReportResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-s-document-text';
     protected static ?string $navigationLabel = 'Laporan TPS';
     protected static ?int $navigationSort = 1;
-    protected static ?string $navigationGroup = 'TPS';
 
 
 
@@ -57,7 +56,7 @@ class ReportResource extends Resource
                 ->copyable()
                 ->copyMessage('Email address copied')
                 ->copyMessageDuration(1500),
-                
+
                 Tables\Columns\TextColumn::make('address')->searchable()
                 ->wrap(),
                 Tables\Columns\TextColumn::make('status')
