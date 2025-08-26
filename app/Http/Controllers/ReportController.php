@@ -23,6 +23,23 @@ class ReportController extends Controller
     /**
      * Menyimpan laporan baru dari pengguna yang sudah login.
      */
+     public function history(Request $request)
+    {
+        $search = $request->input('search');
+
+        // Ambil laporan HANYA milik user yang sedang login
+        $reports = Report::where('user_id', Auth::id())
+                        ->when($search, function ($query, $search) {
+                            // Logika pencarian berdasarkan alamat atau status
+                            return $query->where('address', 'like', "%{$search}%")
+                                         ->orWhere('status', 'like', "%{$search}%");
+                        })
+                        ->orderBy('waktu_lapor', 'desc') 
+                        ->paginate(5); 
+
+        // Mengarahkan ke view yang benar sesuai struktur folder Anda
+        return view('pages.report.history', compact('reports', 'search'));
+    }
     public function store(Request $request)
     {
         // Validasi tetap di luar try-catch, agar error validasi tetap diarahkan otomatis
@@ -32,7 +49,7 @@ class ReportController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'address' => 'required|string',
-            'file' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'file' => 'required|image|mimes:jpg,jpeg,png|max:10240',
         ]);
 
         try {

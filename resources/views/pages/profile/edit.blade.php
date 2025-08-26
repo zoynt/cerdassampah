@@ -4,7 +4,7 @@
 
 @section('content')
 
-    <div class="bg-white rounded-xl shadow-md">
+    <div class="bg-white rounded-xl shadow-md ">
         <div class="h-40 bg-cover bg-center rounded-t-xl"
             style="background-image: url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2070&auto-format&fit=crop')">
         </div>

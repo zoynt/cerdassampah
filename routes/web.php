@@ -39,6 +39,9 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::get('/dashboard', function () {
         return view('pages.dashboard.dashboard');
     })->name('dashboard');
+    Route::get('/scan-user', function () {
+        return view('pages.dashboard.scan-sampah');
+    })->name('scan-user');
 
     Route::get('/lokasi-tps', function () {
         return view('pages.dashboard.lokasi-tps');
@@ -53,6 +56,7 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     })->name('lapor');
     Route::get('/lapor', [ReportController::class, 'index'])->name('lapor.index');
     Route::post('/lapor', [ReportController::class, 'store'])->name('lapor.store.user');
+    Route::get('/histori-laporan', [ReportController::class, 'history'])->name('laporan.history');
 });
 
 
