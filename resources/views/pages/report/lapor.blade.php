@@ -109,7 +109,7 @@
                             foto</span>
                     </div>
                     <img id="image-preview" src="#" alt="Pratinjau Gambar"
-                        class="absolute h-full w-full object-contain rounded-lg hidden p-2">
+                        class="absolute h-full w-full object-cover rounded-lg hidden">
                 </div>
                 <input type="file" id="file" name="file" class="hidden" accept=".png, .jpg, .jpeg"
                     onchange="previewImage(event)">

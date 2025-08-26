@@ -30,6 +30,21 @@
                     <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                 @enderror
             </div>
+            <div>
+                <label for="username" class="block text-gray-700 text-sm font-semibold mb-2">Username</label>
+                <div class="flex items-center bg-slate-100 rounded-lg focus-within:ring-2 focus-within:ring-green-500">
+                    <input type="text" id="username" name="username" value="{{ old('username') }}"
+                        placeholder="Masukkan nama panggilan"
+                        class="bg-transparent border-none w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none"
+                        required>
+                    <span class="p-3">
+                        <i class="fa fa-user text-gray-400"></i>
+                    </span>
+                </div>
+                @error('username')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
 
             <div>
                 <label for="email" class="block text-gray-700 text-sm font-semibold mb-2">Email</label>
