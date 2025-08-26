@@ -11,14 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('locations', function (Blueprint $table) {
+        Schema::create('tps', function (Blueprint $table) {
             $table->id();
-            $table->string('location_name');
-            $table->enum('location_type', ['tps', 'bank sampah', 'surung sintak']);
-            $table->string('location_longitude');
-            $table->string('location_latitude');
-            $table->enum('location_status', ['legal', 'ilegal'])->nullable();
-            $table->text('description')->nullable();
+            $table->string('tps_name');
+            $table->string('tps_longitude');
+            $table->string('tps_latitude');
+            $table->enum('tps_status', ['resmi', 'liar'])->nullable();
+            $table->text('tps_description')->nullable();
             $table->enum('kecamatan', [
                 'banjarmasin utara',
                 'banjarmasin selatan',
@@ -26,6 +25,10 @@ return new class extends Migration
                 'banjarmasin barat',
                 'banjarmasin timur'
             ]);
+            $table->string('tps_day');
+            $table->time('tps_start_time');
+            $table->time('tps_end_time');
+            $table->string('tps_transport');
             $table->timestamps();
         });
     }
@@ -35,6 +38,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('locations');
+        Schema::dropIfExists('tps');
     }
 };
