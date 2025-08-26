@@ -19,6 +19,9 @@ class UserResource extends Resource
     protected static ?string $model = User::class;
 
     protected static ?string $navigationIcon = 'heroicon-c-user-group';
+    protected static ?string $navigationLabel = 'Pengguna';
+    protected static ?int $navigationSort = 0;
+    protected static ?string $pluralModelLabel = 'Pengguna'; // Nama di semua tempat
 
     public static function form(Form $form): Form
     {
@@ -33,10 +36,12 @@ class UserResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name'),
-                Tables\Columns\TextColumn::make('username')->searchable(),
+                Tables\Columns\TextColumn::make('username')->searchable()
+                ->placeholder('No Username'),
                 Tables\Columns\TextColumn::make('email')->searchable()
                 ->toggleable(isToggledHiddenByDefault: true), // Sembunyikan default
                 Tables\Columns\TextColumn::make('created_at')
+                // ->since()
                 ->dateTime()
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true), // Sembunyikan default
@@ -66,7 +71,7 @@ class UserResource extends Resource
         return [
             'index' => Pages\ListUsers::route('/'),
             'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            // 'edit' => Pages\EditUser::route('/{record}/edit'),
         ];
     }
 }
