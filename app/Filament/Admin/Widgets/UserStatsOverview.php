@@ -2,10 +2,13 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use App\Models\Bank;
+use App\Models\Tps;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use App\Models\User; // <-- Jangan lupa import model User
 use App\Models\Report; // <-- Contoh import model lain jika diperlukan
+use App\Models\Surung;
 
 class UserStatsOverview extends BaseWidget
 {
@@ -16,6 +19,16 @@ class UserStatsOverview extends BaseWidget
             Stat::make('Total Users', User::count())
                 ->description('Jumlah semua user terdaftar')
                 ->descriptionIcon('heroicon-m-users')
+                ->color('success'),
+                
+            Stat::make('Total Tps', Tps::count())
+                ->description('Jumlah semua TPS terdaftar')
+                ->color('success'),
+            Stat::make('Total Surung Sintak', Surung::count())
+                ->description('Jumlah semua Surung terdaftar')
+                ->color('success'),
+            Stat::make('Total Bank Sampah', Bank::count())
+                ->description('Jumlah semua Bank Sampah terdaftar')
                 ->color('success'),
 
             Stat::make('Total Reports', Report::count())

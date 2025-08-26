@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class SurungSeeder extends Seeder
 {
@@ -12,6 +13,40 @@ class SurungSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        $kecamatans = [
+            'banjarmasin utara',
+            'banjarmasin selatan',
+            'banjarmasin tengah',
+            'banjarmasin barat',
+            'banjarmasin timur'
+        ];
+
+        // Ambil semua ID TPS yang tersedia
+        $tpsIds = DB::table('tps')->pluck('id')->toArray();
+
+        if (empty($tpsIds)) {
+            // Jika tidak ada TPS, hentikan seeding
+            $this->command->info('Tidak ada data TPS ditemukan. Jalankan TpsSeeder terlebih dahulu.');
+            return;
+        }
+
+        for ($i = 1; $i <= 20; $i++) {
+            DB::table('surungs')->insert([
+                'tps_id' => $tpsIds[array_rand($tpsIds)],
+                'surung_name' => 'Surung ' . $i,
+                'surung_longitude' => '114.6' . rand(1000, 9999),
+                'surung_latitude' => '-3.4' . rand(1000, 9999),
+                'kecamatan' => $kecamatans[array_rand($kecamatans)],
+                'worker_name' => 'Petugas ' . $i,
+                'worker_no' => '08' . rand(111111111, 999999999),
+                'area' => 'Area ' . rand(1, 10),
+                'surung_day' => 'Senin - Jumat',
+                'surung_start_time' => '06:00:00',
+                'surung_end_time' => '14:00:00',
+                'surung_description' => 'Surung pengangkut sampah wilayah ' . $kecamatans[array_rand($kecamatans)],
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
     }
 }

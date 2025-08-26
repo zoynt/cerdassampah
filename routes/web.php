@@ -33,8 +33,8 @@ Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
 
 // Auth
-Route::middleware(['auth'])->group(function () {
-// Route::middleware(['auth', 'role:warga'])->group(function () {
+// Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     // Dashboard
     Route::get('/dashboard', function () {
         return view('pages.dashboard.dashboard');
