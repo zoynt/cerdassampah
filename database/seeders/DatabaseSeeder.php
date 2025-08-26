@@ -16,10 +16,8 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
         $this->call([
             WasteTypeSeeder::class,
-            // LocationSeeder::class,
-            LocationAndScheduleSeeder::class,
             RolePermissionSeeder::class,
-            // ScheduleSeeder::class,
+            TpsSeeder::class,
             // Add other seeders here as needed
         ]);
 
