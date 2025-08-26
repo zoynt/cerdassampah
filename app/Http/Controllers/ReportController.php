@@ -6,6 +6,9 @@ use App\Models\Report;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
 
 class ReportController extends Controller
 {
@@ -39,7 +42,7 @@ class ReportController extends Controller
     }
     public function store(Request $request)
     {
-        // 1. Validasi input dari form
+        // Validasi tetap di luar try-catch, agar error validasi tetap diarahkan otomatis
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
@@ -49,23 +52,47 @@ class ReportController extends Controller
             'file' => 'required|image|mimes:jpg,jpeg,png|max: 2048',
         ]);
 
-        // 2. Proses upload file gambar
-        $imagePath = $request->file('file')->store('report-images', 'public');
+        try {
+            DB::beginTransaction();
 
-        // 3. Buat laporan baru di database, user_id pasti ada.
-        Report::create([
-            'user_id' => Auth::id(),
-            'name' => $validatedData['name'],
-            'email' => $validatedData['email'],
-            'latitude' => $validatedData['latitude'],
-            'longitude' => $validatedData['longitude'],
-            'address' => $validatedData['address'],
-            'image' => $imagePath,
-            'status' => 'pending',
-            'waktu_lapor' => now(),
-        ]);
+            // Upload gambar
+            $imagePath = $request->file('file')->store('report-images', 'public');
 
-        // 4. Arahkan kembali ke halaman laporan di dalam dasbor dengan pesan sukses
-        return redirect()->route('lapor.index')->with('success', 'Laporan Anda berhasil dikirim!');
+            // Simpan ke database
+            Report::create([
+                'user_id' => Auth::id(),
+                'name' => $validatedData['name'],
+                'email' => $validatedData['email'],
+                'latitude' => $validatedData['latitude'],
+                'longitude' => $validatedData['longitude'],
+                'address' => $validatedData['address'],
+                'image' => $imagePath,
+                'status' => 'pending',
+                'waktu_lapor' => now(),
+            ]);
+
+            DB::commit();
+
+            return redirect()->route('lapor.index')
+                ->with('success', 'Laporan Anda berhasil dikirim!');
+
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            // Hapus file yang sudah terupload (jika ada)
+            if (!empty($imagePath) && Storage::disk('public')->exists($imagePath)) {
+                Storage::disk('public')->delete($imagePath);
+            }
+
+            // Catat error ke log
+            Log::error('Gagal menyimpan laporan: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan saat mengirim laporan. Silakan coba lagi.');
+        }
     }
+
 }
