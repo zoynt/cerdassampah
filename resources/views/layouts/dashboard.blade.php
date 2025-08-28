@@ -79,7 +79,7 @@
                 </a>
 
                 {{-- MENU YANG HILANG DIKEMBALIKAN --}}
-                <a href="#" @class([
+                <a href="PilahSampahGame.js" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
                     'bg-green-700 text-white shadow-sm' => request()->routeIs('game.*'),
                     'text-gray-500 hover:bg-gray-200' => !request()->routeIs('game.*'),
