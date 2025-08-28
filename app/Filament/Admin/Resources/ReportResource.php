@@ -2,19 +2,21 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\Report;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use FIlament\Infolists\Infolist;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
+use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists; // <-- Jangan lupa import
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\ReportResource\Pages;
 use App\Filament\Admin\Resources\ReportResource\RelationManagers;
-use App\Models\Report;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Infolists; // <-- Jangan lupa import
-use FIlament\Infolists\Infolist;
-use Filament\Resources\Pages\ListRecords;
 
 class ReportResource extends Resource
 {
@@ -24,23 +26,39 @@ class ReportResource extends Resource
     protected static ?string $navigationLabel = 'Laporan TPS';
     protected static ?int $navigationSort = 1;
 
-
-
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required()
-                    ->maxLength(100),
+                    ->maxLength(100)
+                    ->disabled(),
+                Forms\Components\TextInput::make('username')
+                    // ->required()
+                    ->maxLength(100)
+                    ->disabled(),
                 Forms\Components\TextInput::make('email')
                     ->required()
-                    ->maxLength(100),
-                    Forms\Components\Textarea::make('address')
-                    ->required(),
-                    Forms\Components\TextInput::make('status')
-                        ->required()
-                        ->maxLength(100),
+                    ->maxLength(100)
+                    ->disabled(),
+                Forms\Components\Textarea::make('address')
+                    ->required()
+                    ->disabled(),
+                TextInput::make('latitude'),
+                TextInput::make('longitude'),
+                Forms\Components\Select::make('status')
+                    ->required()
+                    ->label('Status')
+                    ->options([
+                        'pending' => 'Pending',
+                        'proses' => 'Proses',
+                        'selesai' => 'Selesai',
+                    ]),
+                FileUpload::make('image')
+                    ->image()
+                    ->imageEditor()
+                    ->disabled(),
             ]);
     }
 
@@ -48,10 +66,8 @@ class ReportResource extends Resource
     {
         return $table
             ->columns([
-                // Tables\Columns\ImageColumn::make('image')
-                //     ->width(100)
-                //     ->height(100),
                 Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
+                Tables\Columns\TextColumn::make('username')->label('Username')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable()
                 ->copyable()
                 ->copyMessage('Email address copied')
@@ -64,16 +80,16 @@ class ReportResource extends Resource
                 Tables\Columns\TextColumn::make('waktu_lapor')->sortable(),
             ])
             ->filters([
-                Tables\Filters\Filter::make('status')
+                Tables\Filters\SelectFilter::make('status')
                     ->label('Status')
-                    ->query(fn ($query) => $query->where('status', 'pending')),
+                    ->options(
+                        // Ambil semua nilai unik dari kolom 'tps_kecamatan' dan jadikan pilihan
+                        Report::query()->distinct()->pluck('status', 'status')->all()
+                    ),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
-                // Tables\Actions\ExportAction::make(),
-                // Tables\Actions\EditAction::make(),
-
-                // Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
                 // Tables\Actions\BulkActionGroup::make([
@@ -87,12 +103,16 @@ class ReportResource extends Resource
         return $infolist
             ->schema([
                 Infolists\Components\TextEntry::make('name'),
-                Infolists\Components\TextEntry::make('email'),
+                Infolists\Components\TextEntry::make('username'),
+                Infolists\Components\TextEntry::make('email')
+                    ->copyable()
+                    ->copyMessage('Email address copied')
+                    ->copyMessageDuration(1500),
+                Infolists\Components\TextEntry::make('address'),
+                Infolists\Components\TextEntry::make('status'),
                 Infolists\Components\ImageEntry::make('image') // 🖼️ Tampilkan gambar di sini
                     ->width(400)
                     ->height('auto'),
-                Infolists\Components\TextEntry::make('address'),
-                Infolists\Components\TextEntry::make('status'),
             ]);
     }
 
@@ -109,7 +129,8 @@ class ReportResource extends Resource
             'index' => Pages\ListReports::route('/'),
             // 'view' => ListRecords::route('/{record}'),
             // 'create' => Pages\CreateReport::route('/create'),
-            // 'edit' => Pages\EditReport::route('/{record}/edit'),
+            'edit' => Pages\EditReport::route('/{record}/edit'),
         ];
     }
+    
 }

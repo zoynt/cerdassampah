@@ -110,7 +110,12 @@ class SurungResource extends Resource
                 // Tables\Columns\TextColumn::make('surung_description')->searchable(),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('kecamatan')
+                    ->label('Kecamatan')
+                    ->options(
+                        // Ambil semua nilai unik dari kolom 'surung_kecamatan' dan jadikan pilihan
+                        Surung::query()->distinct()->pluck('kecamatan', 'kecamatan')->all()
+                    )
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -46,7 +46,6 @@ class AdminPanelProvider extends PanelProvider
                 </span>
             </div>
             '))
-            // ->brandLogo('img/logobiasa.png')
             ->darkModeBrandLogo(fn () => new HtmlString('
             <div class="flex items-center gap-x-2">
                 <img src="' . asset('img/logoputih.png') . '" class="h-8">

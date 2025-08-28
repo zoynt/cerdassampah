@@ -11,5 +11,12 @@ class Report extends Model
     use HasFactory;
 
     protected $guarded = ['id'];
+    // protected $fillable = [
+    //     'name',
+    //     'email',
+    //     'address',
+    //     'status',
+    //     'image',
+    // ];
 
 }

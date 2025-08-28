@@ -73,7 +73,8 @@ class ReportController extends Controller
 
             DB::commit();
 
-            return redirect()->route('lapor.index')
+            return redirect()->route('laporan.history')
+            // return redirect()->route('lapor.index')
                 ->with('success', 'Laporan Anda berhasil dikirim!');
 
         } catch (\Throwable $e) {

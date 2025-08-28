@@ -27,6 +27,7 @@ return new class extends Migration
             $table->time('bank_start_time');
             $table->time('bank_end_time');
             $table->text('bank_description')->nullable();
+            $table->text('image')->nullable();
             $table->timestamps();
         });
     }

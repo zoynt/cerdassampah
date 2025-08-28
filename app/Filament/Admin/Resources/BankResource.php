@@ -10,6 +10,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\BankResource\Pages;
@@ -32,14 +33,18 @@ class BankResource extends Resource
     {
         return $form
             ->schema([
-                 TextInput::make('bank_name')->searchable(),
-                 TextInput::make('bank_longitude'),
-                 TextInput::make('bank_latitude'),
-                 TextInput::make('kecamatan')->searchable(),
-                 TextInput::make('bank_day')->searchable(),
-                 TextInput::make('bank_start_time')->searchable(),
-                 TextInput::make('bank_end_time')->searchable(),
-                 TextInput::make('bank_description'),
+                TextInput::make('bank_name'),
+                TextInput::make('bank_longitude'),
+                TextInput::make('bank_latitude'),
+                TextInput::make('kecamatan'),
+                TextInput::make('bank_day'),
+                TextInput::make('bank_start_time'),
+                TextInput::make('bank_end_time'),
+                TextInput::make('bank_description'),
+                FileUpload::make('image')
+                    ->image()
+                    ->imageEditor()
+                    ->Label('Gambar Bank'),
             ]);
     }
 
@@ -48,16 +53,19 @@ class BankResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('bank_name')->searchable(),
-                TextColumn::make('bank_longitude'),
-                TextColumn::make('bank_latitude'),
                 TextColumn::make('kecamatan')->searchable(),
                 TextColumn::make('bank_day')->searchable(),
                 TextColumn::make('bank_start_time')->searchable(),
                 TextColumn::make('bank_end_time')->searchable(),
-                TextColumn::make('bank_description'),
             ])
             ->filters([
-                //
+                Tables\Filters\SelectFilter::make('kecamatan')
+                    ->label('kecamatan')
+                    ->options(
+                        // Ambil semua nilai unik dari kolom 'bank_kecamatan' dan jadikan pilihan
+                        Bank::query()->distinct()->pluck('kecamatan', 'kecamatan')->all()
+                    )
+                
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -81,7 +89,7 @@ class BankResource extends Resource
         return [
             'index' => Pages\ListBanks::route('/'),
             'create' => Pages\CreateBank::route('/create'),
-            'edit' => Pages\EditBank::route('/{record}/edit'),
+            // 'edit' => Pages\EditBank::route('/{record}/edit'),
         ];
     }
 }

@@ -21,6 +21,7 @@ class Tps extends Model
         'tps_start_time',
         'tps_end_time',
         'tps_transport',
+        'image'
     ];
 
     public function surungs()
