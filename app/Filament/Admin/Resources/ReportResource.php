@@ -21,10 +21,13 @@ class ReportResource extends Resource
     protected static ?string $model = Report::class;
 
     protected static ?string $navigationIcon = 'heroicon-s-document-text';
+<<<<<<< HEAD
     protected static ?string $navigationLabel = 'Laporan TPS';
     protected static ?int $navigationSort = 1;
 
 
+=======
+>>>>>>> 011cfcc (Add filament for Admin's Panel)
 
     public static function form(Form $form): Form
     {
@@ -52,6 +55,7 @@ class ReportResource extends Resource
                 //     ->width(100)
                 //     ->height(100),
                 Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
+<<<<<<< HEAD
                 Tables\Columns\TextColumn::make('email')->searchable()
                 ->copyable()
                 ->copyMessage('Email address copied')
@@ -61,6 +65,11 @@ class ReportResource extends Resource
                 ->wrap(),
                 Tables\Columns\TextColumn::make('status')
                 ->color('primary'),
+=======
+                Tables\Columns\TextColumn::make('email')->searchable(),
+                // Tables\Columns\TextColumn::make('address')->searchable(),
+                Tables\Columns\TextColumn::make('status'),
+>>>>>>> 011cfcc (Add filament for Admin's Panel)
                 Tables\Columns\TextColumn::make('waktu_lapor')->sortable(),
             ])
             ->filters([

@@ -36,7 +36,11 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->colors([
+<<<<<<< HEAD
                 'primary' => Color::Lime,   
+=======
+                'primary' => Color::Lime,
+>>>>>>> 011cfcc (Add filament for Admin's Panel)
             ])
             ->brandLogo(fn () => new HtmlString('
             <div class="flex items-center gap-x-2">
