@@ -2,21 +2,23 @@
 
 namespace App\Filament\Admin\Resources;
 
-use App\Filament\Admin\Resources\TpsResource\Pages;
-use App\Filament\Admin\Resources\TpsResource\RelationManagers;
 use App\Models\Tps;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Infolists; // <-- Jangan lupa import
 use FIlament\Infolists\Infolist;
-
-
+use Filament\Resources\Resource;
+use PhpParser\Node\Stmt\Label;
 use function Laravel\Prompts\form;
+use Filament\Forms\Components\FileUpload;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Infolists; // <-- Jangan lupa import
+use App\Filament\Admin\Resources\TpsResource\Pages;
+use Filament\Tables\Columns\ImageColumn;
+
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Admin\Resources\TpsResource\RelationManagers;
 
 class TpsResource extends Resource
 {
@@ -47,9 +49,6 @@ class TpsResource extends Resource
                 Forms\Components\TextInput::make('tps_status')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\Textarea::make('tps_description')
-                    ->required()
-                    ->maxLength(300),
                 Forms\Components\TextInput::make('tps_day')
                     ->required()
                     ->maxLength(255),
@@ -62,6 +61,13 @@ class TpsResource extends Resource
                 Forms\Components\TextInput::make('tps_transport')
                     ->required()
                     ->maxLength(255),
+                    Forms\Components\Textarea::make('tps_description')
+                        ->required()
+                        ->maxLength(300),
+                FileUpload::make('image')
+                    ->image()
+                    ->imageEditor()
+                    ->Label('Gambar TPS'),
             ]);
     }
 
@@ -70,21 +76,20 @@ class TpsResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('tps_name')->searchable(),
-                Tables\Columns\TextColumn::make('tps_longitude'),
-                Tables\Columns\TextColumn::make('tps_latitude'),
                 Tables\Columns\TextColumn::make('kecamatan')->searchable(),
                 Tables\Columns\TextColumn::make('tps_status')->searchable(),
-                Tables\Columns\TextColumn::make('tps_description'),
                 Tables\Columns\TextColumn::make('tps_day')->searchable(),
                 Tables\Columns\TextColumn::make('tps_start_time')->searchable(),
                 Tables\Columns\TextColumn::make('tps_end_time')->searchable(),
                 Tables\Columns\TextColumn::make('tps_transport')->searchable(),
             ])
             ->filters([
-                Tables\Filters\Filter::make('kecamatan')
+                Tables\Filters\SelectFilter::make('kecamatan')
                     ->label('kecamatan')
-                    ->query(fn ($query) => $query->where('kecamatan', 'banjarmasin utara')),
-
+                    ->options(
+                        // Ambil semua nilai unik dari kolom 'tps_kecamatan' dan jadikan pilihan
+                        Tps::query()->distinct()->pluck('kecamatan', 'kecamatan')->all()
+                    )
             ])
             ->actions([
                 // Tables\Actions\ViewAction::make(),
@@ -126,7 +131,7 @@ class TpsResource extends Resource
         return [
             'index' => Pages\ListTps::route('/'),
             'create' => Pages\CreateTps::route('/create'),
-            'edit' => Pages\EditTps::route('/{record}/edit'),
+            // 'edit' => Pages\EditTps::route('/{record}/edit'),
         ];
     }
 }

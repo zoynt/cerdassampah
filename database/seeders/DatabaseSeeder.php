@@ -19,13 +19,9 @@ class DatabaseSeeder extends Seeder
             RolePermissionSeeder::class,
             TpsSeeder::class,
             SurungSeeder::class,
+            BankSeeder::class,
             // Add other seeders here as needed
         ]);
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@mail.com',
-            'password' => bcrypt('12345678'),
-        ]);
     }
 }

@@ -51,7 +51,7 @@
         @auth
             <a href="{{ route('lapor.index') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
         @else
-            <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
+            <a href="{{ route('lapor.index') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
         @endauth
 
         <div class="h-6 w-px bg-white/70"></div>

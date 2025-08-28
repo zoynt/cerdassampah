@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
@@ -75,7 +76,10 @@ public function run(): void
         ['email' => 'admin@mail.test'],
         [
             'name' => 'Super Admin',
+            'username' => 'super',
             'password' => bcrypt('password123'),
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10), // <-- 2. TAMBAHKAN BARIS INI
         ]
     );
     $admin->assignRole($adminRole);
@@ -84,7 +88,11 @@ public function run(): void
         ['email' => 'warga@mail.test'],
         [
             'name' => 'User Warga',
+            'username' => 'warga',
             'password' => bcrypt('password123'),
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10), // <-- 2. TAMBAHKAN BARIS INI
+
         ]
     );
     $warga->assignRole($wargaRole);
