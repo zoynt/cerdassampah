@@ -33,8 +33,8 @@ class ProfileController extends Controller
 
         $validatedData = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'username' => ['nullable', 'string', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'email' => ['required', 'string', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'username' => ['nullable', 'string', 'lowercase', 'max:255', Rule::unique('users')->ignore($user->id)],
+            'email' => ['required', 'string', 'email', 'lowercase', 'max:255', Rule::unique('users')->ignore($user->id)],
             'alamat' => ['nullable', 'string'],
             'no_telepon' => ['nullable', 'string', 'max:20'],
             'photo' => ['nullable', 'image', 'mimes:jpg,jpeg,png', 'max:2048'],

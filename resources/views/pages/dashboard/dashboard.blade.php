@@ -9,9 +9,7 @@
     <div class="relative bg-gradient-to-b from-green-700 via-green-700 to-green-500 -mt-4 sm:-mt-6 text-white mb-6">
 
         <div class="relative z-10 p-8 pt-10 pb-20 flex flex-col justify-center items-center text-center">
-            <div
-                class="flex items-center ju
-            stify-center w-24 h-24 mb-4 bg-white rounded-full overflow-hidden shadow-md">
+            <div class="flex items-center justify-center w-24 h-24 mb-4 bg-white rounded-full overflow-hidden shadow-md">
                 @if (Auth::user()->profile_photo_path)
                     <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Foto Profil"
                         class="w-full h-full object-cover">
