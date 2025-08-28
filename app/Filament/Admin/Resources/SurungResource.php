@@ -26,7 +26,7 @@ class SurungResource extends Resource
     protected static ?string $model = Surung::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-    protected static ?string $navigationGroup = 'Lokasi';
+    protected static ?string $navigationGroup = 'Lokasi Pengelola Sampah';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Surung Sintak';
     protected static ?string $pluralModelLabel = 'Surung Sintak'; // Nama di semua tempat

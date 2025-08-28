@@ -15,13 +15,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\BankResource\Pages;
 use App\Filament\Admin\Resources\BankResource\RelationManagers;
+use Filament\Forms\Components\Textarea;
 
 class BankResource extends Resource
 {
     protected static ?string $model = Bank::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-home-modern';
-    protected static ?string $navigationGroup = 'Lokasi';
+    protected static ?string $navigationGroup = 'Lokasi Pengelola Sampah';
     protected static ?int $navigationSort = 3;
     protected static ?string $navigationLabel = 'Bank Sampah';
     protected static ?string $pluralModelLabel = 'Bank Sampah'; // Nama di semua tempat
@@ -40,7 +41,7 @@ class BankResource extends Resource
                 TextInput::make('bank_day'),
                 TextInput::make('bank_start_time'),
                 TextInput::make('bank_end_time'),
-                TextInput::make('bank_description'),
+                Textarea::make('bank_description'),
                 FileUpload::make('image')
                     ->image()
                     ->imageEditor()
