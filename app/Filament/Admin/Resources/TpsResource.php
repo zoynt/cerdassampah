@@ -27,7 +27,7 @@ class TpsResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-trophy';
     protected static ?int $navigationSort = 1;
     protected static ?string $navigationLabel = 'TPS';
-    protected static ?string $navigationGroup = 'Lokasi';
+    protected static ?string $navigationGroup = 'Lokasi Pengelola Sampah';
 
 
     public static function form(Form $form): Form
@@ -61,7 +61,7 @@ class TpsResource extends Resource
                 Forms\Components\TextInput::make('tps_transport')
                     ->required()
                     ->maxLength(255),
-                    Forms\Components\Textarea::make('tps_description')
+                Forms\Components\Textarea::make('tps_description')
                         ->required()
                         ->maxLength(300),
                 FileUpload::make('image')
