@@ -42,6 +42,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/scan-user', function () {
         return view('pages.dashboard.scan-sampah');
     })->name('scan-user');
+    Route::get('/schedule-tps', function () {
+        return view('pages.schedule.tps');
+    })->name('schedule-tps');
+    Route::get('/surung-user', function () {
+        return view('pages.schedule.surungsintak');
+    })->name('surung-user');
+    Route::get('/banksampah-user', function () {
+        return view('pages.schedule.banksampah');
+    })->name('banksampah-user');
 
     Route::get('/lokasi-tps', function () {
         return view('pages.dashboard.lokasi-tps');

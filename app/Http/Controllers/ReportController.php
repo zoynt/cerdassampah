@@ -46,7 +46,7 @@ class ReportController extends Controller
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'address' => 'required|string',
-            'file' => 'required|image|mimes:jpg,jpeg,png|max:10240',
+            'file' => 'required|image|mimes:jpg,jpeg,png|max: 2048',
         ]);
 
         // 2. Proses upload file gambar
