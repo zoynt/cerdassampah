@@ -85,7 +85,6 @@ class ReportResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image')->label('Image'),
                 Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
                 Tables\Columns\TextColumn::make('username')->label('Username')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable()
@@ -94,9 +93,15 @@ class ReportResource extends Resource
                 ->copyMessageDuration(1500),
 
                 Tables\Columns\TextColumn::make('address')->searchable()
-                ->wrap(),
+                ->wrap()
+                ->limit(30),
                 Tables\Columns\TextColumn::make('status')
-                ->color('primary'),
+                ->color(fn (string $state): string => match ($state) {
+                    'pending' => 'gray',
+                    'proses' => 'warning',
+                    'selesai' => 'success',
+                    'rejected' => 'danger',
+                }),
                 Tables\Columns\TextColumn::make('waktu_lapor')->sortable(),
             ])
             ->filters([
