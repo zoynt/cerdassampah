@@ -23,29 +23,39 @@ class ReportController extends Controller
     /**
      * Menyimpan laporan baru dari pengguna yang sudah login.
      */
-     public function history(Request $request)
+    public function history(Request $request)
     {
         $search = $request->input('search');
 
-        // Ambil laporan HANYA milik user yang sedang login
-        $reports = Report::where('user_id', Auth::id())
-                        ->when($search, function ($query, $search) {
-                            // Logika pencarian berdasarkan alamat atau status
-                            return $query->where('address', 'like', "%{$search}%")
-                                         ->orWhere('status', 'like', "%{$search}%");
-                        })
-                        ->orderBy('waktu_lapor', 'desc') 
-                        ->paginate(5); 
+        $reportsQuery = Report::where('user_id', Auth::id())
+            ->when($search, function ($query, $search) {
+                return $query->where(function ($q) use ($search) {
+                    $q->where('address', 'like', "%{$search}%")
+                    ->orWhere('status', 'like', "%{$search}%");
+                });
+            })
+            ->orderBy('waktu_lapor', 'desc');
 
-        // Mengarahkan ke view yang benar sesuai struktur folder Anda
+        $reports = $reportsQuery->paginate(5)->withQueryString();
+
+       
+        if ($request->ajax()) {
+            return response()->json([
+                'table_html' => view('layouts.partials._history_table', ['reports' => $reports])->render(),
+                'pagination_html' => $reports->links()->toHtml()
+            ]);
+        }
+
+       
         return view('pages.report.history', compact('reports', 'search'));
     }
     public function store(Request $request)
     {
-        // Validasi tetap di luar try-catch, agar error validasi tetap diarahkan otomatis
+        
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
+            'username' => 'required|string|max:255',
             'latitude' => 'required|numeric',
             'longitude' => 'required|numeric',
             'address' => 'required|string',
@@ -55,14 +65,15 @@ class ReportController extends Controller
         try {
             DB::beginTransaction();
 
-            // Upload gambar
+           
             $imagePath = $request->file('file')->store('report-images', 'public');
 
-            // Simpan ke database
+           
             Report::create([
                 'user_id' => Auth::id(),
                 'name' => $validatedData['name'],
                 'email' => $validatedData['email'],
+                'username' => $validatedData['username'],
                 'latitude' => $validatedData['latitude'],
                 'longitude' => $validatedData['longitude'],
                 'address' => $validatedData['address'],
@@ -74,18 +85,17 @@ class ReportController extends Controller
             DB::commit();
 
             return redirect()->route('laporan.history')
-            // return redirect()->route('lapor.index')
+            
                 ->with('success', 'Laporan Anda berhasil dikirim!');
 
         } catch (\Throwable $e) {
             DB::rollBack();
 
-            // Hapus file yang sudah terupload (jika ada)
             if (!empty($imagePath) && Storage::disk('public')->exists($imagePath)) {
                 Storage::disk('public')->delete($imagePath);
             }
 
-            // Catat error ke log
+
             Log::error('Gagal menyimpan laporan: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
@@ -95,5 +105,6 @@ class ReportController extends Controller
                 ->with('error', 'Terjadi kesalahan saat mengirim laporan. Silakan coba lagi.');
         }
     }
+    
 
 }

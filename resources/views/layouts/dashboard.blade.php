@@ -20,18 +20,21 @@
 
 <body class="text-gray-800">
 
-    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-slate-50">
+    <div x-data="{ sidebarOpen: window.innerWidth >= 768 }" class="flex h-screen bg-slate-50">
 
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-64 px-4 py-7 overflow-y-auto text-gray-700 bg-white border-r border-gray-200 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0"
-            :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
+            class="fixed inset-y-0 left-0 z-40 w-64 px-4 py-7 overflow-y-auto text-gray-700 bg-white border-r border-gray-200 transition-transform duration-300 transform"
+            :class="{
+                'translate-x-0': sidebarOpen,
+                '-translate-x-full': !sidebarOpen,
+                'md:relative md:translate-x-0': sidebarOpen
+            }">
 
             <a href="{{ route('dashboard') }}" class="flex items-center px-4 mb-8">
                 <img src="{{ asset('img/logo.png') }}" alt="Logo CerdasSampah" class="w-10 h-10 mr-3" />
                 <span class="text-lg font-bold text-gray-800">CerdasSampah</span>
             </a>
 
-            {{-- NAVIGASI LENGKAP YANG SUDAH DIPERBAIKI --}}
             <nav x-data="{ ruteOpen: @json(request()->routeIs(['tps.index', 'surung-sintak.index', 'banksampah-user'])) }">
                 <a href="{{ route('dashboard') }}" @class([
                     'flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200',
@@ -89,7 +92,6 @@
                     Lokasi TPS
                 </a>
 
-                {{-- MENU YANG HILANG DIKEMBALIKAN --}}
                 <a href="#" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
                     'bg-green-700 text-white shadow-sm' => request()->routeIs('game.*'),
@@ -193,20 +195,18 @@
             </nav>
         </aside>
 
-        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 md-hidden"
+        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 md:hidden"
             x-cloak></div>
 
-        <div class="flex flex-col flex-1 w-full">
+        <div class="flex flex-col flex-1 w-full transition-all duration-300" :class="sidebarOpen">
 
-            {{-- PENYESUAIAN: Bayangan header dibuat dinamis menggunakan @class --}}
             <header @class([
                 'sticky top-0 z-20 flex items-center justify-between px-6 py-4 text-white bg-green-700 transition-shadow duration-300',
-                'shadow-md' => !request()->routeIs('dashboard', 'scan-user'), // Bayangan HANYA muncul jika BUKAN halaman dasbor
+                'shadow-md' => !request()->routeIs('dashboard', 'scan-user'),
             ])>
 
-                {{-- Sisi Kiri Header --}}
                 <div class="flex items-center">
-                    <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none md:hidden">
+                    <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none">
                         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
                             <path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round"></path>
@@ -215,9 +215,8 @@
                     <h1 class="ml-3 text-xl font-semibold">@yield('title')</h1>
                 </div>
 
-                {{-- Sisi Kanan Header (Dropdown Profil) --}}
                 <div x-data="{ dropdownOpen: false }" class="relative">
-                    <button @click="dropdownOpen = !dropdownOpen"
+                    <button
                         class="relative z-10 flex items-center p-1 rounded-full focus:outline-none hover:bg-black/10 transition-colors">
 
                         <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
@@ -243,11 +242,11 @@
                         </svg>
                     </button>
 
-                    {{-- Overlay untuk menutup dropdown --}}
-                    <div x-show="dropdownOpen" @click="dropdownOpen = false" class="fixed inset-0 z-0 h-full w-full">
+
+                    <div x-show="dropdownOpen" class="fixed inset-0 z-0 h-full w-full">
                     </div>
 
-                    {{-- Isi Dropdown Menu --}}
+
                     <div x-show="dropdownOpen" x-transition
                         class="absolute right-0 z-30 w-48 py-2 mt-2 text-gray-800 bg-white rounded-md shadow-xl">
                         <a href="{{ route('profile.edit') }}"
@@ -277,10 +276,8 @@
 
             <main class="relative z-10 flex-1 overflow-y-auto">
                 @if (request()->routeIs('dashboard') || request()->routeIs('scan-user'))
-                    {{-- KHUSUS UNTUK HALAMAN DASBOR: Konten dirender tanpa pembungkus --}}
                     @yield('content')
                 @else
-                    {{-- UNTUK SEMUA HALAMAN LAIN: Konten dibungkus di dalam container dengan padding --}}
                     <div class="py-6 px-4 sm:px-6 lg:px-8">
                         @yield('content')
                     </div>
@@ -312,7 +309,7 @@
                 text: '{{ session('error') }}',
                 confirmButtonText: 'OK',
                 customClass: {
-                    confirmButton: 'btn-custom' // Kelas khusus untuk tombol
+                    confirmButton: 'btn-custom'
                 }
             });
             {{-- <div class="alert alert-danger" role="alert">

@@ -12,10 +12,7 @@ class BankController extends Controller
      */
     public function index(Request $request)
     {
-        // 1. Query dasar
         $query = Bank::query();
-
-        // 2. Logika Filter (Kecamatan dan Hari)
         if ($request->filled('kecamatan')) {
             $query->where('kecamatan', $request->kecamatan);
         }
@@ -23,8 +20,7 @@ class BankController extends Controller
             $query->where('bank_day', 'like', '%' . $request->hari . '%');
         }
 
-        // 3. Ambil data untuk Peta
-        $bankLocations = $query->get()->map(function ($bank) {
+        $bankLocations = (clone $query)->orderBy('id', 'asc')->get()->map(function ($bank) {
             return [
                 'id' => $bank->id,
                 'nama' => $bank->bank_name,
@@ -33,26 +29,28 @@ class BankController extends Controller
                 'deskripsi' => $bank->bank_description,
                 'lat' => (float) $bank->bank_latitude,
                 'lng' => (float) $bank->bank_longitude,
-                'image_url' => $bank->image
-                                ? asset('storage/' . $bank->image)
-                                : asset('img/tps-placeholder.jpg'), // Sediakan gambar placeholder
+                'image_url' => $bank->image ? asset('storage/' . $bank->image) : asset('img/tps-placeholder.jpg'),
             ];
         });
 
-        // 4. Ambil data untuk Tabel dengan paginasi
-        $schedules = $query->orderBy('id', 'asc')->paginate(5)->withQueryString();
+        $schedules = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
 
-        // 5. Ambil data unik untuk opsi filter kecamatan
+        if ($request->ajax()) {
+            return response()->json([
+                'table_html' => view('layouts.partials._bank_table_body', ['schedules' => $schedules])->render(),
+                'pagination_html' => $schedules->links()->toHtml(),
+                'map_locations' => $bankLocations
+            ]);
+        }
+
         $kecamatans = Bank::select('kecamatan')->whereNotNull('kecamatan')->distinct()->orderBy('kecamatan')->get();
 
-        // 6. Kirim semua data ke view
         return view('pages.schedule.banksampah', [
             'schedules' => $schedules,
             'bankLocations' => $bankLocations,
             'kecamatans' => $kecamatans,
         ]);
     }
-
     /**
      * Show the form for creating a new resource.
      */

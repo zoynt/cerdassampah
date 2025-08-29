@@ -1,12 +1,9 @@
-{{-- Lokasi File: resources/views/pages/schedule/tps.blade.php --}}
-
 @extends('layouts.dashboard')
 
-@section('title', 'Rute & Jadwal')
+@section('title', 'Jadwal & Lokasi TPS')
 
 @push('styles')
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
         #map {
             height: 450px;
@@ -27,12 +24,6 @@
         .leaflet-popup-tip-container {
             display: none;
         }
-
-        .leaflet-control-zoom {
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-        }
     </style>
 @endpush
 
@@ -40,13 +31,11 @@
     <div class="space-y-6">
         <h1 class="text-3xl font-bold text-gray-800">Jadwal & Lokasi TPS</h1>
 
-        {{-- Bagian Peta Leaflet --}}
         <div class="bg-white p-2 rounded-xl shadow-md">
             <div id="map" class="w-full rounded-lg"></div>
         </div>
 
-        {{-- Bagian Filter --}}
-
+        {{-- Bagian Filter (LENGKAP) --}}
         <div class="bg-white p-6 rounded-xl shadow-md">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Filter Pencarian</h2>
             <form id="filter-form" action="{{ route('tps.index') }}" method="GET">
@@ -60,7 +49,7 @@
                                 class="block w-full pl-4 pr-10 py-2.5 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500">
                                 <option value="">Semua Status</option>
                                 <option value="resmi" @selected(request('status') == 'resmi')>Resmi</option>
-                                <option value="ilegal" @selected(request('status') == 'ilegal')>Ilegal</option>
+                                <option value="liar" @selected(request('status') == 'liar')>Liar</option>
                             </select>
                             <div
                                 class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-gray-700">
@@ -132,7 +121,6 @@
             </form>
         </div>
 
-
         {{-- Bagian Tabel Jadwal --}}
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
             <div class="overflow-x-auto">
@@ -148,46 +136,23 @@
                             <th scope="col" class="px-6 py-4">Jenis Angkutan</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        @forelse ($schedules as $schedule)
-                            {{-- PERUBAHAN DI SINI: Menambahkan class dan data attribute pada <tr> --}}
-                            <tr class="bg-white border-b hover:bg-green-50 transition-colors duration-200 cursor-pointer tps-row"
-                                data-id="{{ $schedule->id }}" data-lat="{{ $schedule->tps_latitude }}"
-                                data-lng="{{ $schedule->tps_longitude }}">
-                                <td class="px-6 py-4 font-medium text-gray-900">
-                                    {{ $loop->iteration + $schedules->firstItem() - 1 }}</td>
-                                <td class="px-6 py-4 font-semibold text-gray-800">{{ $schedule->tps_name }}</td>
-                                <td class="px-6 py-4">{{ $schedule->tps_address }}</td>
-                                <td class="px-6 py-4">{{ $schedule->kecamatan }}</td>
-                                <td class="px-6 py-4">{{ $schedule->tps_day }}</td>
-                                <td class="px-6 py-4">{{ date('H:i', strtotime($schedule->tps_start_time)) }} -
-                                    {{ date('H:i', strtotime($schedule->tps_end_time)) }} WITA</td>
-                                <td class="px-6 py-4">{{ $schedule->tps_transport }}</td>
-                            </tr>
-                        @empty
-                            <tr class="bg-white border-b">
-                                <td colspan="7" class="px-6 py-4 text-center text-gray-500">
-                                    Tidak ada data TPS yang ditemukan. Silakan coba reset filter Anda.
-                                </td>
-                            </tr>
-                        @endforelse
+                    <tbody id="tps-table-body">
+                        @include('layouts.partials._tps_table_body', ['schedules' => $schedules])
                     </tbody>
                 </table>
             </div>
 
-            {{-- Bagian Paginasi Dinamis --}}
-            @if ($schedules->hasPages())
-                <div class="p-4 border-t bg-gray-50">
+            <div id="pagination-container" class="p-4 border-t bg-gray-50">
+                @if ($schedules->hasPages())
                     {{ $schedules->links() }}
-                </div>
-            @endif
+                @endif
+            </div>
         </div>
     </div>
 @endsection
 
 @push('scripts')
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const map = L.map('map').setView([-3.316694, 114.590111], 13);
@@ -195,8 +160,8 @@
                 attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             }).addTo(map);
 
+            let allMarkers = [];
             const greenIcon = L.icon({
-                /* ...icon definition... */
                 iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
@@ -205,7 +170,6 @@
                 shadowSize: [41, 41]
             });
             const redIcon = L.icon({
-                /* ...icon definition... */
                 iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png',
                 iconSize: [25, 41],
                 iconAnchor: [12, 41],
@@ -214,77 +178,78 @@
                 shadowSize: [41, 41]
             });
 
-            const tpsLocations = @json($tpsLocations);
+            function updateMapAndTableInteractivity(locations) {
+                allMarkers.forEach(marker => map.removeLayer(marker));
+                allMarkers = [];
 
-            // PERUBAHAN DI SINI: Variabel untuk menyimpan semua marker
-            let markers = {};
+                if (locations && locations.length > 0) {
+                    const bounds = L.latLngBounds(locations.map(tps => [tps.lat, tps.lng]));
+                    map.fitBounds(bounds, {
+                        padding: [50, 50],
+                        maxZoom: 15
+                    });
+                }
 
-            if (tpsLocations.length > 0) {
-                const bounds = L.latLngBounds(tpsLocations.map(tps => [tps.lat, tps.lng]));
-                map.fitBounds(bounds, {
-                    padding: [50, 50]
+                const markerObjectsById = {};
+                (locations || []).forEach(tps => {
+                    const icon = tps.status === 'resmi' ? greenIcon : redIcon;
+                    const marker = L.marker([tps.lat, tps.lng], {
+                        icon: icon
+                    }).addTo(map);
+                    const popupContent =
+                        `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0"><img class="w-full h-32 object-cover" src="${tps.image_url}" alt="Foto ${tps.nama}"><div class="p-3"><div class="font-bold text-base mb-1 text-gray-800">${tps.nama}</div><p class="text-gray-600 text-xs mb-2">${tps.alamat}</p><span class="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white ${tps.status === 'resmi' ? 'bg-green-600' : 'bg-red-500'}">Status: ${tps.status.charAt(0).toUpperCase() + tps.status.slice(1)}</span></div></div>`;
+                    marker.bindPopup(popupContent);
+                    allMarkers.push(marker);
+                    markerObjectsById[tps.id] = marker;
+                });
+
+                document.querySelectorAll('.tps-row').forEach(row => {
+                    row.addEventListener('click', function() {
+                        const id = this.dataset.id;
+                        if (markerObjectsById[id]) {
+                            map.flyTo(markerObjectsById[id].getLatLng(), 17);
+                            setTimeout(() => {
+                                markerObjectsById[id].openPopup();
+                            }, 500);
+                        }
+                    });
                 });
             }
 
-            tpsLocations.forEach(tps => {
-                const icon = tps.status === 'resmi' ? greenIcon : redIcon;
-                const marker = L.marker([tps.lat, tps.lng], {
-                    icon: icon
-                }).addTo(map);
+            updateMapAndTableInteractivity(@json($tpsLocations));
 
-                // PERUBAHAN DI SINI: Simpan marker ke dalam object markers
-                markers[tps.id] = marker;
-
-                const popupContent = `
-                    <div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0">
-                        <img class="w-full h-32 object-cover" src="${tps.image_url}" alt="Foto ${tps.nama}">
-                        <div class="p-3">
-                            <div class="font-bold text-base mb-1 text-gray-800">${tps.nama}</div>
-                            <p class="text-gray-600 text-xs mb-2">${tps.alamat}</p>
-                            <span class="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white ${tps.status === 'resmi' ? 'bg-green-600' : 'bg-red-500'}">
-                                Status: ${tps.status.charAt(0).toUpperCase() + tps.status.slice(1)}
-                            </span>
-                        </div>
-                    </div>`;
-                marker.bindPopup(popupContent);
-            });
-
-            // PERUBAHAN DI SINI: Tambahkan event listener untuk setiap baris tabel
-            const tableRows = document.querySelectorAll('.tps-row');
-            tableRows.forEach(row => {
-                row.addEventListener('click', function() {
-                    const lat = this.dataset.lat;
-                    const lng = this.dataset.lng;
-                    const id = this.dataset.id;
-
-                    if (lat && lng && id) {
-                        // Animasikan peta ke lokasi yang diklik
-                        map.flyTo([lat, lng], 17); // Zoom level 17 (lebih dekat)
-
-                        // Buka popup marker yang sesuai
-                        if (markers[id]) {
-                            // setTimeout untuk memberi waktu animasi map selesai
-                            setTimeout(() => {
-                                markers[id].openPopup();
-                            }, 500); // 500ms
-                        }
-
-                        // (Opsional) Beri highlight pada baris yang diklik
-                        tableRows.forEach(r => r.classList.remove('bg-green-100'));
-                        this.classList.add('bg-green-100');
-                    }
-                });
-            });
             const filterForm = document.getElementById('filter-form');
-            // Dapatkan semua elemen <select> di dalam form
-            const filterSelects = filterForm.querySelectorAll('select');
 
-            // Tambahkan event listener 'change' ke setiap elemen <select>
-            filterSelects.forEach(select => {
-                select.addEventListener('change', function() {
-                    // Ketika salah satu select diubah, submit form-nya
-                    filterForm.submit();
-                });
+            function handleFilterChange() {
+                const formData = new FormData(filterForm);
+                const params = new URLSearchParams(formData);
+                const url = `${filterForm.action}?${params.toString()}`;
+
+                history.pushState(null, '', url);
+
+                document.getElementById('tps-table-body').innerHTML =
+                    `<tr><td colspan="7" class="text-center p-6 animate-pulse">Memuat data...</td></tr>`;
+
+                fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('tps-table-body').innerHTML = data.table_html;
+                        document.getElementById('pagination-container').innerHTML = data.pagination_html;
+                        updateMapAndTableInteractivity(data.map_locations);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        document.getElementById('tps-table-body').innerHTML =
+                            `<tr><td colspan="7" class="text-center p-6 text-red-500">Gagal memuat data. Silakan coba lagi.</td></tr>`;
+                    });
+            }
+
+            filterForm.querySelectorAll('select').forEach(select => {
+                select.addEventListener('change', handleFilterChange);
             });
         });
     </script>
