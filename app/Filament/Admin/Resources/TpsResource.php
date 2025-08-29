@@ -38,7 +38,15 @@ class TpsResource extends Resource
     protected static ?string $navigationLabel = 'TPS';
     protected static ?string $navigationGroup = 'Lokasi Pengelola Sampah';
 
-
+private const DAYS_OPTIONS = [
+    'Senin' => 'Senin',
+    'Selasa' => 'Selasa',
+    'Rabu' => 'Rabu',
+    'Kamis' => 'Kamis',
+    'Jumat' => 'Jumat',
+    'Sabtu' => 'Sabtu',
+    'Minggu' => 'Minggu',
+];
     public static function form(Form $form): Form
     {
         return $form
@@ -179,12 +187,23 @@ class TpsResource extends Resource
                 ->seconds(false)
                 ->required(),
 
-            Forms\Components\TextInput::make('tps_day')
+            Forms\Components\CheckboxList::make('tps_day')
                 ->label('Hari Operasional')
+                ->options([
+                    'Senin' => 'Senin',
+                    'Selasa' => 'Selasa',
+                    'Rabu' => 'Rabu',
+                    'Kamis' => 'Kamis',
+                    'Jumat' => 'Jumat',
+                    'Sabtu' => 'Sabtu',
+                    'Minggu' => 'Minggu',
+                ])
                 ->required()
-                ->maxLength(255),
+                ->columns(3)
+                ->gridDirection('row')
+                ->bulkToggleable(), // <-- Tambahkan baris ini 👍
 
-            Forms\Components\TextInput::make('tps_transport')
+                Forms\Components\TextInput::make('tps_transport')
                 ->label('Transportasi')
                 ->required()
                 ->maxLength(255),
@@ -211,9 +230,19 @@ class TpsResource extends Resource
                 Tables\Columns\TextColumn::make('kecamatan')->searchable()
                 ->label('Kecamatan'),
                 Tables\Columns\TextColumn::make('tps_status')->searchable()
+                ->color(fn (string $state): string => match ($state) {
+                    'resmi' => 'success',
+                    'liar' => 'danger',
+                })
+                ->badge()
+                ->alignCenter()
                 ->label('Status TPS'),
+                
                 Tables\Columns\TextColumn::make('tps_day')->searchable()
-                ->label('Hari Operasional'),
+                ->label('Hari Operasional')
+                ->wrap()
+                ->searchable(),
+
                 Tables\Columns\TextColumn::make('tps_start_time')->searchable()
                 ->dateTime('H:i')
                 ->label('Jam Buka'),
@@ -229,7 +258,22 @@ class TpsResource extends Resource
                     ->options(
                         // Ambil semua nilai unik dari kolom 'tps_kecamatan' dan jadikan pilihan
                         Tps::query()->distinct()->pluck('kecamatan', 'kecamatan')->all()
-                    )
+                    ),
+                Tables\Filters\SelectFilter::make('tps_day')
+                ->label('Hari Operasional')
+                ->options(self::DAYS_OPTIONS)
+                ->query(function (Builder $query, array $data): Builder {
+                    $value = $data['value'];
+
+                    // Jika tidak ada hari yang dipilih, jangan filter apa-apa
+                    if (blank($value)) {
+                        return $query;
+                    }
+                    
+                    // <-- Kunci utamanya di sini
+                    // Cari record di mana kolom 'tps_day' mengandung nilai yang dipilih
+                    return $query->whereJsonContains('tps_day', $value);
+                })
             ])
             ->actions([
                 // Tables\Actions\ViewAction::make(),
