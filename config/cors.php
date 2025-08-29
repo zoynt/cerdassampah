@@ -19,7 +19,7 @@ return [
 
     'allowed_headers' => ['*'], // Mengizinkan semua header
 
-    'exposed_headers' => [], // Jika perlu mengekspos header khusus ke browser
+    'exposed_headers' => ['*'], // Jika perlu mengekspos header khusus ke browser
 
     'max_age' => 0, // Mengatur waktu cache pre-flight request
 

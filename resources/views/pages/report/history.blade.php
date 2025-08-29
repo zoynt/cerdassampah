@@ -56,9 +56,9 @@
                                 @if ($report->status == 'pending')
                                     <span
                                         class="bg-yellow-200 text-yellow-800 py-1 px-3 rounded-full text-xs font-medium">Pending</span>
-                                @elseif($report->status == 'ditolak')
+                                @elseif($report->status == 'proses')
                                     <span
-                                        class="bg-red-200 text-red-800 py-1 px-3 rounded-full text-xs font-medium">Ditolak</span>
+                                        class="bg-red-200 text-red-800 py-1 px-3 rounded-full text-xs font-medium">Proses</span>
                                 @else
                                     <span
                                         class="bg-green-200 text-green-800 py-1 px-3 rounded-full text-xs font-medium">Diterima</span>

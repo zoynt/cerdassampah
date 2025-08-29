@@ -25,9 +25,7 @@ return new class extends Migration
                 'banjarmasin timur'
             ]);
             $table->string('worker_name');
-            $table->string('worker_no');
             $table->string('area');
-            
             $table->string('surung_day');
             $table->time('surung_start_time');
             $table->time('surung_end_time');

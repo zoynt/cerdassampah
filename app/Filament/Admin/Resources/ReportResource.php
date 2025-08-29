@@ -9,14 +9,19 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use FIlament\Infolists\Infolist;
 use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
+use Illuminate\Support\Facades\Storage;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Forms\Components\FileUpload;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Placeholder;
 use Filament\Infolists; // <-- Jangan lupa import
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\ReportResource\Pages;
 use App\Filament\Admin\Resources\ReportResource\RelationManagers;
+
 
 class ReportResource extends Resource
 {
@@ -42,11 +47,6 @@ class ReportResource extends Resource
                     ->required()
                     ->maxLength(100)
                     ->disabled(),
-                Forms\Components\Textarea::make('address')
-                    ->required()
-                    ->disabled(),
-                TextInput::make('latitude'),
-                TextInput::make('longitude'),
                 Forms\Components\Select::make('status')
                     ->required()
                     ->label('Status')
@@ -55,10 +55,29 @@ class ReportResource extends Resource
                         'proses' => 'Proses',
                         'selesai' => 'Selesai',
                     ]),
-                FileUpload::make('image')
-                    ->image()
-                    ->imageEditor()
+                TextInput::make('latitude')
                     ->disabled(),
+                TextInput::make('longitude')
+                    ->disabled(),
+                Forms\Components\Textarea::make('address')
+                        ->required()
+                        ->autosize()
+                        ->disabled(),
+                Placeholder::make('image_preview')
+                    ->label('Gambar Saat Ini')
+                    ->content(function ($record): ?HtmlString {
+                        // Cek jika record dan field 'image' ada isinya
+                        if ($record && $record->image) {
+                            // Dapatkan URL gambar dari disk penyimpanan Anda
+                            $url = Storage::disk('public')->url($record->image);
+                            
+                            // Tampilkan gambar menggunakan tag <img>
+                            return new HtmlString("<img src='{$url}' style='max-height: 200px;' alt='preview' />");
+                        }
+
+                        // Tampilkan null jika tidak ada gambar, agar placeholder tidak muncul
+                        return null;
+                    })
             ]);
     }
 
@@ -66,6 +85,7 @@ class ReportResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('image')->label('Image'),
                 Tables\Columns\TextColumn::make('name')->label('Nama')->searchable(),
                 Tables\Columns\TextColumn::make('username')->label('Username')->searchable(),
                 Tables\Columns\TextColumn::make('email')->searchable()
@@ -88,7 +108,6 @@ class ReportResource extends Resource
                     ),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -129,7 +148,7 @@ class ReportResource extends Resource
             'index' => Pages\ListReports::route('/'),
             // 'view' => ListRecords::route('/{record}'),
             // 'create' => Pages\CreateReport::route('/create'),
-            'edit' => Pages\EditReport::route('/{record}/edit'),
+            // 'edit' => Pages\EditReport::route('/{record}/edit'),
         ];
     }
     

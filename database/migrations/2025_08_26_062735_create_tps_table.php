@@ -16,8 +16,8 @@ return new class extends Migration
             $table->string('tps_name');
             $table->string('tps_longitude');
             $table->string('tps_latitude');
+            $table->string('tps_address');
             $table->enum('tps_status', ['resmi', 'liar'])->nullable();
-            $table->text('tps_description')->nullable();
             $table->enum('kecamatan', [
                 'banjarmasin utara',
                 'banjarmasin selatan',
@@ -29,6 +29,7 @@ return new class extends Migration
             $table->time('tps_start_time');
             $table->time('tps_end_time');
             $table->string('tps_transport');
+            $table->text('tps_description')->nullable();
             $table->string('image')->nullable();
             $table->timestamps();
         });

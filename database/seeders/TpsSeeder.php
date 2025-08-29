@@ -28,6 +28,7 @@ class TpsSeeder extends Seeder
                 'tps_name' => 'TPS ' . $i,
                 'tps_longitude' => '114.5' . rand(1000, 9999),
                 'tps_latitude' => '-3.3' . rand(1000, 9999),
+                'tps_address' => 'Alamat TPS ' . $i,
                 'tps_status' => $statuses[array_rand($statuses)],
                 'tps_description' => 'Tempat Penampungan Sampah sementara ke-' . $i,
                 'kecamatan' => $kecamatans[array_rand($kecamatans)],

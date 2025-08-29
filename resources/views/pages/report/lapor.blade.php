@@ -60,6 +60,13 @@
                         class="w-full px-4 py-3 border rounded-lg mt-2 bg-gray-100" value="{{ Auth::user()->email }}"
                         readonly>
                 </div>
+                <div class="col-span-1">
+                    <label for="username" class="block text-base font-semibold text-gray-600">Username
+                        Pelapor</label>
+                    <input type="text" id="username" name="username"
+                        class="w-full px-4 py-3 border rounded-lg mt-2 bg-gray-100" value="{{ Auth::user()->username }}"
+                        readonly>
+                </div>
             </div>
 
             {{-- Peta --}}

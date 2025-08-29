@@ -15,6 +15,7 @@ class Tps extends Model
         'alamat',
         'tps_longitude',
         'tps_latitude',
+        'tps_address',
         'tps_status',
         'tps_description',
         'kecamatan',
