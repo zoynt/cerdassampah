@@ -75,8 +75,7 @@
                         <span id="scan-title"
                             class="inline-block rounded-lg px-4 py-2 font-bold leading-none bg-green-700 text-white">—</span>
                     </div>
-                    <p class="my-3"><span class="font-semibold">Jenis Sampah:</span> <span id="scan-type"
-                            class="inline-block rounded-lg px-3 py-1 font-bold bg-green-100 text-green-800">—</span></p>
+                    <p class="my-3"></p>
                     <p id="scan-desc" class="hidden text-gray-700 leading-relaxed mb-3"></p>
                     <div class="mb-4">
                         <span class="inline-block bg-green-700 text-white rounded-lg px-3 py-1 font-bold">Saran
@@ -164,7 +163,7 @@
                 const resultContainer = document.getElementById('scan-result');
                 document.getElementById('result-image').src = document.getElementById('image-preview').src;
                 document.getElementById('scan-title').textContent = data.label || 'Tidak Diketahui';
-                document.getElementById('scan-type').textContent = data.type || 'Tidak Diketahui';
+
 
                 const descEl = document.getElementById('scan-desc');
                 if (data.description) {

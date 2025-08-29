@@ -10,9 +10,47 @@ class BankController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        // 1. Query dasar
+        $query = Bank::query();
+
+        // 2. Logika Filter (Kecamatan dan Hari)
+        if ($request->filled('kecamatan')) {
+            $query->where('kecamatan', $request->kecamatan);
+        }
+        if ($request->filled('hari')) {
+            $query->where('bank_day', 'like', '%' . $request->hari . '%');
+        }
+
+        // 3. Ambil data untuk Peta
+        $bankLocations = $query->get()->map(function ($bank) {
+            return [
+                'id' => $bank->id,
+                'nama' => $bank->bank_name,
+                'alamat' => $bank->address_bank,
+                'kecamatan' => $bank->kecamatan,
+                'deskripsi' => $bank->bank_description,
+                'lat' => (float) $bank->bank_latitude,
+                'lng' => (float) $bank->bank_longitude,
+                'image_url' => $bank->image
+                                ? asset('storage/' . $bank->image)
+                                : asset('img/tps-placeholder.jpg'), // Sediakan gambar placeholder
+            ];
+        });
+
+        // 4. Ambil data untuk Tabel dengan paginasi
+        $schedules = $query->orderBy('id', 'asc')->paginate(5)->withQueryString();
+
+        // 5. Ambil data unik untuk opsi filter kecamatan
+        $kecamatans = Bank::select('kecamatan')->whereNotNull('kecamatan')->distinct()->orderBy('kecamatan')->get();
+
+        // 6. Kirim semua data ke view
+        return view('pages.schedule.banksampah', [
+            'schedules' => $schedules,
+            'bankLocations' => $bankLocations,
+            'kecamatans' => $kecamatans,
+        ]);
     }
 
     /**

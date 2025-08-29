@@ -10,6 +10,9 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\ReverseGeocodeController;
+use App\Http\Controllers\TpsController;
+use App\Http\Controllers\SurungController;
+use App\Http\Controllers\BankController;
 
 // Landing Page
 Route::get('/', function () {
@@ -43,19 +46,10 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::get('/scan-user', function () {
         return view('pages.dashboard.scan-sampah');
     })->name('scan-user');
-    Route::get('/schedule-tps', function () {
-        return view('pages.schedule.tps');
-    })->name('schedule-tps');
-    Route::get('/surung-user', function () {
-        return view('pages.schedule.surungsintak');
-    })->name('surung-user');
-    Route::get('/banksampah-user', function () {
-        return view('pages.schedule.banksampah');
-    })->name('banksampah-user');
-
-    Route::get('/lokasi-tps', function () {
-        return view('pages.dashboard.lokasi-tps');
-    })->name('lokasi-tps.index');
+    Route::get('/tps', [TpsController::class, 'index'])->name('tps.index');
+    Route::get('/surung-sintak', [SurungController::class, 'index'])->name('surung-sintak.index');
+    Route::get('/banksampah-user', [BankController::class, 'index'])->name('banksampah-user');
+    Route::get('/lokasi-tps', [TpsController::class, 'mapIndex'])->name('lokasi-tps.index');
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
 
@@ -70,6 +64,7 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
 });
 
     Route::get('/leaderboard', [UserpointController::class, 'index'])->name('userpoint.index');
+    Route::get('/tps', [TpsController::class, 'index'])->name('tps.index');
 
 // Admin
 // Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
