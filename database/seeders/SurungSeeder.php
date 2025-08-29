@@ -38,7 +38,6 @@ class SurungSeeder extends Seeder
                 'surung_latitude' => '-3.4' . rand(1000, 9999),
                 'kecamatan' => $kecamatans[array_rand($kecamatans)],
                 'worker_name' => 'Petugas ' . $i,
-                'worker_no' => '08' . rand(111111111, 999999999),
                 'area' => 'Area ' . rand(1, 10),
                 'surung_day' => 'Senin - Jumat',
                 'surung_start_time' => '06:00:00',

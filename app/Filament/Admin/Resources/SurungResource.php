@@ -68,23 +68,21 @@ class SurungResource extends Resource
                 Forms\Components\TextInput::make('worker_name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('worker_no')
-                    ->required()
-                    ->maxLength(255),
                 Forms\Components\TextInput::make('surung_day')
                     ->required()
                     ->maxLength(255),
                 TimePicker::make('surung_start_time')
                     ->label('Waktu Mulai')
-                    ->format('H:i')  // Menggunakan format HH:MM (tanpa detik)
+                    ->seconds(false)  // Menggunakan format HH:MM (tanpa detik)
                     ->required(),
                 TimePicker::make('surung_end_time')
                     ->label('Waktu Selesai')
-                    ->format('H:i')  // Menggunakan format HH:MM (tanpa detik)
+                    ->seconds(false)  // Menggunakan format HH:MM (tanpa detik)
                     ->required(),
                 Forms\Components\Textarea::make('surung_description')
                     ->required()
-                    ->maxLength(300),
+                    ->maxLength(300)
+                    ->columnSpanFull(),
             ]);
     }
     
@@ -98,15 +96,18 @@ class SurungResource extends Resource
                 ->searchable()
                 ->sortable(),
                 Tables\Columns\TextColumn::make('surung_name')->searchable(),
-                Tables\Columns\TextColumn::make('kecamatan')->searchable(),
-                Tables\Columns\TextColumn::make('area')->searchable(),
-                Tables\Columns\TextColumn::make('surung_day')->searchable(),
+                Tables\Columns\TextColumn::make('kecamatan')->searchable()
+                ->label('Kecamatan'),
+                Tables\Columns\TextColumn::make('area')->searchable()
+                ->label('Area'),
+                Tables\Columns\TextColumn::make('surung_day')->searchable()
+                ->label('Hari Operasional'),
                 TextColumn::make('surung_start_time')
                     ->label('Waktu Mulai')
-                    ->formatStateUsing(fn ($state) => \Carbon\Carbon::parse($state)->format('H:i')),
+                    ->dateTime('H:i'),
                 TextColumn::make('surung_end_time')
                     ->label('Waktu Selesai')
-                    ->formatStateUsing(fn ($state) => \Carbon\Carbon::parse($state)->format('H:i')),
+                    ->dateTime('H:i'),
                 // Tables\Columns\TextColumn::make('surung_description')->searchable(),
             ])
             ->filters([
@@ -119,7 +120,6 @@ class SurungResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
-                Tables\Actions\ViewAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
