@@ -23,6 +23,8 @@ class TpsSeeder extends Seeder
 
         $statuses = ['resmi', 'liar'];
 
+        $allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
         for ($i = 1; $i <= 10; $i++) {
             DB::table('tps')->insert([
                 'tps_name' => 'TPS ' . $i,
@@ -32,7 +34,7 @@ class TpsSeeder extends Seeder
                 'tps_status' => $statuses[array_rand($statuses)],
                 'tps_description' => 'Tempat Penampungan Sampah sementara ke-' . $i,
                 'kecamatan' => $kecamatans[array_rand($kecamatans)],
-                'tps_day' => 'Senin - Jumat',
+                'tps_day' => json_encode($allDays),
                 'tps_start_time' => '07:00:00',
                 'tps_end_time' => '17:00:00',
                 'tps_transport' => 'Truk Sampah',

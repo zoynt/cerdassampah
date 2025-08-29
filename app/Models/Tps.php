@@ -30,4 +30,8 @@ class Tps extends Model
     {
         return $this->hasMany(Surung::class);
     }
+
+    protected $casts = [
+        'tps_day' => 'array', // <-- KUNCI UTAMANYA DI SINI
+    ];
 };
