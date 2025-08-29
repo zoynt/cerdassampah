@@ -38,7 +38,7 @@ class TpsController extends Controller
             return [
                 'id' => $tps->id,
                 'nama' => $tps->tps_name,
-                'alamat' => $tps->alamat,
+                'alamat' => $tps->tps_address,
                 'lat' => (float) $tps->tps_latitude,
                 'lng' => (float) $tps->tps_longitude,
                 'status' => $tps->tps_status,

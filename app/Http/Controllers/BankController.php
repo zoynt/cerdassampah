@@ -28,7 +28,7 @@ class BankController extends Controller
             return [
                 'id' => $bank->id,
                 'nama' => $bank->bank_name,
-                'alamat' => $bank->address_bank,
+                'alamat' => $bank->bank_address,
                 'kecamatan' => $bank->kecamatan,
                 'deskripsi' => $bank->bank_description,
                 'lat' => (float) $bank->bank_latitude,
