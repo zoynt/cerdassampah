@@ -133,21 +133,27 @@ class BankResource extends Resource
             Forms\Components\Textarea::make('bank_address')
                 ->label('Alamat Lengkap (Otomatis/Manual)')
                 ->rows(3)
-                ->helperText('Alamat akan terisi otomatis dari peta, namun Anda bisa mengoreksinya jika perlu.'),
-            TextInput::make('kecamatan'),
+                ->helperText('Alamat akan terisi otomatis dari peta, namun Anda bisa mengoreksinya jika perlu.')
+                ->required(),
+            TextInput::make('kecamatan')
+                ->required(),
 
             Forms\Components\Hidden::make('address_json'),
-                TextInput::make('bank_name'),
-                TextInput::make('bank_day'),
+                TextInput::make('bank_name')
+                ->required(),
+                TextInput::make('bank_day')
+                ->required(),
             TimePicker::make('bank_start_time')
-                ->seconds(false),
+                ->seconds(false)
+                ->required(),
             TimePicker::make('bank_end_time')
-                ->seconds(false),
-                Textarea::make('bank_description'),
-                FileUpload::make('image')
-                    ->image()
-                    ->imageEditor()
-                    ->Label('Gambar Bank'),
+                ->seconds(false)
+                ->required(),
+            Textarea::make('bank_description'),
+            FileUpload::make('image')
+                ->image()
+                ->imageEditor()
+                ->Label('Gambar Bank'),
             ]);
     }
 
