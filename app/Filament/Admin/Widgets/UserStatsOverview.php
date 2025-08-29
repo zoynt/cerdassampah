@@ -22,16 +22,17 @@ class UserStatsOverview extends BaseWidget
     {
         return [
             // Kartu Statistik #1: Total Users
-            Stat::make('Total Users', User::count())
-                ->description('Jumlah semua user terdaftar')
+            Stat::make('Total Pengguna', User::count())
+                ->description('Jumlah semua pengguna terdaftar')
                 ->descriptionIcon('heroicon-m-users')
                 ->color('success')
                 ->url(UserResource::getUrl()),
 
-            Stat::make('Total Tps', Tps::count())
+            Stat::make('Total TPS', Tps::count())
                 ->description('Jumlah semua TPS terdaftar')
                 ->color('success')
                 ->url(TpsResource::getUrl()),
+
             Stat::make('Total Surung Sintak', Surung::count())
                 ->description('Jumlah semua Surung terdaftar')
                 ->url(SurungResource::getUrl())
@@ -41,7 +42,7 @@ class UserStatsOverview extends BaseWidget
                 ->url(BankResource::getUrl())
                 ->color('success'),
 
-            Stat::make('Total Reports', Report::count())
+            Stat::make('Total Laporan TPS Liar', Report::count())
                 ->description('Jumlah semua laporan yang diterima')
                 ->descriptionIcon('heroicon-m-document-text')
                 ->color('primary')
