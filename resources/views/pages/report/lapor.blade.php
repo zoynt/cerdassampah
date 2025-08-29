@@ -45,23 +45,23 @@
             @csrf
 
             {{-- Form fields Nama dan Email --}}
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="col-span-1">
-                    <label for="name" class="block text-base font-semibold text-gray-600">Nama
+                    <label for="name" class="block text-base font-medium text-gray-600">Nama
                         Pelapor</label>
                     <input type="text" id="name" name="name"
                         class="w-full px-4 py-3 border rounded-lg mt-2 bg-gray-100" value="{{ Auth::user()->name }}"
                         readonly>
                 </div>
                 <div class="col-span-1">
-                    <label for="email" class="block text-base font-semibold text-gray-600">Email
+                    <label for="email" class="block text-base font-medium text-gray-600">Email
                         Pelapor</label>
                     <input type="email" id="email" name="email"
                         class="w-full px-4 py-3 border rounded-lg mt-2 bg-gray-100" value="{{ Auth::user()->email }}"
                         readonly>
                 </div>
                 <div class="col-span-1">
-                    <label for="username" class="block text-base font-semibold text-gray-600">Username
+                    <label for="username" class="block text-base font-medium text-gray-600">Username
                         Pelapor</label>
                     <input type="text" id="username" name="username"
                         class="w-full px-4 py-3 border rounded-lg mt-2 bg-gray-100" value="{{ Auth::user()->username }}"
@@ -71,7 +71,7 @@
 
             {{-- Peta --}}
             <div class="mb-6">
-                <label for="map" class="block text-base font-semibold text-gray-600 mb-2">Geser Pin
+                <label for="map" class="block text-base font-medium text-gray-600 mb-2">Geser Pin
                     atau Klik Peta
                     untuk Menentukan Lokasi</label>
                 <div id="mapid" class="w-full bg-gray-100"></div>
@@ -80,12 +80,12 @@
             {{-- Latitude, Longitude, dan Alamat --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
-                    <label for="latitude" class="block text-base font-semibold text-gray-600">Latitude</label>
+                    <label for="latitude" class="block text-base font-medium text-gray-600">Latitude</label>
                     <input type="text" id="latitude" name="latitude"
                         class="w-full px-4 py-3 border rounded-lg mt-2 bg-gray-100" readonly required>
                 </div>
                 <div>
-                    <label for="longitude" class="block text-base font-semibold text-gray-600">Longitude</label>
+                    <label for="longitude" class="block text-base font-medium text-gray-600">Longitude</label>
                     <input type="text" id="longitude" name="longitude"
                         class="w-full px-4 py-3 border rounded-lg mt-2 bg-gray-100" readonly required>
                 </div>
@@ -93,14 +93,14 @@
 
             {{-- PENYESUAIAN: Tombol "Cari" dihapus --}}
             <div class="mb-6">
-                <label for="address" class="block text-base font-semibold text-gray-600">Alamat</label>
+                <label for="address" class="block text-base font-medium text-gray-600">Alamat</label>
                 <input type="text" id="address" name="address" class="w-full px-4 py-3 border rounded-lg mt-2"
                     placeholder="Ketik alamat, peta akan menyesuaikan otomatis" required>
             </div>
 
             {{-- ... sisa form (upload file dan tombol kirim) ... --}}
             <div class="mb-6">
-                <label for="file" class="block text-base font-semibold text-gray-600">Unggah Bukti
+                <label for="file" class="block text-base font-medium text-gray-600">Unggah Bukti
                     Pendukung</label>
                 <div class="relative flex items-center justify-center w-full h-48 border-2 border-dashed border-gray-300 rounded-lg mt-2 cursor-pointer"
                     id="upload-area" onclick="document.getElementById('file').click()">
