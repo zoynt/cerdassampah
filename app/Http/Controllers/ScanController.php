@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Log;
 use App\Models\Scan;
 use App\Models\WasteType;
+use App\Models\Material;   
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
@@ -51,16 +52,25 @@ class ScanController extends Controller
         $label = $flaskData['label'] ?? null;
         $confidence = $flaskData['confidence'] ?? null;
 
+        $info = WasteType::with('materials')->where('type_name', $label)->first();
         // Ambil info dari DB
-        $info = WasteType::where('type_name', $label)->first();
+        // $info = WasteType::where('type_name', $label)->first();
+        $recyclingMethods = [];
+      if ($info && $info->materials->isNotEmpty()) {
+          // Ganti 'name' dengan nama kolom yang sesuai di tabel 'materials' Anda
+          // contohnya: 'recycling_method', 'description', dll.
+          $recyclingMethods = $info->materials->pluck('recycle_info')->all();
+      }
+        $description_mat = $info->materials->pluck('description_mat')->random();
 
         // Susun data untuk dikirim kembali ke browser
         $data = [
             'label'       => ucfirst($label),
             'confidence'  => $confidence,
-            'description' => $info->waste_description ?? 'Deskripsi belum tersedia',
-            'recycle'     => $info->cara_daur_ulang ?? '-',
-            'impact'      => $info->dampak ?? '-',
+            // 'description' => $info->waste_description ?? 'Deskripsi belum tersedia',
+            'description'   => $description_mat, // <-- TAMBAHKAN HURUF 'g' DI SINI
+            'recycling'   => $recyclingMethods, // <-- TAMBAHKAN HURUF 'g' DI SINI
+            // 'recycle'     => $recyclingMethods ?? '-',
             'imageUrl'    => asset('storage/' . $storedPath),
         ];
 

@@ -31,8 +31,6 @@ class SurungResource extends Resource
     protected static ?string $navigationLabel = 'Surung Sintak';
     protected static ?string $pluralModelLabel = 'Surung Sintak'; // Nama di semua tempat
 
-
-
     public static function form(Form $form): Form
     {
         return $form

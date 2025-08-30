@@ -65,7 +65,7 @@
         <span class="badge badge--soft" id="scan-type">—</span>
       </p>
 
-      <p id="scan-desc" class="scan-card__desc hidden"></p>
+      {{-- <p id="scan-desc" class="scan-card__desc hidden"></p> --}}
 
       <div class="scan-card__section mb-4">
         <span class="section-chip">Saran Penanganan :</span>

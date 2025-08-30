@@ -14,8 +14,8 @@ return new class extends Migration
         Schema::create('materials', function (Blueprint $table) {
             $table->id();
             $table->foreignId('waste_types_id')->constrained('waste_types')->onDelete('cascade');
-            $table->string('description_mat');
             $table->longText('recycle_info');
+            $table->string('description_mat');
             $table->timestamps();
         });
     }

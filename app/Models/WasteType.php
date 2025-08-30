@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Material;
 
 class WasteType extends Model
 {
@@ -15,6 +16,6 @@ class WasteType extends Model
 
     public function materials()
     {
-        return $this->hasMany(Material::class);
+        return $this->hasMany(Material::class, 'waste_types_id');
     }
 }
