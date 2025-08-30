@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             TpsSeeder::class,
             SurungSeeder::class,
             BankSeeder::class,
+            MaterialSeeder::class,
             // Add other seeders here as needed
         ]);
 

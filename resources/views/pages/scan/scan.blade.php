@@ -644,7 +644,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }
     }
 
-    fillList('handling-tips', data.handlingTips || data.handling || []);
+    fillList('handling-tips', data.handlingTips || data.suggest || []);
     fillList('recycling-tips', data.recyclingTips || data.recycling || []);
 
     resultContainer.classList.remove('hidden');

@@ -62,6 +62,7 @@ class ScanController extends Controller
           $recyclingMethods = $info->materials->pluck('recycle_info')->all();
       }
         $description_mat = $info->materials->pluck('description_mat')->random();
+        $suggest = $info->materials->pluck('suggest')->unique();
 
         // Susun data untuk dikirim kembali ke browser
         $data = [
@@ -70,6 +71,7 @@ class ScanController extends Controller
             // 'description' => $info->waste_description ?? 'Deskripsi belum tersedia',
             'description'   => $description_mat, // <-- TAMBAHKAN HURUF 'g' DI SINI
             'recycling'   => $recyclingMethods, // <-- TAMBAHKAN HURUF 'g' DI SINI
+            'suggest'   => $suggest, // <-- TAMBAHKAN HURUF 'g' DI SINI
             // 'recycle'     => $recyclingMethods ?? '-',
             'imageUrl'    => asset('storage/' . $storedPath),
         ];

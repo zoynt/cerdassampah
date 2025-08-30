@@ -173,7 +173,7 @@
                     descEl.classList.add('hidden');
                 }
 
-                fillList('handling-tips', data.handling || []);
+                fillList('handling-tips', data.suggest|| []);
                 fillList('recycling-tips', data.recycling || []);
 
                 resultContainer.classList.remove('hidden');
