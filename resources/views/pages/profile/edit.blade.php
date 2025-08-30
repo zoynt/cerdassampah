@@ -14,7 +14,8 @@
                 @csrf
                 @method('patch')
 
-                <div class="flex items-center space-x-6 mt-8 mb-8">
+                <div
+                    class="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-6 mt-8 mb-8">
                     <div
                         class="w-28 h-28 bg-slate-200 rounded-full flex items-center justify-center border-4 border-white shadow-sm overflow-hidden">
                         @if (Auth::user()->profile_photo_path)

@@ -34,14 +34,23 @@
         <div class="bg-white p-2 rounded-xl shadow-md">
             <div id="map" class="w-full rounded-lg"></div>
         </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div class="bg-green-700 text-white p-4 rounded-lg shadow-sm text-center">
+                <h3 class="font-semibold">TPS Resmi</h3>
+                <p id="resmi-count" class="text-3xl font-bold">{{ $resmiCount }}</p>
+            </div>
+            <div class="bg-red-700 text-white p-4 rounded-lg shadow-sm text-center">
+                <h3 class="font-semibold">TPS Liar (Ilegal)</h3>
+                <p id="ilegal-count" class="text-3xl font-bold">{{ $ilegalCount }}</p>
+            </div>
+        </div>
 
-        {{-- Bagian Filter (LENGKAP) --}}
         <div class="bg-white p-6 rounded-xl shadow-md">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Filter Pencarian</h2>
             <form id="filter-form" action="{{ route('tps.index') }}" method="GET">
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
 
-                    {{-- Filter Status --}}
+
                     <div>
                         <label for="status" class="block mb-2 text-sm font-medium text-gray-700">Status TPS</label>
                         <div class="relative">
@@ -63,7 +72,6 @@
                         </div>
                     </div>
 
-                    {{-- Filter Hari --}}
                     <div>
                         <label for="hari" class="block mb-2 text-sm font-medium text-gray-700">Hari</label>
                         <div class="relative">
@@ -87,7 +95,7 @@
                         </div>
                     </div>
 
-                    {{-- Filter Kecamatan --}}
+
                     <div>
                         <label for="kecamatan" class="block mb-2 text-sm font-medium text-gray-700">Kecamatan</label>
                         <div class="relative">
@@ -121,7 +129,8 @@
             </form>
         </div>
 
-        {{-- Bagian Tabel Jadwal --}}
+
+
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-600">
@@ -197,7 +206,12 @@
                         icon: icon
                     }).addTo(map);
                     const popupContent =
-                        `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0"><img class="w-full h-32 object-cover" src="${tps.image_url}" alt="Foto ${tps.nama}"><div class="p-3"><div class="font-bold text-base mb-1 text-gray-800">${tps.nama}</div><p class="text-gray-600 text-xs mb-2">${tps.alamat}</p><span class="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white ${tps.status === 'resmi' ? 'bg-green-600' : 'bg-red-500'}">Status: ${tps.status.charAt(0).toUpperCase() + tps.status.slice(1)}</span></div></div>`;
+                        `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0">
+                            <img class="w-full h-32 object-cover" src="${tps.image_url}" alt="Foto ${tps.nama}">
+                            <div class="p-3"><div class="font-bold text-base mb-1 text-gray-800">${tps.nama}</div>
+                            <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat: </span>${tps.address}</p>
+                            <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Deskripsi: </span>${tps.description}</p>
+                            <span class="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white ${tps.status === 'resmi' ? 'bg-green-600' : 'bg-red-500'}">Status: ${tps.status.charAt(0).toUpperCase() + tps.status.slice(1)}</span></div></div>`;
                     marker.bindPopup(popupContent);
                     allMarkers.push(marker);
                     markerObjectsById[tps.id] = marker;
@@ -239,6 +253,8 @@
                     .then(data => {
                         document.getElementById('tps-table-body').innerHTML = data.table_html;
                         document.getElementById('pagination-container').innerHTML = data.pagination_html;
+                        document.getElementById('resmi-count').textContent = data.resmiCount;
+                        document.getElementById('ilegal-count').textContent = data.ilegalCount;
                         updateMapAndTableInteractivity(data.map_locations);
                     })
                     .catch(error => {
@@ -250,6 +266,10 @@
 
             filterForm.querySelectorAll('select').forEach(select => {
                 select.addEventListener('change', handleFilterChange);
+            });
+            updateUI({
+                resmiCount: {{ $resmiCount }},
+                ilegalCount: {{ $ilegalCount }}
             });
         });
     </script>

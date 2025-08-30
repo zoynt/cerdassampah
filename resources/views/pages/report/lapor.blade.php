@@ -4,7 +4,6 @@
 
 @section('content')
 
-    {{-- Style khusus untuk halaman ini (termasuk Leaflet CSS) --}}
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <style>
@@ -29,7 +28,6 @@
                 {{ session('status') }}
             </div>
         @endif
-        {{-- Blok untuk menampilkan SEMUA error validasi jika ada --}}
         @if ($errors->any())
             <div class="mb-4 p-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
                 <span class="font-medium">Oops! Harap unggah bukti pendukung</span>
@@ -44,7 +42,6 @@
         <form action="{{ route('lapor.store.user') }}" method="POST" enctype="multipart/form-data">
             @csrf
 
-            {{-- Form fields Nama dan Email --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div class="col-span-1">
                     <label for="name" class="block text-base font-medium text-gray-600">Nama
@@ -69,7 +66,7 @@
                 </div>
             </div>
 
-            {{-- Peta --}}
+
             <div class="mb-6">
                 <label for="map" class="block text-base font-medium text-gray-600 mb-2">Geser Pin
                     atau Klik Peta
@@ -77,7 +74,6 @@
                 <div id="mapid" class="w-full bg-gray-100"></div>
             </div>
 
-            {{-- Latitude, Longitude, dan Alamat --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 <div>
                     <label for="latitude" class="block text-base font-medium text-gray-600">Latitude</label>
@@ -91,14 +87,12 @@
                 </div>
             </div>
 
-            {{-- PENYESUAIAN: Tombol "Cari" dihapus --}}
             <div class="mb-6">
                 <label for="address" class="block text-base font-medium text-gray-600">Alamat</label>
                 <input type="text" id="address" name="address" class="w-full px-4 py-3 border rounded-lg mt-2"
                     placeholder="Ketik alamat, peta akan menyesuaikan otomatis" required>
             </div>
 
-            {{-- ... sisa form (upload file dan tombol kirim) ... --}}
             <div class="mb-6">
                 <label for="file" class="block text-base font-medium text-gray-600">Unggah Bukti
                     Pendukung</label>
@@ -136,7 +130,7 @@
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             let marker;
-            let debounceTimer; // Variabel untuk timer debounce
+            let debounceTimer;
             const map = L.map('mapid').setView([-3.316694, 114.590111], 13);
             const addressInput = document.getElementById('address');
 
@@ -170,7 +164,7 @@
                 }
                 map.flyTo([lat, lng], 17);
                 updateLatLngFields(lat, lng);
-                // Saat pin digerakkan oleh sistem, kita juga panggil reverseGeocode
+                // reverseGeocode
                 reverseGeocode(lat, lng);
             }
 
@@ -190,7 +184,7 @@
             function geocodeAddress() {
                 const address = addressInput.value;
                 if (address.length < 5) {
-                    return; // Jangan cari jika alamat terlalu pendek
+                    return;
                 }
 
                 const apiUrl =
@@ -202,7 +196,6 @@
                         if (data && data.length > 0) {
                             const lat = data[0].lat;
                             const lon = data[0].lon;
-                            // Hanya pindahkan peta dan marker, tidak perlu reverse geocode lagi
                             if (marker) {
                                 marker.setLatLng([lat, lon]);
                             } else {
@@ -218,18 +211,14 @@
                     .catch(error => console.error("Error geocoding address:", error));
             }
 
-            // --- PENYESUAIAN: Menerapkan DEBOUNCE pada input alamat ---
             addressInput.addEventListener('keyup', function() {
-                // Hapus timer sebelumnya setiap kali ada ketukan baru
                 clearTimeout(debounceTimer);
-                // Atur timer baru
                 debounceTimer = setTimeout(() => {
-                    geocodeAddress(); // Jalankan pencarian setelah 1 detik tidak ada ketukan
-                }, 1000); // 1000 milidetik = 1 detik
+                    geocodeAddress();
+                }, 1000);
             });
         });
 
-        // --- FUNGSI-FUNGSI PEMBANTU (tidak berubah) ---
         function updateLatLngFields(lat, lng) {
             /* ... */
         }
@@ -242,7 +231,6 @@
             /* ... */
         }
 
-        // Implementasi lengkap dari fungsi pembantu
         function updateLatLngFields(lat, lng) {
             document.getElementById('latitude').value = lat.toFixed(6);
             document.getElementById('longitude').value = lng.toFixed(6);

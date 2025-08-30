@@ -26,13 +26,17 @@ class TpsController extends Controller
         if ($request->filled('kecamatan')) {
             $query->where('kecamatan', $request->kecamatan);
         }
+         $allTpsFiltered = (clone $query)->get();
+    $resmiCount = $allTpsFiltered->where('tps_status', 'resmi')->count();
+    $ilegalCount = $allTpsFiltered->where('tps_status', 'liar')->count();
 
    
         $tpsLocations = (clone $query)->orderBy('id', 'asc')->get()->map(function ($tps) {
             return [
                 'id' => $tps->id,
                 'nama' => $tps->tps_name,
-                'alamat' => $tps->tps_address, 
+                'address' => $tps->tps_address, 
+                'description' => $tps->tps_description,
                 'lat' => (float) $tps->tps_latitude,
                 'lng' => (float) $tps->tps_longitude,
                 'status' => $tps->tps_status,
@@ -48,7 +52,9 @@ class TpsController extends Controller
             return response()->json([
                 'table_html' => view('layouts.partials._tps_table_body', ['schedules' => $schedules])->render(),
                 'pagination_html' => $schedules->links()->toHtml(),
-                'map_locations' => $tpsLocations
+                'map_locations' => $tpsLocations,
+                'resmiCount' => $resmiCount,
+                'ilegalCount' => $ilegalCount,
             ]);
         }
         
@@ -60,6 +66,8 @@ class TpsController extends Controller
             'schedules' => $schedules,
             'tpsLocations' => $tpsLocations,
             'kecamatans' => $kecamatans,
+            'resmiCount' => $resmiCount,
+            'ilegalCount' => $ilegalCount,
         ]);
     }
    public function mapIndex(Request $request)
@@ -82,7 +90,8 @@ class TpsController extends Controller
         return [
             'id' => $tps->id,
             'nama' => $tps->tps_name,
-            'alamat' => $tps->tps_address, 
+            'address' => $tps->tps_address, 
+            'description' => $tps->tps_description,
             'latitude' => (float) $tps->tps_latitude,
             'longitude' => (float) $tps->tps_longitude,
             'status' => $tps->tps_status,

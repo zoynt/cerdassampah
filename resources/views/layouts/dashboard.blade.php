@@ -75,7 +75,7 @@
                     Histori Laporan
                 </a>
 
-                <a href="{{ route('lokasi-tps.index') }}" @class([
+                {{-- <a href="{{ route('lokasi-tps.index') }}" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
                     'bg-green-700 text-white shadow-sm' => request()->routeIs(
                         'lokasi-tps.index'),
@@ -90,7 +90,7 @@
                             d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     </svg>
                     Lokasi TPS
-                </a>
+                </a> --}}
 
                 <a href="#" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
@@ -157,11 +157,13 @@
                             'text-gray-500 hover:bg-gray-200' => !request()->routeIs('tps.index'),
                         ])>
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path>
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                </path>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
-                            TPS
+                            Lokasi TPS
                         </a>
                         <a href="{{ route('surung-sintak.index') }}" @class([
                             'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
@@ -198,7 +200,7 @@
         <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 md:hidden"
             x-cloak></div>
 
-        <div class="flex flex-col flex-1 w-full transition-all duration-300" :class="sidebarOpen">
+        <div class="flex flex-col flex-1 w-full transition-transform duration-300">
 
             <header @class([
                 'sticky top-0 z-20 flex items-center justify-between px-6 py-4 text-white bg-green-700 transition-shadow duration-300',
@@ -215,8 +217,7 @@
                     <h1 class="ml-3 text-xl font-semibold">@yield('title')</h1>
                 </div>
 
-                <div x-data="{ dropdownOpen: false }" class="relative">
-                    <button
+                <div x-data="{ dropdownOpen: false }" class="relative"> <button @click="dropdownOpen = !dropdownOpen"
                         class="relative z-10 flex items-center p-1 rounded-full focus:outline-none hover:bg-black/10 transition-colors">
 
                         <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
@@ -240,15 +241,19 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
                             </path>
                         </svg>
+
                     </button>
 
+                    <div x-show="dropdownOpen" @click.away="dropdownOpen = false"
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 z-30 w-48 py-2 mt-2 origin-top-right text-gray-800 bg-white rounded-md shadow-xl"
+                        style="display: none;">
 
-                    <div x-show="dropdownOpen" class="fixed inset-0 z-0 h-full w-full">
-                    </div>
-
-
-                    <div x-show="dropdownOpen" x-transition
-                        class="absolute right-0 z-30 w-48 py-2 mt-2 text-gray-800 bg-white rounded-md shadow-xl">
                         <a href="{{ route('profile.edit') }}"
                             class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -318,7 +323,6 @@
         </script>
     @endif
 
-    {{-- Popup Langkah-langkah (dikonversi ke Tailwind & Alpine.js) --}}
     @if (request()->routeIs('scan-user'))
         <div x-data="{ showPopup: true, currentStep: 0 }" x-show="showPopup" x-transition.opacity
             class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" x-cloak>
