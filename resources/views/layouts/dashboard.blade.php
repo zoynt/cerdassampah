@@ -92,7 +92,7 @@
                     Lokasi TPS
                 </a> --}}
 
-                <a href="#" @class([
+                <a href="{{ route('game-pilah-sampah') }}" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
                     'bg-green-700 text-white shadow-sm' => request()->routeIs('game.*'),
                     'text-gray-500 hover:bg-gray-200' => !request()->routeIs('game.*'),
@@ -157,6 +157,7 @@
                             'text-gray-500 hover:bg-gray-200' => !request()->routeIs('tps.index'),
                         ])>
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
                                 </path>
@@ -280,7 +281,7 @@
             </header>
 
             <main class="relative z-10 flex-1 overflow-y-auto">
-                @if (request()->routeIs('dashboard') || request()->routeIs('scan-user'))
+                @if (request()->routeIs('dashboard') || request()->routeIs('scan-user') || request()->routeIs('game-pilah-sampah'))
                     @yield('content')
                 @else
                     <div class="py-6 px-4 sm:px-6 lg:px-8">

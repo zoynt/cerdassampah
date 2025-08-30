@@ -28,12 +28,16 @@ Route::get('/tentang', function () {
 })->name('tentang');
 Route::get('/reverse-geocode', ReverseGeocodeController::class);
 
-// Fitur Scan 
+// Fitur Scan
 Route::get('/scan', function () {
     return view('pages.scan.scan');
 })->name('scan.form');
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
+// Tambahkan route ini
+Route::get('/game', function () {
+    return view('game');
+})->name('game-pilah-sampah');
 
 
 // Auth
