@@ -21,6 +21,8 @@ class SurungSeeder extends Seeder
             'banjarmasin timur'
         ];
 
+        $allDays = ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'];
+
         // Ambil semua ID TPS yang tersedia
         $tpsIds = DB::table('tps')->pluck('id')->toArray();
 
@@ -39,7 +41,7 @@ class SurungSeeder extends Seeder
                 'kecamatan' => $kecamatans[array_rand($kecamatans)],
                 'worker_name' => 'Petugas ' . $i,
                 'area' => 'Area ' . rand(1, 10),
-                'surung_day' => 'Senin - Jumat',
+                'surung_day' => json_encode($allDays),
                 'surung_start_time' => '06:00:00',
                 'surung_end_time' => '14:00:00',
                 'surung_description' => 'Surung pengangkut sampah wilayah ' . $kecamatans[array_rand($kecamatans)],

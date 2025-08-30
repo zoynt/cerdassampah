@@ -21,7 +21,7 @@ use Filament\Infolists; // <-- Jangan lupa import
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\ReportResource\Pages;
 use App\Filament\Admin\Resources\ReportResource\RelationManagers;
-
+use DateTime;
 
 class ReportResource extends Resource
 {
@@ -102,7 +102,8 @@ class ReportResource extends Resource
                     'selesai' => 'success',
                     'rejected' => 'danger',
                 }),
-                Tables\Columns\TextColumn::make('waktu_lapor')->sortable(),
+                Tables\Columns\TextColumn::make('waktu_lapor')->sortable()
+                ->dateTime('d M Y'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')

@@ -17,4 +17,8 @@ class Bank extends Model
     //     'bank_longitude',
     //     'kecamatan'
     // ];
+
+    protected $casts = [
+        'bank_day' => 'array', 
+    ];
 }

@@ -42,7 +42,7 @@ class UserResource extends Resource
                 ->toggleable(isToggledHiddenByDefault: true), // Sembunyikan default
                 Tables\Columns\TextColumn::make('created_at')
                 // ->since()
-                ->dateTime()
+                ->dateTime('d M Y') // Format manual
                 ->sortable()
                 ->toggleable(isToggledHiddenByDefault: true), // Sembunyikan default
             ])

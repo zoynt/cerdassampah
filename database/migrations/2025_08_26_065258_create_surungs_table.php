@@ -26,7 +26,7 @@ return new class extends Migration
             ]);
             $table->string('worker_name');
             $table->string('area');
-            $table->string('surung_day');
+            $table->json('surung_day');
             $table->time('surung_start_time');
             $table->time('surung_end_time');
             $table->text('surung_description')->nullable();
