@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Jadwal & Lokasi TPS')
+@section('title', 'Rute & Jadwal')
 
 @push('styles')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
