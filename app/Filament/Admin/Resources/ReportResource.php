@@ -102,12 +102,8 @@ class ReportResource extends Resource
                     'selesai' => 'success',
                     'rejected' => 'danger',
                 }),
-<<<<<<< HEAD
                 Tables\Columns\TextColumn::make('waktu_lapor')->sortable()
                 ->dateTime('d M Y'),
-=======
-                Tables\Columns\TextColumn::make('waktu_lapor')->sortable(),
->>>>>>> c00016c (Fix Label Admin Dashboard)
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
