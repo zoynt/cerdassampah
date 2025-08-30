@@ -7,27 +7,17 @@
     <style>
         .leaflet-popup-content-wrapper {
             border-radius: 8px;
-            width: 220px;
+            padding: 1px;
         }
 
         .leaflet-popup-content {
-            margin: 13px 19px;
+            margin: 0;
+            padding: 0;
             font-family: 'Poppins', sans-serif;
         }
 
-        .leaflet-popup-content img {
-            width: 100%;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 4px;
-            margin-bottom: 8px;
-        }
-
-        .leaflet-popup-content p {
-            margin: 4px 0;
-            font-size: 12px;
-            line-height: 1.4;
-            word-wrap: break-word;
+        .leaflet-popup-tip-container {
+            display: none;
         }
     </style>
 @endpush
@@ -42,7 +32,6 @@
             <div id="map" class="w-full h-[450px] rounded-lg z-0"></div>
         </div>
 
-        {{-- Bagian Filter --}}
         <div class="bg-white p-6 rounded-xl shadow-md">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Filter Pencarian</h2>
             <form id="filter-form" action="{{ route('lokasi-tps.index') }}" method="GET">
@@ -79,7 +68,6 @@
             </form>
         </div>
 
-        {{-- KOTAK JUMLAH TPS (DINAMIS) --}}
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div class="bg-green-700 text-white p-4 rounded-lg shadow-sm text-center">
                 <h3 class="font-semibold">TPS Resmi</h3>
@@ -91,7 +79,7 @@
             </div>
         </div>
 
-        {{-- DAFTAR ALAMAT TPS --}}
+
         <div class="bg-white p-6 rounded-xl shadow-md">
             <h2 class="text-xl font-semibold text-gray-800 mb-2">Daftar Lokasi</h2>
             <div id="tps-list-container" class="space-y-4">
@@ -135,7 +123,7 @@
             });
 
             function updateUI(data) {
-                // Update Peta
+
                 allMarkers.forEach(marker => map.removeLayer(marker));
                 allMarkers = [];
                 if (data.map_locations && data.map_locations.length > 0) {
@@ -152,26 +140,23 @@
                     const marker = L.marker([tps.latitude, tps.longitude], {
                         icon: icon
                     }).addTo(map);
-                    const popupContent = `
-                        <div class="p-3">
-                            <img src="${tps.image_url}" alt="Foto TPS">
-                            <p class="text-gray-600 text-xs mb-2">${tps.alamat}</p>
-                            <p class="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white ${tps.status === 'resmi' ? 'bg-green-600' : 'bg-red-500'}">
-                                        Status: ${tps.status.charAt(0).toUpperCase() + tps.status.slice(1)} </p>
-                        </div>`;
-
+                    const popupContent =
+                        `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0">
+                            <img class="w-full h-32 object-cover" src="${tps.image_url}" alt="Foto ${tps.nama}">
+                            <div class="p-3"><div class="font-bold text-base mb-1 text-gray-800">${tps.nama}</div>
+                            <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat: </span>${tps.address}</p>
+                            <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Deskripsi: </span>${tps.description}</p>
+                            <span class="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white ${tps.status === 'resmi' ? 'bg-green-600' : 'bg-red-500'}">Status: ${tps.status.charAt(0).toUpperCase() + tps.status.slice(1)}</span></div></div>`;
                     marker.bindPopup(popupContent);
                     allMarkers.push(marker);
                     markerObjectsById[tps.id] = marker;
                 });
 
-                // Update Daftar & Paginasi & Hitungan
                 document.getElementById('tps-list-container').innerHTML = data.list_html;
                 document.getElementById('pagination-container').innerHTML = data.pagination_html;
                 document.getElementById('resmi-count').textContent = data.resmiCount;
                 document.getElementById('ilegal-count').textContent = data.ilegalCount;
 
-                // Pasang ulang event listener untuk daftar baru
                 document.querySelectorAll('.tps-list-item').forEach(item => {
                     item.addEventListener('click', function() {
                         const tpsId = this.dataset.id;
@@ -184,7 +169,6 @@
                 });
             }
 
-            // Inisialisasi awal
             updateUI({
                 map_locations: @json($locations),
                 list_html: document.getElementById('tps-list-container').innerHTML,
@@ -193,7 +177,6 @@
                 ilegalCount: {{ $ilegalCount }}
             });
 
-            // Logika Filter AJAX
             const filterForm = document.getElementById('filter-form');
 
             function handleFilterChange() {

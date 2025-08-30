@@ -33,13 +33,13 @@
         <div class="bg-white p-2 rounded-xl shadow-md">
             <div id="map" class="w-full rounded-lg"></div>
         </div>
-        {{-- Bagian Filter --}}
+
         <div class="bg-white p-6 rounded-xl shadow-md">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Filter Pencarian</h2>
             <form id="filter-form" action="{{ route('banksampah-user') }}" method="GET">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
-                    {{-- Filter Kecamatan --}}
+
                     <div>
                         <label for="kecamatan" class="block mb-2 text-sm font-medium text-gray-700">Kecamatan</label>
                         <div class="relative">
@@ -63,7 +63,7 @@
                         </div>
                     </div>
 
-                    {{-- Filter Hari --}}
+
                     <div>
                         <label for="hari" class="block mb-2 text-sm font-medium text-gray-700">Hari</label>
                         <div class="relative">
@@ -160,7 +160,11 @@
                         icon: greenIcon
                     }).addTo(map);
                     const popupContent =
-                        `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0"><img class="w-full h-32 object-cover" src="${loc.image_url}" alt="Foto ${loc.nama}"><div class="p-3"><div class="font-bold text-base mb-2 text-gray-800">${loc.nama}</div><p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat:</span> ${loc.alamat || 'Tidak ada alamat.'}</p><p class="text-gray-500 text-xs">${loc.deskripsi || ''}</p></div></div>`;
+                        `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0">
+                            <img class="w-full h-32 object-cover" src="${loc.image_url}" alt="Foto ${loc.nama}">
+                            <div class="p-3"><div class="font-bold text-base mb-2 text-gray-800">${loc.nama}</div>
+                            <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat:</span> ${loc.alamat || 'Tidak ada alamat.'}</p>
+                            <p class="text-gray-500 text-xs"><span class="font-semibold">Deskripsi: </span>${loc.deskripsi || ''}</p></div></div>`;
                     marker.bindPopup(popupContent);
                     allMarkers.push(marker);
                     markerObjectsById[loc.id] = marker;

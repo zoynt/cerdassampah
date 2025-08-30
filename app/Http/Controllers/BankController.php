@@ -33,7 +33,7 @@ class BankController extends Controller
             ];
         });
 
-        $schedules = $query->orderBy('id', 'asc')->paginate(10)->withQueryString();
+        $schedules = $query->orderBy('id', 'asc')->paginate(5)->withQueryString();
 
         if ($request->ajax()) {
             return response()->json([
