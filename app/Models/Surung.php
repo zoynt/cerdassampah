@@ -41,7 +41,7 @@ class Surung extends Model
         $this->attributes['surung_end_time'] = \Carbon\Carbon::createFromFormat('H:i', $value)->format('H:i:s');
     }
 
-    // protected $casts = [
-    //     'kecamatan' => 'enum:banjarmasin utara,banjarmasin selatan,banjarmasin tengah,banjarmasin barat,banjarmasin timur',
-    // ];
+    protected $casts = [
+        'surung_day' => 'array',
+    ];
 }

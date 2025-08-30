@@ -29,7 +29,7 @@ class BankController extends Controller
                 'deskripsi' => $bank->bank_description,
                 'lat' => (float) $bank->bank_latitude,
                 'lng' => (float) $bank->bank_longitude,
-                'image_url' => $bank->image ? asset('storage/' . $bank->image) : asset('img/tps-placeholder.jpg'),
+                'image_url' => $bank->image ? asset('' . $bank->image) : asset('img/tps-placeholder.jpg'),
             ];
         });
 

@@ -163,7 +163,8 @@ class BankResource extends Resource
             ->columns([
                 TextColumn::make('bank_name')->searchable(),
                 TextColumn::make('kecamatan')->searchable(),
-                TextColumn::make('bank_day')->searchable(),
+                TextColumn::make('bank_day')->searchable()
+                ->wrap(),
                 TextColumn::make('bank_start_time')->searchable()
                 ->label('Buka')
                 ->dateTime('H:i'),
