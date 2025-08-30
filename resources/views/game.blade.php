@@ -1,12 +1,10 @@
 {{-- resources/views/game.blade.php --}}
 
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Game Pilah Sampah - CerdasSampah</title>
+@extends('layouts.dashboard')
 
+@section('title', 'Game Pilah Sampah')
+
+@push('head')
     {{-- PERBAIKAN: Menambahkan meta CSRF token --}}
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
@@ -17,133 +15,13 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+@endpush
 
+@section('content')
+    <div id="pilah-sampah" style="width: 100%; height: 100%;"></div>
+@endsection
+
+@push('scripts')
     @viteReactRefresh
     @vite(['resources/css/app.css', 'resources/js/app.jsx'])
-
-    <style>
-        /* General Styling */
-        body {
-            margin: 0;
-            font-family: 'Poppins', sans-serif; /* Menggunakan font Poppins */
-            background-color: #f0f4f8;
-            color: #333;
-        }
-
-        .page-container {
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar Styling */
-        .sidebar {
-            width: 260px;
-            background-color: #ffffff;
-            border-right: 1px solid #e0e0e0;
-            display: flex;
-            flex-direction: column;
-            padding: 20px 0;
-        }
-        .sidebar-header {
-            padding: 0 25px 20px 25px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .sidebar-header i {
-            font-size: 28px;
-            color: #4CAF50;
-        }
-        .sidebar-header h2 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 600;
-        }
-        .sidebar-nav {
-            flex-grow: 1;
-            list-style: none;
-            padding: 20px 0;
-            margin: 0;
-        }
-        .sidebar-nav li a {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            padding: 15px 25px;
-            text-decoration: none;
-            color: #555;
-            font-weight: 500;
-            transition: background-color 0.3s, color 0.3s;
-        }
-        .sidebar-nav li a i {
-            width: 20px;
-            text-align: center;
-        }
-        .sidebar-nav li a:hover {
-            background-color: #f1f8e9;
-            color: #4CAF50;
-        }
-        .sidebar-nav li.active a {
-            background-color: #4CAF50;
-            color: #ffffff;
-            border-radius: 0 30px 30px 0;
-            margin-right: 20px;
-        }
-
-        /* Main Content Styling */
-        .main-content {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-        }
-        .main-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px;
-            background-color: #ffffff;
-            border-bottom: 1px solid #e0e0e0;
-        }
-        .main-header h1 {
-            margin: 0;
-            font-size: 24px;
-        }
-        .user-profile {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .user-profile .fa-user-circle {
-            font-size: 28px;
-            color: #757575;
-        }
-
-        /* Game Area Styling */
-        .game-area {
-            flex-grow: 1;
-            padding: 20px;
-            background-color: #e8f5e9; /* Light green background for the game area */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        /* The container for React should take up all available space */
-        #pilah-sampah {
-            width: 100%;
-            height: 100%;
-            max-width: 1200px; /* Max width for the game component */
-        }
-    </style>
-</head>
-<body>
-    <div class="page-container">
-        <main class="main-content">
-            <div class="game-area">
-                {{-- Ini adalah "wadah" tempat game React akan muncul --}}
-                <div id="pilah-sampah"></div>
-            </div>
-        </main>
-    </div>
-</body>
-</html>
+@endpush

@@ -34,12 +34,10 @@ const heroContentStyle = {
     alignItems: 'center',
     textAlign: 'center',
     width: '100%',
-    maxWidth: '960px',
     border: '1px solid rgba(255, 255, 255, 0.2)',
     backdropFilter: 'blur(10px)',
     borderRadius: '20px',
     padding: '50px 70px',
-    marginBottom: '20px',
     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
     backgroundColor: 'white',
 };
@@ -48,24 +46,30 @@ const imageContainerStyle = {
     marginBottom: '20px',
 };
 
+const logoStyle = {
+    height: 'min(30vw, 150px)',
+    marginBottom: '20px',
+};
+
 const gameTitleStyle = {
-    fontSize: '3em',
+    fontSize: 'min(6vw, 3em)',
     fontWeight: '800',
     marginBottom: '30px',
-    textShadow: '2px 2px 4px rgba(0,0,0,0.1)',
     color: '#16a34a',
+    textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
 };
 
 const buttonContainerStyle = {
     display: 'flex',
-    gap: '20px',
+    gap: 'min(20px, 3vw)',
     justifyContent: 'center',
+    flexWrap: 'wrap',
 };
 
 const baseButtonStyle = {
     padding: '12px 24px',
     borderRadius: '12px',
-    fontSize: '1em',
+    fontSize: 'min(3vw, 1em)',
     fontWeight: 'bold',
     cursor: 'pointer',
     border: 'none',
@@ -73,7 +77,10 @@ const baseButtonStyle = {
     transition: 'transform 0.3s ease, box-shadow 0.3s ease',
     display: 'flex',
     alignItems: 'center',
+    justifyContent: 'center', // Perbaikan: Menengahkan konten secara horizontal
     textTransform: 'uppercase',
+    whiteSpace: 'nowrap',
+    minWidth: '160px', // Menetapkan lebar minimum agar tidak terlalu kecil
 };
 
 const primaryButtonStyle = {

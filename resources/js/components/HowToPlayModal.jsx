@@ -28,13 +28,14 @@ export default function HowToPlayModal({ onClose }) {
 
 // --- STYLING (CSS-in-JS) ---
 const overlayStyle = {
-    position: 'fixed',
+    position: 'fixed', // Perbaikan: Mengubah ke fixed agar memenuhi seluruh layar
     top: 0,
     left: 0,
     right: 0,
     bottom: 0,
     background: 'rgba(0, 0, 0, 0.6)',
     backdropFilter: 'blur(5px)',
+    WebkitBackdropFilter: 'blur(5px)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -42,13 +43,13 @@ const overlayStyle = {
 };
 
 const modalStyle = {
-    background: 'white', // Latar belakang putih
-    padding: '40px 60px',
+    background: 'white',
+    padding: '30px 40px',
     borderRadius: '20px',
-    width: '450px',
+    width: '400px',
     maxWidth: '90%',
     textAlign: 'center',
-    color: '#1f2937', // Warna teks gelap
+    color: '#1f2937',
     fontFamily: "'Poppins', sans-serif",
     position: 'relative',
     boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
@@ -56,51 +57,51 @@ const modalStyle = {
 
 const closeButtonStyle = {
     position: 'absolute',
-    top: '15px',
-    right: '15px',
+    top: '10px',
+    right: '10px',
     background: 'none',
     border: 'none',
-    color: '#4b5563', // Warna ikon gelap
-    fontSize: '24px',
+    color: '#4b5563',
+    fontSize: '20px',
     cursor: 'pointer',
 };
 
 const titleStyle = {
-    fontSize: '2.5em',
+    fontSize: '2em',
     fontWeight: 'bold',
-    marginBottom: '10px',
-    color: '#16a34a', // Warna judul hijau
+    marginBottom: '8px',
+    color: '#16a34a',
     textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
 };
 
 const subtitleStyle = {
-    fontSize: '1em',
+    fontSize: '0.9em',
     fontWeight: '300',
     marginBottom: '20px',
-    color: '#4b5563', // Warna teks abu-abu gelap
+    color: '#4b5563',
 };
 
 const listStyle = {
     textAlign: 'left',
-    fontSize: '1em',
+    fontSize: '0.9em',
     lineHeight: '1.8',
     marginBottom: '30px',
     paddingLeft: '20px',
     color: '#1f2937',
-    listStyleType: 'decimal', // Penomoran
+    listStyleType: 'decimal',
 };
 
 const backButtonStyle = {
-    background: '#10b981', // Latar belakang tombol hijau
+    background: '#10b981',
     color: 'white',
-    padding: '12px 30px',
+    padding: '10px 24px',
     border: 'none',
-    borderRadius: '10px',
+    borderRadius: '8px',
     cursor: 'pointer',
-    fontSize: '1em',
+    fontSize: '0.9em',
     fontWeight: 'bold',
     transition: 'transform 0.2s ease',
     '&:hover': {
         transform: 'scale(1.05)',
     },
-};
+};  

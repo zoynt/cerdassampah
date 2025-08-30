@@ -12,9 +12,18 @@ export default function TrashTypeModal({ onClose }) {
                 <h2 style={titleStyle}>Jenis Sampah</h2>
                 <p style={subtitleStyle}>Memisahkan sampah ke dalam tiga jenis tempat sampah yang benar</p>
                 <ol style={listStyle}>
-                    <li><span style={{color: '#16a34a', fontWeight: 'bold'}}>Organik</span> – Sampah yang bisa terurai, seperti sisa makanan, daun, kulit buah.</li>
-                    <li><span style={{color: '#f59e0b', fontWeight: 'bold'}}>Anorganik</span> – Sampah yang sulit terurai, seperti plastik, botol minum, kertas.</li>
-                    <li><span style={{color: '#ef4444', fontWeight: 'bold'}}>B3</span> (Bahan Berbahaya & Beracun) – Sampah berbahaya seperti baterai, kaca pecah, obat kadaluarsa.</li>
+                    <li>
+                        <div style={listItemHeaderStyle}><span style={{color: '#16a34a', fontWeight: 'bold'}}>Organik</span></div>
+                        <p style={listItemDescriptionStyle}>Sampah yang bisa terurai, seperti sisa makanan, daun, kulit buah.</p>
+                    </li>
+                    <li>
+                        <div style={listItemHeaderStyle}><span style={{color: '#f59e0b', fontWeight: 'bold'}}>Anorganik</span></div>
+                        <p style={listItemDescriptionStyle}>Sampah yang sulit terurai, seperti plastik, botol minum, kertas.</p>
+                    </li>
+                    <li>
+                        <div style={listItemHeaderStyle}><span style={{color: '#ef4444', fontWeight: 'bold'}}>B3</span> (Bahan Berbahaya & Beracun)</div>
+                        <p style={listItemDescriptionStyle}>Sampah berbahaya seperti baterai, kaca pecah, obat kadaluarsa.</p>
+                    </li>
                 </ol>
                 <button style={backButtonStyle} onClick={onClose}>
                     Kembali
@@ -33,6 +42,7 @@ const overlayStyle = {
     bottom: 0,
     background: 'rgba(0, 0, 0, 0.6)',
     backdropFilter: 'blur(5px)',
+    WebkitBackdropFilter: 'blur(5px)',
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
@@ -41,9 +51,9 @@ const overlayStyle = {
 
 const modalStyle = {
     background: 'white',
-    padding: '40px 60px',
+    padding: '30px 40px',
     borderRadius: '20px',
-    width: '450px',
+    width: '400px',
     maxWidth: '90%',
     textAlign: 'center',
     color: '#1f2937',
@@ -54,25 +64,25 @@ const modalStyle = {
 
 const closeButtonStyle = {
     position: 'absolute',
-    top: '15px',
-    right: '15px',
+    top: '10px',
+    right: '10px',
     background: 'none',
     border: 'none',
     color: '#4b5563',
-    fontSize: '24px',
+    fontSize: '20px',
     cursor: 'pointer',
 };
 
 const titleStyle = {
-    fontSize: '2.5em',
+    fontSize: '2em',
     fontWeight: 'bold',
-    marginBottom: '10px',
+    marginBottom: '8px',
     color: '#16a34a',
     textShadow: '1px 1px 2px rgba(0,0,0,0.1)',
 };
 
 const subtitleStyle = {
-    fontSize: '1em',
+    fontSize: '0.9em',
     fontWeight: '300',
     marginBottom: '20px',
     color: '#4b5563',
@@ -80,7 +90,7 @@ const subtitleStyle = {
 
 const listStyle = {
     textAlign: 'left',
-    fontSize: '1em',
+    fontSize: '0.9em',
     lineHeight: '1.8',
     marginBottom: '30px',
     paddingLeft: '20px',
@@ -88,14 +98,25 @@ const listStyle = {
     listStyleType: 'decimal',
 };
 
+const listItemHeaderStyle = {
+    display: 'block', // Mengubah display agar setiap judul memiliki baris sendiri
+    fontWeight: 'bold',
+};
+
+const listItemDescriptionStyle = {
+    display: 'block', // Mengubah display agar setiap deskripsi memiliki baris sendiri
+    margin: 0,
+    lineHeight: '1.4',
+};
+
 const backButtonStyle = {
     background: '#10b981',
     color: 'white',
-    padding: '12px 30px',
+    padding: '10px 24px',
     border: 'none',
-    borderRadius: '10px',
+    borderRadius: '8px',
     cursor: 'pointer',
-    fontSize: '1em',
+    fontSize: '0.9em',
     fontWeight: 'bold',
     transition: 'transform 0.2s ease',
     '&:hover': {

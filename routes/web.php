@@ -31,7 +31,7 @@ Route::get('/scan', function () {
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
 // Tambahkan route ini
-Route::get('/game-pilah-sampah', function () {
+Route::get('/game', function () {
     return view('game');
 })->name('game.pilah-sampah');
 

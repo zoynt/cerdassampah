@@ -20,21 +20,23 @@
 
 <body class="text-gray-800">
 
-    <div x-data="{ sidebarOpen: false }" class="flex h-screen bg-slate-50">
+    <div x-data="{ sidebarOpen: window.innerWidth >= 768 }" class="flex h-screen bg-slate-50">
 
         <aside
-            class="fixed inset-y-0 left-0 z-30 w-64 px-4 py-7 overflow-y-auto text-gray-700 bg-slate-50 border-r border-gray-200 transition-transform duration-300 transform -translate-x-full md:relative md:translate-x-0"
-            :class="{ 'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen }">
+            class="fixed inset-y-0 left-0 z-40 w-64 px-4 py-7 overflow-y-auto text-gray-700 bg-white border-r border-gray-200 transition-transform duration-300 transform"
+            :class="{
+                'translate-x-0': sidebarOpen,
+                '-translate-x-full': !sidebarOpen,
+                'md:relative md:translate-x-0': sidebarOpen
+            }">
 
-            <div class="flex items-center justify-between px-4 mb-8">
-                <a href="#" class="flex">
-                    <img src="{{ asset('img/logo.png') }}" alt="Logo CerdasSampah" class="w-10 h-10 mr-3" />
-                    <span class="text-lg font-bold text-gray-700 mt-2">CerdasSampah</span>
-                </a>
-            </div>
+            <a href="{{ route('dashboard') }}" class="flex items-center px-4 mb-8">
+                <img src="{{ asset('img/logo.png') }}" alt="Logo CerdasSampah" class="w-10 h-10 mr-3" />
+                <span class="text-lg font-bold text-gray-800">CerdasSampah</span>
+            </a>
 
             {{-- NAVIGASI LENGKAP YANG SUDAH DIPERBAIKI --}}
-            <nav x-data="{ ruteOpen: false }">
+            <nav x-data="{ ruteOpen: @json(request()->routeIs(['tps.index', 'surung-sintak.index', 'banksampah-user'])) }">
                 <a href="{{ route('dashboard') }}" @class([
                     'flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200',
                     'bg-green-700 text-white shadow-sm' => request()->routeIs('dashboard'),
@@ -48,7 +50,7 @@
                     Home
                 </a>
 
-                <a href="{{ route('lapor.index') }}" @class([
+                <a href="#" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
                     'bg-green-700 text-white shadow-sm' => request()->routeIs('lapor.index'),
                     'text-gray-500 hover:bg-gray-200' => !request()->routeIs('lapor.index'),
@@ -59,6 +61,19 @@
                         </path>
                     </svg>
                     Laporan
+                </a>
+                <a href="#" @class([
+                    'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
+                    'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                        'laporan.history'),
+                    'text-gray-500 hover:bg-gray-200' => !request()->routeIs('laporan.history'),
+                ])>
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                        </path>
+                    </svg>
+                    Histori Laporan
                 </a>
 
                 <a href="{{ route('lokasi-tps.index') }}" @class([
@@ -79,7 +94,7 @@
                 </a>
 
                 {{-- MENU YANG HILANG DIKEMBALIKAN --}}
-                <a href="PilahSampahGame.js" @class([
+                <a href="game" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
                     'bg-green-700 text-white shadow-sm' => request()->routeIs('game.*'),
                     'text-gray-500 hover:bg-gray-200' => !request()->routeIs('game.*'),
@@ -96,8 +111,8 @@
 
                 <a href="#" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
-                    'bg-green-700 text-white shadow-sm' => request()->routeIs('scan.*'),
-                    'text-gray-500 hover:bg-gray-200' => !request()->routeIs('scan.*'),
+                    'bg-green-700 text-white shadow-sm' => request()->routeIs('scan-user'),
+                    'text-gray-500 hover:bg-gray-200' => !request()->routeIs('scan-user'),
                 ])>
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -110,8 +125,19 @@
                 </a>
 
                 <div class="mt-2">
-                    <button @click="ruteOpen = !ruteOpen"
-                        class="flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-left text-gray-500 transition-colors duration-200 hover:bg-gray-200 rounded-lg">
+                    <button @click="ruteOpen = !ruteOpen" @class([
+                        'flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-left rounded-lg transition-colors duration-200',
+                        'bg-green-700 text-white shadow-sm' => request()->routeIs([
+                            'tps.index',
+                            'surung-sintak.index',
+                            'banksampah-user',
+                        ]),
+                        'text-gray-500 hover:bg-gray-200' => !request()->routeIs([
+                            'tps.index',
+                            'surung-sintak.index',
+                            'banksampah-user',
+                        ]),
+                    ])>
                         <span class="flex items-center">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -127,16 +153,25 @@
                         </svg>
                     </button>
                     <div x-show="ruteOpen" x-transition class="mt-2 ml-4 space-y-2">
-                        <a href="#"
-                            class="flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-gray-200 rounded-lg">
+                        <a href="#" @class([
+                            'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
+                            'bg-green-700 text-white shadow-sm' => request()->routeIs('tps.index'),
+                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs('tps.index'),
+                        ])>
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path>
                             </svg>
                             TPS
                         </a>
-                        <a href="#"
-                            class="flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-gray-200 rounded-lg">
+                        <a href="#" @class([
+                            'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
+                            'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                                'surung-sintak.index'),
+                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
+                                'surung-sintak.index'),
+                        ])>
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -144,8 +179,12 @@
                             </svg>
                             Surung Sintak
                         </a>
-                        <a href="#"
-                            class="flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 hover:bg-gray-200 rounded-lg">
+                        <a href="#" @class([
+                            'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
+                            'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                                'banksampah-user'),
+                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs('banksampah-user'),
+                        ])>
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -158,28 +197,33 @@
             </nav>
         </aside>
 
-        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-20 bg-black/50 md:hidden"
+        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 md:hidden"
             x-cloak></div>
 
-        <div class="flex flex-col flex-1">
+        <div class="flex flex-col flex-1 w-full transition-all duration-300" :class="sidebarOpen">
 
-            <header
-                class="sticky top-0 z-20 flex items-center justify-between px-6 py-4 text-white bg-green-700 shadow-md">
+            <header @class([
+                'sticky top-0 z-20 flex items-center justify-between px-6 py-4 text-white bg-green-700 transition-shadow duration-300',
+                'shadow-md' => !request()->routeIs('dashboard', 'scan-user'),
+            ])>
+
+
+                {{-- Sisi Kiri Header --}}
                 <div class="flex items-center">
-                    <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none md:hidden">
+                    <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none">
                         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
                             <path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2"
                                 stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
                     </button>
-                    <h1 class="ml-3 text-xl font-semibold">@yield('title', 'Dasbor')</h1>
+                    <h1 class="ml-3 text-xl font-semibold">@yield('title')</h1>
                 </div>
 
+                {{-- Sisi Kanan Header (Dropdown Profil) --}}
                 <div x-data="{ dropdownOpen: false }" class="relative">
-                    <button @click="dropdownOpen = !dropdownOpen"
+                    <button
                         class="relative z-10 flex items-center p-1 rounded-full focus:outline-none hover:bg-black/10 transition-colors">
 
-                        {{-- PENYESUAIAN: Menampilkan foto profil user jika ada --}}
                         <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
                             @if (Auth::user()->profile_photo_path)
                                 <img class="w-full h-full object-cover"
@@ -202,8 +246,12 @@
                             </path>
                         </svg>
                     </button>
-                    <div x-show="dropdownOpen" @click="dropdownOpen = false" class="fixed inset-0 z-0 h-full w-full">
+
+                    {{-- Overlay untuk menutup dropdown --}}
+                    <div x-show="dropdownOpen" class="fixed inset-0 z-0 h-full w-full">
                     </div>
+
+                    {{-- Isi Dropdown Menu --}}
                     <div x-show="dropdownOpen" x-transition
                         class="absolute right-0 z-30 w-48 py-2 mt-2 text-gray-800 bg-white rounded-md shadow-xl">
                         <a href="{{ route('profile.edit') }}"
@@ -231,8 +279,17 @@
                 </div>
             </header>
 
-            <main class="relative z-0 flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
+            <!-- <main class="relative z-0 flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto">
                 @yield('content')
+            </main> -->
+            <main class="relative z-10 flex-1 overflow-y-auto">
+                @if (request()->routeIs('game.pilah-sampah'))
+                    @yield('content')
+                @else
+                    <div class="py-6 px-4 sm:px-6 lg:px-8">
+                        @yield('content')
+                    </div>
+                @endif
             </main>
         </div>
     </div>
@@ -253,21 +310,68 @@
     @endif
 
     @if (session('error'))
-    <script>
-      Swal.fire({
-        icon: 'error',
-        {{-- title: 'Laporan Gagal Dikirim', --}}
-        text: '{{ session('error') }}',
-        confirmButtonText: 'OK',
-        customClass: {
-            confirmButton: 'btn-custom'  // Kelas khusus untuk tombol
-        }
-    });
-{{-- <div class="alert alert-danger" role="alert">
+        <script>
+            Swal.fire({
+                icon: 'error',
+                {{-- title: 'Laporan Gagal Dikirim', --}}
+                text: '{{ session('error') }}',
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: 'btn-custom' // Kelas khusus untuk tombol
+                }
+            });
+            {{-- <div class="alert alert-danger" role="alert">
     {{ session('error') }}
 </div> --}}
-</script>
-@endif
+        </script>
+    @endif
+
+    {{-- Popup Langkah-langkah (dikonversi ke Tailwind & Alpine.js) --}}
+    @if (request()->routeIs('scan-user'))
+        <div x-data="{ showPopup: true, currentStep: 0 }" x-show="showPopup" x-transition.opacity
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" x-cloak>
+            <div class="bg-white rounded-xl shadow-lg text-center w-full max-w-md p-6">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">Langkah Mudah Menggunakan Fitur Scan</h2>
+
+                <div class="flex items-center justify-center gap-5 mb-4">
+                    <button @click="currentStep = Math.max(0, currentStep - 1)"
+                        class="text-3xl text-gray-400 hover:text-green-700">&lt;</button>
+                    <div class="flex gap-3">
+                        <template x-for="i in 3">
+                            <button @click="currentStep = i - 1"
+                                :class="{
+                                    'bg-green-700 text-white': currentStep === i -
+                                        1,
+                                    'bg-gray-200 text-gray-600': currentStep !== i - 1
+                                }"
+                                class="w-10 h-10 rounded-full font-bold text-lg transition-colors"
+                                x-text="i"></button>
+                        </template>
+                    </div>
+                    <button @click="currentStep = Math.min(2, currentStep + 1)"
+                        class="text-3xl text-gray-400 hover:text-green-700">&gt;</button>
+                </div>
+
+                <div class="text-gray-600">
+                    <div x-show="currentStep === 0">
+                        <h3 class="mb-2 font-bold text-lg">1. Unggah Gambar Sampah</h3>
+                        <p>Ambil foto sampah menggunakan kamera atau unggah gambar dari galeri Anda.</p>
+                    </div>
+                    <div x-show="currentStep === 1" style="display:none;">
+                        <h3 class="mb-2 font-bold text-lg">2. Sistem Menganalisis Gambar</h3>
+                        <p>Sistem cerdas kami akan memproses dan mengenali jenis sampah berdasarkan pola visual.</p>
+                    </div>
+                    <div x-show="currentStep === 2" style="display:none;">
+                        <h3 class="mb-2 font-bold text-lg">3. Hasil Analisis Ditampilkan</h3>
+                        <p>Hasil klasifikasi (Organik, Anorganik, B3) akan muncul secara otomatis.</p>
+                    </div>
+                </div>
+
+                <button @click="showPopup = false"
+                    class="mt-6 w-full py-2 px-4 bg-green-700 text-white font-semibold rounded-full hover:bg-green-800 transition">Mengerti</button>
+            </div>
+        </div>
+    @endif
 </body>
 
 </html>

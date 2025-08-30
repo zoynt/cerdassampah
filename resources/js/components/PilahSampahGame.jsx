@@ -40,7 +40,7 @@ const initialTrashItems = {
 };
 
 const levelData = {
-    1: { duration: 10, items: initialTrashItems.unclassified },
+    1: { duration: 90, items: initialTrashItems.unclassified },
     2: { duration: 90, items: [...initialTrashItems.unclassified, ...additionalTrashItemsLvl2] },
     3: { duration: 60, items: [...initialTrashItems.unclassified, ...additionalTrashItemsLvl2, ...additionalTrashItemsLvl3] },
 };

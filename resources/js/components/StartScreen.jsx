@@ -3,40 +3,40 @@ import HeroSection from './HeroSection';
 import LeaderboardSection from './LeaderboardSection';
 import RewardSection from './RewardSection';
 import HowToPlayModal from './HowToPlayModal';
-import TrashTypeModal from './TrashTypeModal'; // <-- Impor komponen baru
+import TrashTypeModal from './TrashTypeModal';
 
 export default function StartScreen({ onStart }) {
     const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
-    const [showTrashTypeModal, setShowTrashTypeModal] = useState(false); // <-- State baru
+    const [showTrashTypeModal, setShowTrashTypeModal] = useState(false);
 
     const handleShowHowToPlayModal = () => setShowHowToPlayModal(true);
     const handleCloseHowToPlayModal = () => setShowHowToPlayModal(false);
 
-    const handleShowTrashTypeModal = () => setShowTrashTypeModal(true); // <-- Fungsi baru
-    const handleCloseTrashTypeModal = () => setShowTrashTypeModal(false); // <-- Fungsi baru
+    const handleShowTrashTypeModal = () => setShowTrashTypeModal(true);
+    const handleCloseTrashTypeModal = () => setShowTrashTypeModal(false);
 
     return (
         <div style={containerStyle}>
             <HeroSection
                 onStart={onStart}
                 onShowHowToPlay={handleShowHowToPlayModal}
-                onShowTrashType={handleShowTrashTypeModal} // <-- Teruskan fungsi baru
+                onShowTrashType={handleShowTrashTypeModal}
             />
             <LeaderboardSection />
             <RewardSection />
 
             {showHowToPlayModal && <HowToPlayModal onClose={handleCloseHowToPlayModal} />}
-            {showTrashTypeModal && <TrashTypeModal onClose={handleCloseTrashTypeModal} />} {/* <-- Tampilkan modal baru */}
+            {showTrashTypeModal && <TrashTypeModal onClose={handleCloseTrashTypeModal} />}
         </div>
     );
 }
 
 const containerStyle = {
     fontFamily: "'Poppins', sans-serif",
-    height: '100%',
     width: '100%',
     boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
+    gap: '24px',
 };

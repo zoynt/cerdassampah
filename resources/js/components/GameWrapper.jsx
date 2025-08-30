@@ -1,22 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PilahSampahGame from './PilahSampahGame';
 import StartScreen from './StartScreen';
 import EndScreen from './EndScreen';
+import FullscreenPrompt from './FullscreenPrompt'; // <-- Tambahkan ini
 
 export default function GameWrapper() {
     const [gameState, setGameState] = useState('start');
     const [finalScore, setFinalScore] = useState(0);
     const [gameKey, setGameKey] = useState(0);
+    const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+    const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
+
+    // Effect untuk mendeteksi perubahan ukuran dan orientasi layar
+    useEffect(() => {
+        const handleResize = () => {
+            setIsMobile(window.innerWidth < 768);
+            setIsLandscape(window.innerWidth > window.innerHeight);
+        };
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', handleResize);
+        return () => {
+            window.removeEventListener('resize', handleResize);
+            window.removeEventListener('orientationchange', handleResize);
+        };
+    }, []);
 
     const handleStartGame = () => {
         setGameState('playing');
         setGameKey(prevKey => prevKey + 1);
     };
 
-    // Perubahan: Fungsi ini sekarang akan langsung mengarahkan ke halaman awal
     const handleEndGame = () => {
-        setFinalScore(0); // Reset skor
-        setGameState('start'); // Kembali ke halaman awal
+        setFinalScore(0);
+        setGameState('start');
     };
 
     const handleRestartGame = () => {
@@ -24,17 +40,56 @@ export default function GameWrapper() {
         setFinalScore(0);
     };
 
-    const gameProps = {
-        onGameEnd: handleEndGame, // Teruskan fungsi baru
+    const handleFullscreen = () => {
+        const elem = document.documentElement;
+        if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+        } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+        }
+
+        if (screen.orientation.lock) {
+            screen.orientation.lock('landscape').catch(err => {
+                console.error('Gagal mengunci orientasi layar:', err);
+            });
+        }
     };
+
+    const gameProps = {
+        onGameEnd: handleEndGame,
+    };
+
+    const wrapperStyle = {
+        background: 'linear-gradient(to bottom, #dcfce7, #f0fdf4)',
+        minHeight: '100vh',
+        fontFamily: "'Poppins', sans-serif",
+        padding: '24px',
+        boxSizing: 'border-box',
+    };
+
+    if (gameState === 'playing' && isMobile && !isLandscape) {
+        return <FullscreenPrompt onContinue={handleFullscreen} />;
+    }
 
     switch (gameState) {
         case 'playing':
-            return <PilahSampahGame key={gameKey} {...gameProps} />;
+            return (
+                <div style={wrapperStyle}>
+                    <PilahSampahGame key={gameKey} {...gameProps} />
+                </div>
+            );
         case 'end':
-            return <EndScreen score={finalScore} onRestart={handleRestartGame} />;
+            return (
+                <div style={wrapperStyle}>
+                    <EndScreen score={finalScore} onRestart={handleRestartGame} />
+                </div>
+            );
         case 'start':
         default:
-            return <StartScreen onStart={handleStartGame} />;
+            return (
+                <div style={wrapperStyle}>
+                    <StartScreen onStart={handleStartGame} />
+                </div>
+            );
     }
 }

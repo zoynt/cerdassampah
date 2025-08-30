@@ -11,13 +11,13 @@ export default function RewardSection() {
 
     return (
         <div style={rewardSectionStyle}>
-            <h2 style={{ color: '#16a34a', fontSize: '2em', fontWeight: '800', marginBottom: '20px' }}>Klaim Reward</h2>
+            <h2 style={{ color: '#16a34a', fontSize: 'min(5vw, 2em)', fontWeight: '800', marginBottom: '20px' }}>Klaim Reward</h2>
             <div style={rewardBoxesContainerStyle}>
                 {dummyRewards.map((reward) => (
                     <div key={reward.id} style={rewardBoxStyle}>
                         <FontAwesomeIcon icon={faGift} style={giftIconStyle} />
-                        <p style={{ margin: '0', fontWeight: 'bold' }}>{reward.name}</p>
-                        <p style={{ margin: '4px 0', fontSize: '0.9em', color: '#6b7280' }}>{reward.points} pts</p>
+                        <p style={{ margin: '0', fontWeight: 'bold', fontSize: 'min(3vw, 1em)' }}>{reward.name}</p>
+                        <p style={{ margin: '4px 0', fontSize: 'min(2.5vw, 0.9em)', color: '#6b7280' }}>{reward.points} pts</p>
                         <button style={claimButtonStyle}>Klaim</button>
                     </div>
                 ))}
@@ -28,25 +28,24 @@ export default function RewardSection() {
 
 // --- STYLING (CSS-in-JS) ---
 const rewardSectionStyle = {
-    // Menyamakan container dengan Hero dan Leaderboard
     width: '100%',
-    maxWidth: '960px',
+    padding: 'min(50px, 5vw) min(70px, 8vw)',
     backgroundColor: 'white',
     borderRadius: '20px',
-    padding: '50px 70px',
-    marginBottom: '20px',
     boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)',
     textAlign: 'center',
+    boxSizing: 'border-box',
 };
 const rewardBoxesContainerStyle = {
     display: 'flex',
-    justifyContent: 'space-around',
-    gap: '20px',
+    justifyContent: 'center',
+    gap: 'min(20px, 3vw)',
     marginTop: '20px',
+    flexWrap: 'wrap',
 };
 const rewardBoxStyle = {
-    flex: 1,
-    background: 'transparent',
+    flex: '1 1 min(200px, 25vw)',
+    background: 'white',
     borderRadius: '12px',
     padding: '20px',
     border: '1px solid #e5e7eb',
@@ -54,8 +53,8 @@ const rewardBoxStyle = {
     boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
 };
 const giftIconStyle = {
-    fontSize: '3em',
-    color: '#10b981', // Mengubah warna ikon menjadi lebih gelap
+    fontSize: 'min(10vw, 3em)',
+    color: '#10b981',
     marginBottom: '10px',
 };
 const claimButtonStyle = {
@@ -68,6 +67,7 @@ const claimButtonStyle = {
     cursor: 'pointer',
     fontWeight: 'bold',
     transition: 'background-color 0.3s ease',
+    fontSize: 'min(2.5vw, 0.9em)',
     '&:hover': {
         backgroundColor: '#059669',
     },
