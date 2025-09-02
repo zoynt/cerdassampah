@@ -4,12 +4,31 @@
 
 @section('content')
 
-    <div class="bg-white rounded-xl shadow-md ">
-        <div class="h-40 bg-cover bg-center rounded-t-xl"
-            style="background-image: url('https://images.unsplash.com/photo-1518837695005-2083093ee35b?q=80&w=2070&auto-format&fit=crop')">
-        </div>
+    <div class="relative bg-gradient-to-b from-green-700 via-green-700 to-green-500 -mt-4 sm:-mt-6 text-white mb-6">
 
-        <div class="p-6 sm:p-8">
+        <div class="relative z-10 p-8 pt-10 pb-20 flex flex-col justify-center items-center text-center">
+
+
+            <div class="flex items-center ju
+            stify-center w-8 h-8 mb-4 rounded-full overflow-hidden">
+            </div>
+            <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
+                Edit Profil
+            </h1>
+            <div class="flex items-center ju
+            stify-center w-8 h-8 mb-4 rounded-full overflow-hidden">
+            </div>
+
+        </div>
+        <div class="absolute bottom-[-1px] left-0 w-full text-slate-50">
+            <svg viewBox="0 0 1440 120" fill="currentColor" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+                <path d="M1440,120H0V20.48c0,0,202.4,69.52,480,69.52s480-139.04,960-69.52V120Z"></path>
+            </svg>
+        </div>
+    </div>
+
+    <div class="p-4 sm:p-6 lg:p-8 -mt-16 relative z-10">
+        <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8">
             <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('patch')
@@ -30,8 +49,12 @@
                     </div>
                     <div>
                         <h2 class="text-xl font-bold text-gray-800">Foto Profil</h2>
-                        <input type="file" name="photo" id="photo"
-                            class="mt-2 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+
+                        <div class="flex justify-center sm:justify-start">
+                            <input type="file" name="photo" id="photo"
+                                class="mt-2 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                        </div>
+
                         @error('photo')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
