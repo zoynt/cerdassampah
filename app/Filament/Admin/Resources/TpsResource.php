@@ -16,18 +16,26 @@ use Filament\Resources\Resource;
 use Dotswan\MapPicker\Fields\Map;
 use function Laravel\Prompts\form;
 use Illuminate\Support\Facades\Log;
-
 use Illuminate\Support\Facades\Http;
+use App\Filament\Exports\TpsExporter;
+
+use App\Filament\Imports\TpsImporter;
 use Filament\Forms\Components\TextInput;
 use Filament\Tables\Columns\ImageColumn;
+use App\Filament\Exports\ProductExporter;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TimePicker;
+use Filament\Tables\Actions\ImportAction;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\Imports\Models\Import;
 use Filament\Forms\Components\ToggleButtons;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Infolists; // <-- Jangan lupa import
 use App\Filament\Admin\Resources\TpsResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Database\Events\ModelPruningFinished;
 use App\Filament\Admin\Resources\TpsResource\RelationManagers;
+
 
 class TpsResource extends Resource
 {
@@ -224,6 +232,20 @@ private const DAYS_OPTIONS = [
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(TpsExporter::class)
+                    ->label('Export TPS')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->formats([
+                        ExportFormat::Xlsx,
+                    ]),
+                Tables\Actions\ImportAction::make()
+                    ->importer(TpsImporter::class)
+                    ->label('Import TPS')
+                    ->icon('heroicon-o-arrow-up-tray')
+            ])
+
             ->columns([
                 Tables\Columns\TextColumn::make('tps_name')->searchable()
                 ->label('Nama TPS'),

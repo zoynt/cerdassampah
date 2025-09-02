@@ -12,7 +12,6 @@ class Tps extends Model
 
     protected $fillable = [
         'tps_name',
-        'alamat',
         'tps_longitude',
         'tps_latitude',
         'tps_address',

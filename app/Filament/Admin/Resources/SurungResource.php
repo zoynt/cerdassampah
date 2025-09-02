@@ -13,13 +13,16 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Tabs\Tab;
 use Filament\Tables\Columns\TextColumn;
+use App\Filament\Exports\SurungExporter;
+use App\Filament\Imports\SurungImporter;
 use Filament\Forms\Components\TimePicker;
+use Filament\Tables\Actions\ImportAction;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Filament\Infolists; // <-- Jangan lupa import
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\SurungResource\Pages;
 use App\Filament\Admin\Resources\SurungResource\RelationManagers;
-
 
 class SurungResource extends Resource
 {
@@ -88,6 +91,20 @@ class SurungResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+            Tables\Actions\ExportAction::make()
+                ->exporter(SurungExporter::class)
+                ->label('Export Surung')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->formats([
+                    ExportFormat::Xlsx,
+                ]),
+                ImportAction::make()
+                    ->importer(SurungImporter::class)
+                    ->label('Import Surung')
+                    ->icon('heroicon-o-arrow-up-tray')
+            ])
+
             ->columns([
                 Tables\Columns\TextColumn::make('tps.tps_name') // Menampilkan nama TPS
                 ->label('Nama TPS') // Opsional, untuk mengganti label

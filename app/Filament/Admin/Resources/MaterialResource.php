@@ -12,7 +12,11 @@ use Filament\Resources\Resource;
 use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
+use Filament\Tables\Actions\ImportAction;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Exports\MaterialExporter;
+use App\Filament\Imports\MaterialImporter;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\MaterialResource\Pages;
 use App\Filament\Admin\Resources\MaterialResource\RelationManagers;
@@ -45,6 +49,19 @@ class MaterialResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+            Tables\Actions\ExportAction::make()
+                ->exporter(MaterialExporter::class)
+                ->label('Export Material')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->formats([
+                    ExportFormat::Xlsx,
+                ]),
+            ImportAction::make()
+                    ->importer(MaterialImporter::class)
+                    ->label('Import Material')
+                    ->icon('heroicon-o-arrow-up-tray')
+            ])
             ->columns([
                 TextColumn::make('waste_types.type_name')
                 ->label('Jenis Sampah')->searchable(),

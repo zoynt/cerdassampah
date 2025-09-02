@@ -13,15 +13,19 @@ use Filament\Resources\Resource;
 use Dotswan\MapPicker\Fields\Map;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Http;
+use App\Filament\Exports\BankExporter;
+use App\Filament\Imports\BankImporter;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\TimePicker;
+use Filament\Tables\Actions\ImportAction;
 use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\Exports\Enums\ExportFormat;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\BankResource\Pages;
 use App\Filament\Admin\Resources\BankResource\RelationManagers;
-use Filament\Forms\Components\TimePicker;
 
 class BankResource extends Resource
 {
@@ -160,8 +164,23 @@ class BankResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->headerActions([
+                Tables\Actions\ExportAction::make()
+                    ->exporter(BankExporter::class)
+                    ->label('Export Bank')
+                    ->icon('heroicon-o-arrow-down-tray')
+                    ->formats([
+                        ExportFormat::Xlsx,
+                    ]),
+                ImportAction::make()
+                    ->importer(BankImporter::class)
+                    ->label('Import Bank')
+                    ->icon('heroicon-o-arrow-up-tray')
+            ])
+
             ->columns([
-                TextColumn::make('bank_name')->searchable(),
+                TextColumn::make('bank_name')->searchable()
+                ->wrap(),
                 TextColumn::make('kecamatan')->searchable(),
                 TextColumn::make('bank_day')->searchable()
                 ->wrap(),

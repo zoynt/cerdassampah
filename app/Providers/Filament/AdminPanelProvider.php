@@ -33,6 +33,9 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+            ->databaseNotifications()
+            ->databaseNotificationsPolling('30s')
+            
             ->id('admin')
             ->path('admin')
             ->colors([
