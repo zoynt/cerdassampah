@@ -190,7 +190,7 @@
                             <img class="w-full h-32 object-cover" src="${loc.image_url}" alt="Foto ${loc.name}">
                             <div class="p-3">
                                 <div class="font-bold text-base mb-1 text-gray-800">${loc.name}</div>
-                                <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat: </span>${loc.address || 'Tidak ada alamat'}</p>
+                                <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat: </span>${loc.tps_address || 'Tidak ada alamat'}</p>
                                 <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Deskripsi: </span>${loc.description || 'Tidak ada deskripsi'}</p>
                                 <span class="inline-block rounded-full px-3 py-1 text-xs font-semibold text-white ${getPopupBadgeColor(loc.status)}">
                                     Status: ${loc.status.charAt(0).toUpperCase() + loc.status.slice(1).replace('-',' ')}
