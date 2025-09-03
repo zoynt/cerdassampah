@@ -205,7 +205,10 @@
 
             <header @class([
                 'sticky top-0 z-20 flex items-center justify-between px-6 py-4 text-white bg-green-700 transition-shadow duration-300',
-                'shadow-md' => !request()->routeIs('dashboard', 'scan-user'),
+                'shadow-md' => !request()->routeIs(
+                    'dashboard',
+                    'scan-user',
+                    'profile.edit'),
             ])>
 
                 <div class="flex items-center">
@@ -281,7 +284,7 @@
             </header>
 
             <main class="relative z-10 flex-1 overflow-y-auto">
-                @if (request()->routeIs('dashboard') || request()->routeIs('scan-user') || request()->routeIs('game-pilah-sampah'))
+                @if (request()->routeIs('dashboard') || request()->routeIs('scan-user') || request()->routeIs('profile.edit'))
                     @yield('content')
                 @else
                     <div class="py-6 px-4 sm:px-6 lg:px-8">

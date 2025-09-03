@@ -27,39 +27,47 @@
             <nav id="main-nav" class="hidden lg:flex flex-row items-center space-x-4 text-sm font-semibold text-white">
                 <a href="/" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Beranda</a>
 
-        <!-- Dropdown -->
-        <div class="relative group">
-          <div class="inline-flex items-center px-4 py-2 rounded-md hover:bg-green-700 cursor-pointer transition">
-            <span>Fitur</span>
-            <svg class="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.1 1.02l-4.25 4.65a.75.75 0 01-1.1 0L5.25 8.27a.75.75 0 01-.02-1.06z" clip-rule="evenodd" />
-            </svg>
-          </div>
-          <!-- Dropdown Menu -->
-          <div class="absolute left-0 mt-2 w-44 bg-white text-gray-800 shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transform scale-95 group-hover:scale-100 transition-all duration-200 ease-out z-20">
-          <a href="/#peta" class="block px-6 py-2 hover:bg-green-100">Peta TPS, TPS-T3R & TPS Liar</a>
-          <a href="/#scan" class="block px-6 py-2 hover:bg-green-100">Scan Sampah</a>
-          <a href="/#game" class="block px-6 py-2 hover:bg-green-100">Game Pilah Sampah</a>
-          <a href="/#edukasi" class="block px-6 py-2 hover:bg-green-100">Video Edukasi</a>
-          <a href="/#faq" class="block px-6 py-2 hover:bg-green-100">FAQ's</a>
-          </div>
+                <!-- Dropdown -->
+                <div class="relative group">
+                    <div
+                        class="inline-flex items-center px-4 py-2 rounded-md hover:bg-green-700 cursor-pointer transition">
+                        <span>Fitur</span>
+                        <svg class="ml-1 h-4 w-4 transition-transform duration-200 group-hover:rotate-180"
+                            fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd"
+                                d="M5.23 7.21a.75.75 0 011.06.02L10 11.293l3.71-4.06a.75.75 0 111.1 1.02l-4.25 4.65a.75.75 0 01-1.1 0L5.25 8.27a.75.75 0 01-.02-1.06z"
+                                clip-rule="evenodd" />
+                        </svg>
+                    </div>
+                    <!-- Dropdown Menu -->
+                    <div
+                        class="absolute left-0 mt-2 w-44 bg-white text-gray-800 shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transform scale-95 group-hover:scale-100 transition-all duration-200 ease-out z-20">
+                        <a href="/#peta" class="block px-6 py-2 hover:bg-green-100">Peta TPS, TPS-T3R & TPS Liar</a>
+                        <a href="/#scan" class="block px-6 py-2 hover:bg-green-100">Scan Sampah</a>
+                        <a href="/#game" class="block px-6 py-2 hover:bg-green-100">Game Pilah Sampah</a>
+                        <a href="/#edukasi" class="block px-6 py-2 hover:bg-green-100">Video Edukasi</a>
+                        <a href="/#faq" class="block px-6 py-2 hover:bg-green-100">FAQ's</a>
+                    </div>
+                </div>
+                <a href="{{ route('informasi') }}"
+                    class="px-4 py-2 rounded-md hover:bg-green-700 transition">Informasi</a>
+                <a href="{{ route('tentang') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Tentang</a>
+
+                {{-- lapor --}}
+                @auth
+                    <a href="{{ route('lapor.index') }}"
+                        class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
+                @else
+                    <a href="{{ route('lapor.index') }}"
+                        class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
+                @endauth
+
+                <div class="h-6 w-px bg-white/70"></div>
+                <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a>
+            </nav>
+
+
         </div>
-        <a href="{{ route('informasi') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Informasi</a>
-        <a href="{{ route('tentang') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Tentang</a>
-        
-        {{-- lapor --}}
-        @auth
-            <a href="{{ route('lapor.index') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
-        @else
-            <a href="{{ route('lapor.index') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
-        @endauth
-
-        <div class="h-6 w-px bg-white/70"></div>
-        <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a>
-      </nav>
-
-
-    </div>
 
         <!-- Mobile Nav Menu -->
         <div id="mobile-nav"
@@ -93,7 +101,8 @@
             <a href="{{ route('informasi') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Informasi</a>
             <a href="{{ route('tentang') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Tentang</a>
             @auth
-                <a href="{{ route('lapor.index') }}" class="block px-4 py-2 hover:bg-green-100 font-bold rounded">Ayo Laporkan!</a>
+                <a href="{{ route('lapor.index') }}" class="block px-4 py-2 hover:bg-green-100 font-bold rounded">Ayo
+                    Laporkan!</a>
             @else
                 <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Ayo Laporkan!</a>
             @endauth
@@ -132,4 +141,3 @@
         fiturOpen = !fiturOpen;
     });
 </script>
-
