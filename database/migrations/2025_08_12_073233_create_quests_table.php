@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('quests', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('waste_types_id')->nullable()->constrained('waste_types');
             // $table->foreignId('waste_types_id')->constrained('waste_types')->onDelete('cascade');
-            // $table->string('quest_name');
-            // $table->integer('quest_points')->default(0);
-            // $table->longText('quest_description');
-            // $table->string('quest_type');
+            $table->string('quest_name');
+            $table->integer('quest_points')->default(0);
+            $table->longText('quest_description')->nullable();
+            $table->string('quest_type');
             $table->timestamps();
         });
     }

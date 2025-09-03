@@ -24,7 +24,7 @@ return new class extends Migration
                 'banjarmasin tengah',
                 'banjarmasin barat',
                 'banjarmasin timur'
-            ]);
+            ])->nullable();
             $table->json('tps_day');
             $table->time('tps_start_time');
             $table->time('tps_end_time');

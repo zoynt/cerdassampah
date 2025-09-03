@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             SurungSeeder::class,
             BankSeeder::class,
             MaterialSeeder::class,
+            QuestSeeder::class,
             // Add other seeders here as needed
         ]);
 

@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('user_quests', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
-            // $table->foreignId('quest_id')->constrained('quests')->onDelete('cascade');
-            // $table->boolean('is_completed')->default(false);
-            // $table->integer('points_awarded')->default(0);
-            
+            $table->foreignId('users_id')->constrained('users')->onDelete('cascade');
+            $table->foreignId('quest_id')->constrained('quests')->onDelete('cascade');
+            $table->boolean('is_completed')->default(false);
+            $table->date('date')->nullable();
+            $table->integer('points_awarded')->default(0);
             $table->timestamps();
         });
     }
