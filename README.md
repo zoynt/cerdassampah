@@ -1,61 +1,82 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://dev-to-uploads.s3.amazonaws.com/uploads/articles/th5xamgrr6se0x5ro4g6.png" alt="Cerdassampah Logo" width="400"/>
 </p>
 
-## About Laravel
+<p align="center">
+  <a href="https://www.cerdassampah.id" target="_blank">
+    <img src="https://img.shields.io/badge/Kunjungi%20Website-Cerdassampah.id-28a745?style=for-the-badge" alt="Link Website">
+  </a>
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<p align="center">
+    Platform digital untuk membantu masyarakat mengelola sampah dengan cara yang lebih cerdas, praktis, dan interaktif. Cerdassampah hadir untuk menghubungkan edukasi, teknologi, dan aksi nyata di lapangan.
+</p>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+<p align="center">
+    <img src="https://picsum.photos/id/20/800/400" width="50%">
+</p>
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🎯 Tentang Proyek
 
-## Learning Laravel
+**Cerdassampah.id** adalah solusi digital untuk tantangan pengelolaan sampah di perkotaan. Kami percaya bahwa dengan teknologi, edukasi yang tepat, dan partisipasi publik, kita bisa menciptakan lingkungan yang lebih bersih dan berkelanjutan.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Tujuan utama kami:**
+* Meningkatkan kesadaran masyarakat dalam pemilahan sampah.
+* Mempermudah akses informasi TPS dan jadwal pengangkutan.
+* Menyediakan edukasi interaktif melalui game pilah sampah yang seru.
+* Mendorong partisipasi warga untuk melaporkan TPS ilegal.
+* Mendukung gerakan menuju *Smart City* di Indonesia.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## ✨ Fitur Utama
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+* 📍 **Pemetaan Lokasi TPS:** Peta interaktif untuk menemukan lokasi TPS terdekat.
+* 📅 **Jadwal Pengangkutan:** Informasi jadwal pengambilan sampah di lokasi pengguna.
+* 📢 **Pelaporan TPS Ilegal:** Memungkinkan warga melaporkan lokasi pembuangan sampah liar.
+* 🎮 **Game Edukasi:** Game pilah sampah yang seru untuk belajar sambil bermain.
+* 🔍 **Pemindaian Sampah:** Fitur untuk mengidentifikasi jenis sampah (fitur mendatang).
 
-## Laravel Sponsors
+## 💻 Teknologi yang Digunakan
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Proyek ini dibangun menggunakan teknologi modern untuk memastikan performa dan pengalaman pengguna terbaik:
 
-### Premium Partners
+* **Frontend:**
+    * [React](https://reactjs.org/) - Library JavaScript untuk membangun antarmuka pengguna.
+    * [Tailwind CSS](https://tailwindcss.com/) - Framework CSS untuk desain yang cepat dan modern.
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+* **Backend:**
+    * [Laravel](https://laravel.com/) - Framework PHP utama untuk logika aplikasi dan API.
+    * [Flask](https://flask.palletsprojects.com/) - Micro-framework Python (kemungkinan untuk service/fitur spesifik).
+    * [Filament](https://filamentphp.com/) - Panel admin elegan untuk Laravel.
+    * [Laravel Breeze](https://laravel.com/docs/starter-kits#laravel-breeze) - Kit starter untuk otentikasi.
 
-## Contributing
+* **Database:**
+    * [MySQL](https://www.mysql.com/) - Sistem manajemen basis data relasional.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+* **Lainnya:**
+    * [Leaflet.js](https://leafletjs.com/) - Library JavaScript untuk peta interaktif.
+    * [Paket Spatie](https://spatie.be/packages) - Berbagai paket PHP/Laravel untuk mempercepat pengembangan.
 
-## Code of Conduct
+* **Deployment:**
+    * *[Isi sesuai dengan platform hosting Anda, contoh: Vercel, Netlify, AWS]*
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🖼️ Galeri Screenshot
 
-## Security Vulnerabilities
+<p align="center">
+  <img src="https://picsum.photos/id/25/600/300" width="45%" alt="Gambar dummy: Tampilan Fitur Peta">
+  &nbsp; &nbsp;
+  <img src="https://picsum.photos/id/30/600/300" width="45%" alt="Gambar dummy: Tampilan Game Edukasi">
+</p>
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 👨‍💻 Tim Pengembang
 
-## License
+Proyek ini adalah hasil kolaborasi dari:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+* **Zoya Nujula Ramadhoni** - [@zoynt](https://www.github.com/zoynt)
+* **Muhammad Irfan Akbar** - [@irpanai](https://www.github.com/irpanai)
+* **Anisa Nurrahmah** - [@anissanr274](https://www.github.com/anissanr274)
+
+Sebuah produk dari **PT. Via Digital Indonesia**.
+
+## 📞 Kontak
+
+Punya pertanyaan, masukan, atau ingin bekerja sama? Hubungi kami di **hello@via.co.id**.
