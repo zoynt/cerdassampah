@@ -10,7 +10,7 @@ class LandingController extends Controller
     public function peta()
     {
         
-       $locations = Tps::select('tps_name', 'tps_latitude', 'tps_longitude', 'tps_status', 'alamat', 'image', 'tps_description')
+       $locations = Tps::select('tps_name', 'tps_latitude', 'tps_longitude', 'tps_status', 'tps_address', 'image', 'tps_description')
             ->where('tps_status', '!=', 'tps-3r') // <-- PENTING: Mengabaikan data tps-3r dari DB
             ->get()->map(function ($tps) {
             return [

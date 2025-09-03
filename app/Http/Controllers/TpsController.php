@@ -40,7 +40,7 @@ class TpsController extends Controller
                 'lng' => (float) $tps->tps_longitude,
                 'status' => $tps->tps_status,
                 'days'   => $tps->tps_day,
-                'image_url' => $tps->image ? asset('storage/' . $tps->image) : asset('img/tps-placeholder.jpg'),
+                'image_url' => $tps->image ? asset('storage/' . $tps->image) : asset('img/bank/tps.jpg'),
             ];
         });
 

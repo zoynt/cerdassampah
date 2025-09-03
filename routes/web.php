@@ -3,17 +3,15 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AuthController;
+use App\Http\Controllers\TpsController;
+use App\Http\Controllers\BankController;
 use App\Http\Controllers\ScanController;
-use App\Http\Controllers\LaporController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SurungController;
+use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\ReverseGeocodeController;
-use App\Http\Controllers\TpsController;
-use App\Http\Controllers\SurungController;
-use App\Http\Controllers\BankController;
-use App\Http\Controllers\LandingController;
 
 // Landing Page
 // Route::get('/', function () {
@@ -72,12 +70,6 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::get('/leaderboard', [UserpointController::class, 'index'])->name('userpoint.index');
     Route::get('/tps', [TpsController::class, 'index'])->name('tps.index');
 
-// Admin
-// Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-//     Route::get('/', function () {
-//         return view('admin');
-//         });
-// });
    
 
 require __DIR__.'/auth.php';
