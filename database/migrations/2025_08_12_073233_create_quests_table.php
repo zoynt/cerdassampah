@@ -17,6 +17,7 @@ return new class extends Migration
             // $table->string('quest_name');
             // $table->integer('quest_points')->default(0);
             // $table->longText('quest_description');
+            // $table->string('quest_type');
             $table->timestamps();
         });
     }

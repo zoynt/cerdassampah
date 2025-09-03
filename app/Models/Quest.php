@@ -11,5 +11,12 @@ class Quest extends Model
     /** @use HasFactory<\Database\Factories\QuestFactory> */
     use HasFactory;
 
-    protected $guarded = ['id'];
+    // protected $guarded = ['id'];
+
+    protected $fillable = [
+        'waste_types_id',
+        'quest_name',
+        'quest_points',
+        'quest_description',
+    ];
 }

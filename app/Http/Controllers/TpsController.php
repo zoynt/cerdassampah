@@ -16,7 +16,6 @@ class TpsController extends Controller
 
         $query = Tps::query();
 
-
         if ($request->filled('status')) {
             $query->where('tps_status', $request->status);
         }

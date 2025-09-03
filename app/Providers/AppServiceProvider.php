@@ -4,6 +4,8 @@ namespace App\Providers;
 
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Report;           // <-- Import model Report
+use App\Observers\ReportObserver; // <-- Import ReportObserver
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
             URL::forceScheme('https');
             URL::forceRootUrl(config('app.url'));
     }
+            Report::observe(ReportObserver::class);
     }
 }

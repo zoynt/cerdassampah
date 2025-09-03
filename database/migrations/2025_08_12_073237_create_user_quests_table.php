@@ -17,6 +17,7 @@ return new class extends Migration
             // $table->foreignId('quest_id')->constrained('quests')->onDelete('cascade');
             // $table->boolean('is_completed')->default(false);
             // $table->integer('points_awarded')->default(0);
+            
             $table->timestamps();
         });
     }
