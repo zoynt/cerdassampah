@@ -26,9 +26,9 @@ class TpsController extends Controller
         if ($request->filled('kecamatan')) {
             $query->where('kecamatan', $request->kecamatan);
         }
-         $allTpsFiltered = (clone $query)->get();
-    $resmiCount = $allTpsFiltered->where('tps_status', 'resmi')->count();
-    $ilegalCount = $allTpsFiltered->where('tps_status', 'liar')->count();
+        $allTpsFiltered = (clone $query)->get();
+        $resmiCount = $allTpsFiltered->where('tps_status', 'resmi')->count();
+        $ilegalCount = $allTpsFiltered->where('tps_status', 'liar')->count();
 
    
         $tpsLocations = (clone $query)->orderBy('id', 'asc')->get()->map(function ($tps) {
@@ -40,6 +40,7 @@ class TpsController extends Controller
                 'lat' => (float) $tps->tps_latitude,
                 'lng' => (float) $tps->tps_longitude,
                 'status' => $tps->tps_status,
+                'days'   => $tps->tps_day,
                 'image_url' => $tps->image ? asset('storage/' . $tps->image) : asset('img/tps-placeholder.jpg'),
             ];
         });
@@ -95,6 +96,7 @@ class TpsController extends Controller
             'latitude' => (float) $tps->tps_latitude,
             'longitude' => (float) $tps->tps_longitude,
             'status' => $tps->tps_status,
+            'days' => $tps->tps_day, 
             'image_url' => $tps->image ? asset('storage/' . $tps->image) : asset('img/tps-placeholder.jpg'),
         ];
     });

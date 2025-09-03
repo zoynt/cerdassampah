@@ -35,11 +35,11 @@
             <div id="map" class="w-full rounded-lg"></div>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="bg-green-700 text-white p-4 rounded-lg shadow-sm text-center">
+            <div class="bg-green-500 text-white p-4 rounded-lg shadow-sm text-center">
                 <h3 class="font-semibold">TPS Resmi</h3>
                 <p id="resmi-count" class="text-3xl font-bold">{{ $resmiCount }}</p>
             </div>
-            <div class="bg-red-700 text-white p-4 rounded-lg shadow-sm text-center">
+            <div class="bg-red-500 text-white p-4 rounded-lg shadow-sm text-center">
                 <h3 class="font-semibold">TPS Liar (Ilegal)</h3>
                 <p id="ilegal-count" class="text-3xl font-bold">{{ $ilegalCount }}</p>
             </div>

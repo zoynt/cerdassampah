@@ -13,11 +13,13 @@ use App\Http\Controllers\ReverseGeocodeController;
 use App\Http\Controllers\TpsController;
 use App\Http\Controllers\SurungController;
 use App\Http\Controllers\BankController;
+use App\Http\Controllers\LandingController;
 
 // Landing Page
-Route::get('/', function () {
-    return view('pages.landing.index');
-});
+// Route::get('/', function () {
+//     return view('pages.landing.index');
+// });
+Route::get('/', [LandingController::class, 'peta'])->name('landing.peta');
 // Informasi
 Route::get('/informasi', function () {
     return view('pages.informasi');

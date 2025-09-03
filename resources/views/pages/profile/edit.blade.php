@@ -9,14 +9,12 @@
         <div class="relative z-10 p-8 pt-10 pb-20 flex flex-col justify-center items-center text-center">
 
 
-            <div class="flex items-center ju
-            stify-center w-8 h-8 mb-4 rounded-full overflow-hidden">
+            <div class="flex items-center justify-center w-8 h-8 mb-4 rounded-full overflow-hidden">
             </div>
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
                 Edit Profil
             </h1>
-            <div class="flex items-center ju
-            stify-center w-8 h-8 mb-4 rounded-full overflow-hidden">
+            <div class="flex items-center justify-center w-8 h-8 mb-4 rounded-full overflow-hidden">
             </div>
 
         </div>
@@ -33,32 +31,57 @@
                 @csrf
                 @method('patch')
 
-                <div
-                    class="flex flex-col items-center text-center sm:flex-row sm:items-center sm:text-left space-y-4 sm:space-y-0 sm:space-x-6 mt-8 mb-8">
+                <div x-data="{ photoName: null, photoPreview: null }"
+                    class="col-span-1 md:col-span-2 flex flex-col items-center text-center space-y-4 sm:flex-row sm:items-center sm:text-left sm:space-y-0 sm:space-x-6 my-6">
+
                     <div
-                        class="w-28 h-28 bg-slate-200 rounded-full flex items-center justify-center border-4 border-white shadow-sm overflow-hidden">
-                        @if (Auth::user()->profile_photo_path)
-                            <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Foto Profil"
-                                class="w-full h-full object-cover">
-                        @else
-                            <svg class="w-20 h-20 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-                            </svg>
-                        @endif
+                        class="w-28 h-28 bg-slate-200 rounded-full flex items-center justify-center border-4 border-white shadow-sm overflow-hidden flex-shrink-0">
+
+                        <template x-if="photoPreview">
+                            <img :src="photoPreview" class="w-full h-full object-cover">
+                        </template>
+
+                        <template x-if="!photoPreview">
+                            @if (Auth::user()->profile_photo_path)
+                                <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Foto Profil"
+                                    class="w-full h-full object-cover">
+                            @else
+                                <svg class="w-20 h-20 text-gray-500" fill="none" stroke="currentColor"
+                                    viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            @endif
+                        </template>
                     </div>
+
+                    <input type="file" name="photo" id="photo" class="hidden" x-ref="photo"
+                        x-on:change="
+                                photoName = $refs.photo.files[0].name;
+                                const reader = new FileReader();
+                                reader.onload = (e) => {
+                                    photoPreview = e.target.result;
+                                };
+                                reader.readAsDataURL($refs.photo.files[0]);
+                        ">
+
                     <div>
                         <h2 class="text-xl font-bold text-gray-800">Foto Profil</h2>
 
-                        <div class="flex justify-center sm:justify-start">
-                            <input type="file" name="photo" id="photo"
-                                class="mt-2 text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-green-700 hover:file:bg-green-100">
+                        <button type="button" x-on:click.prevent="$refs.photo.click()"
+                            class="mt-2 text-sm font-medium text-green-700 bg-green-100 hover:bg-green-200 px-4 py-2 rounded-full">
+                            Pilih File Baru
+                        </button>
+
+                        <div x-show="photoName" class="text-sm text-gray-500 mt-2">
+                            File terpilih: <span x-text="photoName" class="font-semibold"></span>
                         </div>
 
                         @error('photo')
                             <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
                         @enderror
                     </div>
+
                 </div>
 
                 @if (session('status'))
@@ -111,13 +134,14 @@
                     </div>
                 </div>
 
-                <div class="flex justify-end space-x-4 mt-8">
+                <div
+                    class="flex flex-col-reverse mt-8 space-y-4 space-y-reverse sm:flex-row sm:justify-end sm:space-y-0 sm:space-x-4">
                     <a href="{{ url()->previous() }}"
-                        class="px-6 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">
+                        class="w-full rounded-md border border-gray-300 px-6 py-2 text-center text-sm font-medium text-gray-700 hover:bg-gray-50 sm:w-auto">
                         Batal
                     </a>
                     <button type="submit"
-                        class="px-6 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-700 hover:bg-green-800">
+                        class="w-full rounded-md border border-transparent bg-green-700 px-6 py-2 text-sm font-medium text-white shadow-sm hover:bg-green-800 sm:w-auto">
                         Simpan Perubahan
                     </button>
                 </div>
