@@ -10,9 +10,9 @@
             <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-20">
         </div>
 
-        <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Reset Kata Sandi</h2>
+        <h2 class="text-2xl font-bold text-center text-gray-800 mb-1">Reset Kata Sandi</h2>
         <p class="mb-4 text-sm text-center text-gray-600 dark:text-gray-400">
-            {{ __('Silahkan masukkan email Anda  untuk mengatur ulang kata sandi') }}
+            Silahkan masukkan email Anda untuk mengatur ulang kata sandi
         </p>
 
         <!-- Session Status -->
