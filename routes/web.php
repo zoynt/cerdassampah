@@ -35,9 +35,7 @@ Route::get('/reverse-geocode', ReverseGeocodeController::class);
 Route::get('/scan', fn () => view('pages.scan.scan'))->name('scan.form');
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
-// Game (publik)
-Route::get('/game', [LeaderboardController::class, 'index'])->name('game-pilah-sampah');
-
+// ====== Auth ======
 // Area login (role admin|warga)
 Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     // Dashboard & menu
@@ -63,26 +61,17 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::post('/lapor', [ReportController::class, 'store'])->name('lapor.store.user');
     Route::get('/histori-laporan', [ReportController::class, 'history'])->name('laporan.history');
 
-    // ⬇⬇ TAMBAHKAN INI: endpoint simpan poin game (wajib login)
-    // Route::post('/api/game/points', [GameScoreController::class, 'store'])->name('game.points.store');
-    // Route::middleware(['web','auth'])->post('/api/game/points', [UserpointController::class, 'store'])->name('api.game.points');
-    // Route::middleware(['web', 'auth'])->group(function () {
-    // Route::post('/api/game/points', [UserpointController::class, 'store'])
-    // Route::middleware(['web','auth'])->post('/api/game/points', [UserpointController::class, 'store'])
-    // ->name('api.game.points');
+    // Game (publik)
+    Route::get('/game', [LeaderboardController::class, 'index'])
+        ->name('game-pilah-sampah');
 
-    // Route::post('/api/game/points', [UserpointController::class, 'store'])
-    // ->name('game.points.store')
-    // ->middleware(['auth', 'verified']);
-
-    // Simpan poin game (tanpa 'verified')
     Route::post('/api/game/points', [UserpointController::class, 'store'])
         ->name('game.points.store');
+        
+        // Leaderboard halaman web (bukan API)
+        Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
+        Route::post('/leaderboard/fetch', [LeaderboardController::class, 'fetch'])->name('leaderboard.fetch');
 });
-
-// Leaderboard halaman web (bukan API)
-Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
-Route::post('/leaderboard/fetch', [LeaderboardController::class, 'fetch'])->name('leaderboard.fetch');
 
    
 
