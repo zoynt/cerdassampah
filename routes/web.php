@@ -3,79 +3,77 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
+
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ScanController;
 use App\Http\Controllers\LaporController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserpointController;
+// use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\ReverseGeocodeController;
 use App\Http\Controllers\TpsController;
 use App\Http\Controllers\SurungController;
 use App\Http\Controllers\BankController;
+use App\Http\Controllers\LeaderboardController;
+// ⬇⬇ TAMBAHKAN INI
+use App\Http\Controllers\GameScoreController;
+use App\Http\Controllers\UserpointController;
 
-// Landing Page
-Route::get('/', function () {
-    return view('pages.landing.index');
-});
-// Informasi
-Route::get('/informasi', function () {
-    return view('pages.informasi');
-})->name('informasi');
-// Tentang
-Route::get('/tentang', function () {
-    return view('pages.tentang');
-})->name('tentang');
+// Landing & halaman publik
+Route::get('/', fn () => view('pages.landing.index'));
+Route::get('/informasi', fn () => view('pages.informasi'))->name('informasi');
+Route::get('/tentang', fn () => view('pages.tentang'))->name('tentang');
 Route::get('/reverse-geocode', ReverseGeocodeController::class);
 
-// Fitur Scan
-Route::get('/scan', function () {
-    return view('pages.scan.scan');
-})->name('scan.form');
+// Fitur Scan (publik form + proses)
+Route::get('/scan', fn () => view('pages.scan.scan'))->name('scan.form');
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 
-// Tambahkan route ini
-Route::get('/game', function () {
-    return view('game');
-})->name('game-pilah-sampah');
+// Game (publik)
+Route::get('/game', [LeaderboardController::class, 'index'])->name('game-pilah-sampah');
 
-
-// Auth
-// Route::middleware(['auth'])->group(function () {
+// Area login (role admin|warga)
 Route::middleware(['auth', 'role:admin|warga'])->group(function () {
-    // Dashboard
-    Route::get('/dashboard', function () {
-        return view('pages.dashboard.dashboard');
-    })->name('dashboard');
-    Route::get('/scan-user', function () {
-        return view('pages.dashboard.scan-sampah');
-    })->name('scan-user');
+    // Dashboard & menu
+    Route::get('/dashboard', fn () => view('pages.dashboard.dashboard'))->name('dashboard');
+    Route::get('/scan-user', fn () => view('pages.dashboard.scan-sampah'))->name('scan-user');
+
+    // TPS, Surung, Bank Sampah, Peta
     Route::get('/tps', [TpsController::class, 'index'])->name('tps.index');
     Route::get('/surung-sintak', [SurungController::class, 'index'])->name('surung-sintak.index');
     Route::get('/banksampah-user', [BankController::class, 'index'])->name('banksampah-user');
     Route::get('/lokasi-tps', [TpsController::class, 'mapIndex'])->name('lokasi-tps.index');
+
+    // Profil
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
 
-
-    // Route Fitur Lapor
-    Route::get('/lapor', function () {
-        return view('pages.report.lapor');
-    })->name('lapor');
+    // Lapor
+    Route::get('/lapor', fn () => view('pages.report.lapor'))->name('lapor');
     Route::get('/lapor', [ReportController::class, 'index'])->name('lapor.index');
     Route::post('/lapor', [ReportController::class, 'store'])->name('lapor.store.user');
     Route::get('/histori-laporan', [ReportController::class, 'history'])->name('laporan.history');
+
+    // ⬇⬇ TAMBAHKAN INI: endpoint simpan poin game (wajib login)
+    // Route::post('/api/game/points', [GameScoreController::class, 'store'])->name('game.points.store');
+    // Route::middleware(['web','auth'])->post('/api/game/points', [UserpointController::class, 'store'])->name('api.game.points');
+    // Route::middleware(['web', 'auth'])->group(function () {
+    // Route::post('/api/game/points', [UserpointController::class, 'store'])
+    // Route::middleware(['web','auth'])->post('/api/game/points', [UserpointController::class, 'store'])
+    // ->name('api.game.points');
+
+    // Route::post('/api/game/points', [UserpointController::class, 'store'])
+    // ->name('game.points.store')
+    // ->middleware(['auth', 'verified']);
+
+    // Simpan poin game (tanpa 'verified')
+    Route::post('/api/game/points', [UserpointController::class, 'store'])
+        ->name('game.points.store');
 });
 
-    Route::get('/leaderboard', [UserpointController::class, 'index'])->name('userpoint.index');
-    Route::get('/tps', [TpsController::class, 'index'])->name('tps.index');
+// Leaderboard halaman web (bukan API)
+Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
+Route::post('/leaderboard/fetch', [LeaderboardController::class, 'fetch'])->name('leaderboard.fetch');
 
-// Admin
-// Route::middleware(['auth', 'role:admin'])->prefix('admin')->name('admin.')->group(function () {
-//     Route::get('/', function () {
-//         return view('admin');
-//         });
-// });
-   
-
-require __DIR__.'/auth.php';
+// Auth routes
+require __DIR__ . '/auth.php';

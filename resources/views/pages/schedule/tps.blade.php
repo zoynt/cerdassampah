@@ -1,6 +1,8 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Rute & Jadwal')
+  <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+
 
 @push('styles')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />

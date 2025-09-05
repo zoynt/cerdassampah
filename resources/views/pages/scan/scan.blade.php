@@ -1,5 +1,6 @@
 @extends('layouts.landing')
 
+
 @section('content')
 
 <div class="absolute top-0 left-0 w-full overflow-hidden leading-[0] z-[-999]">
