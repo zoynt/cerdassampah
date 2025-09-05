@@ -3,6 +3,8 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Game Pilah Sampah')
+  <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+
 
 @push('head')
     {{-- PERBAIKAN: Menambahkan meta CSRF token --}}
@@ -18,7 +20,10 @@
 @endpush
 
 @section('content')
-    <div id="pilah-sampah" style="width: 100%; height: 100%;"></div>
+    <div id="pilah-sampah"
+       data-leaderboard='@json($leaderboardData)'
+       style="width:100%;height:100%;">
+    </div>
 @endsection
 
 @push('scripts')

@@ -2,72 +2,41 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Userpoint;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use App\Models\UserPoint;
+use App\Models\User;
 
 class UserpointController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
-    {
-        // Ambil 10 user dengan poin tertinggi
-        $topUsers = User::query()
-            ->join('userpoints', 'users.id', '=', 'userpoints.user_id')
-            ->orderByDesc('userpoints.points')
-            ->select('users.name', 'userpoints.points') // Pilih kolom yang dibutuhkan
-            ->take(10)
-            ->get();
-        return view('pages.dashboard.leaderboard', ['users' => $topUsers]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'points' => ['required', 'integer', 'min:0'],
+    ]);
+
+    $userId = Auth::id();
+
+    // cek apakah sudah ada baris user_id ini
+    $row = UserPoint::firstOrNew(['user_id' => $userId]);
+
+    // kalau baru, default points = 0
+    if (!$row->exists) {
+        $row->points = 0;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
+    // tambahkan poin
+    $row->points += $validated['points'];
+    $row->save();
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+    return response()->json([
+        'ok'          => true,
+        'id'          => $row->id,
+        'total_points'=> $row->points,
+    ]);
+}
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Userpoint $userpoint)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Userpoint $userpoint)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Userpoint $userpoint)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Userpoint $userpoint)
-    {
-        //
-    }
 }

@@ -11,10 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // NOTE: Anda sebelumnya memakai nama tabel 'userpoints'
+        // Saya pertahankan agar tidak memutus kode lain.
         Schema::create('userpoints', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-            $table->integer('points')->default(0);
+
+            // 1 user = 1 row (UNIQUE)
+            $table->foreignId('user_id')
+                ->constrained('users')
+                ->onDelete('cascade')
+                ->unique();
+
+            // poin tidak boleh negatif → unsigned
+            $table->unsignedInteger('points')->default(0);
+
             $table->timestamps();
         });
     }

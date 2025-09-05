@@ -3,6 +3,7 @@ import PilahSampahGame from './PilahSampahGame';
 import StartScreen from './StartScreen';
 import EndScreen from './EndScreen';
 import FullscreenPrompt from './FullscreenPrompt'; // <-- Tambahkan ini
+import { usePage } from '@inertiajs/react';
 
 export default function GameWrapper() {
     const [gameState, setGameState] = useState('start');
@@ -10,6 +11,11 @@ export default function GameWrapper() {
     const [gameKey, setGameKey] = useState(0);
     const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
     const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
+
+    // Mengambil leaderboardData dari props
+    const { leaderboard } = usePage().props;
+
+    console.log(leaderboard); // Pastikan data diterima dengan benar
 
     // Effect untuk mendeteksi perubahan ukuran dan orientasi layar
     useEffect(() => {
@@ -88,7 +94,7 @@ export default function GameWrapper() {
         default:
             return (
                 <div style={wrapperStyle}>
-                    <StartScreen onStart={handleStartGame} />
+                    <StartScreen onStart={handleStartGame} leaderboardData={leaderboard} />
                 </div>
             );
     }

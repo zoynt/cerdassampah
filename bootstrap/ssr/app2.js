@@ -1,7 +1,5 @@
-import { jsx, jsxs, Fragment } from "react/jsx-runtime";
-import axios from "axios";
-import Alpine from "alpinejs";
-import React, { useState, useEffect } from "react";
+import { jsx } from "react/jsx-runtime";
+import { createInertiaApp } from "@inertiajs/react";
 import { createRoot } from "react-dom/client";
 import { DndContext, useDroppable, useDraggable } from "@dnd-kit/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
