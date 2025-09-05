@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Log;
+use App\Models\Material;
 use App\Models\Scan;
 use App\Models\WasteType;
-use App\Models\Material;   
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use App\Http\Controllers\UserQuestController;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ScanController extends Controller
 {
@@ -18,68 +21,83 @@ class ScanController extends Controller
 
     public function scan(Request $request)
     {
-        $request->validate([
-            'image' => 'required|image'
-        ]);
+        $request->validate(['image' => 'required|image']);
 
-        // Simpan gambar sementara untuk dikirim ke Flask
         $imagePath = $request->file('image')->getPathname();
         $storedPath = $request->file('image')->store('uploads', 'public');
 
-        // Kirim ke Flask server
-            try {
-                $response = Http::timeout(60)->attach(
-                    'image',
-                    file_get_contents($imagePath),
-                    $request->file('image')->getClientOriginalName()
-                )->post(env('FLASK_URL') . '/predict');
+        try {
+            $response = Http::timeout(60)->attach(
+                'image',
+                file_get_contents($imagePath),
+                $request->file('image')->getClientOriginalName()
+            )->post(env('FLASK_URL') . '/predict');
 
-                if ($response->failed()) {
-                    // Jika Flask mengembalikan error (spt 4xx atau 5xx)
-                    return response()->json(['error' => 'Server AI gagal memproses gambar.'], 502);
+            if ($response->failed()) {
+                return response()->json(['error' => 'Server AI gagal memproses gambar.'], 502);
+            }
+            $flaskData = $response->json();
+        } catch (ConnectionException $e) {
+            report($e);
+            return response()->json(['error' => 'Tidak dapat terhubung ke server AI.'], 504);
+        }
+
+        $label = $flaskData['label'] ?? null;
+        if (!$label) {
+            return response()->json(['error' => 'Jenis sampah tidak terdeteksi.'], 422);
+        }
+        $confidence = $flaskData['confidence'] ?? null;
+        
+        $normalizedLabel = strtolower($label);
+        $info = WasteType::with('materials')
+                         ->where(DB::raw('LOWER(type_name)'), $normalizedLabel)
+                         ->first();
+
+        $recyclingMethods = [];
+        $description_mat = 'Deskripsi untuk sampah ini belum tersedia.';
+        $suggest = [];
+        $questResult = null; 
+
+        if ($info) {
+            try {
+                if ($info->materials->isNotEmpty()) {
+                    $recyclingMethods = $info->materials->pluck('recycle_info')->filter()->values()->all();
+                    
+                    $descriptions = $info->materials->pluck('description_mat')->filter()->values();
+                    if ($descriptions->isNotEmpty()) {
+                        $description_mat = $descriptions->random();
+                    }
+                    
+                    $suggest = $info->materials->pluck('suggest')->filter()->unique()->values()->all();
                 }
 
-                $flaskData = $response->json();
+                $questResult = UserQuestController::tryCompleteScanQuest($info->id);
+                
+                // Cek apakah UserQuestController mengembalikan pesan error dari transaksi
+                if (isset($questResult['error'])) {
+                    // Jika ya, teruskan pesan error tersebut ke frontend
+                    return response()->json(['error' => $questResult['message']], 500);
+                }
 
-            } catch (ConnectionException $e) {
-                // Jika tidak bisa terhubung ke Flask (timeout, server mati, dll)
-                // Cek log laravel.log untuk detail errornya
-                report($e); // Ini akan mencatat error ke log
-                return response()->json(['error' => 'Tidak dapat terhubung ke server AI. Silakan coba lagi nanti.'], 504);
+            } catch (Throwable $e) {
+                // Tangkap error tak terduga lainnya
+                report($e);
+                return response()->json(['error' => 'Terjadi kesalahan sistem saat memproses data.'], 500);
             }
+        }
 
-        $flaskData = $response->json();
-        $label = $flaskData['label'] ?? null;
-        $confidence = $flaskData['confidence'] ?? null;
-
-        $info = WasteType::with('materials')->where('type_name', $label)->first();
-        // Ambil info dari DB
-        // $info = WasteType::where('type_name', $label)->first();
-        $recyclingMethods = [];
-      if ($info && $info->materials->isNotEmpty()) {
-          // Ganti 'name' dengan nama kolom yang sesuai di tabel 'materials' Anda
-          // contohnya: 'recycling_method', 'description', dll.
-          $recyclingMethods = $info->materials->pluck('recycle_info')->all();
-      }
-        $description_mat = $info->materials->pluck('description_mat')->random();
-        $suggest = $info->materials->pluck('suggest')->unique();
-
-        // Susun data untuk dikirim kembali ke browser
         $data = [
-            'label'       => ucfirst($label),
-            'confidence'  => $confidence,
-            // 'description' => $info->waste_description ?? 'Deskripsi belum tersedia',
-            'description'   => $description_mat, // <-- TAMBAHKAN HURUF 'g' DI SINI
-            'recycling'   => $recyclingMethods, // <-- TAMBAHKAN HURUF 'g' DI SINI
-            'suggest'   => $suggest, // <-- TAMBAHKAN HURUF 'g' DI SINI
-            // 'recycle'     => $recyclingMethods ?? '-',
-            'imageUrl'    => asset('storage/' . $storedPath),
+            'label'         => ucfirst($label),
+            'confidence'    => $confidence,
+            'description'   => $description_mat,
+            'recycling'     => $recyclingMethods,
+            'suggest'       => $suggest,
+            'imageUrl'      => asset('storage/' . $storedPath),
+            'questResult'   => $questResult, 
         ];
 
         return response()->json($data);
     }
-
-
 // public function scan(Request $request)
 // {
 //     $request->validate([

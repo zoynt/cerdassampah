@@ -56,7 +56,7 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::get('/lokasi-tps', [TpsController::class, 'mapIndex'])->name('lokasi-tps.index');
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
-
+    Route::get('/dashboard', [QuestController::class, 'index'])->name('dashboard');
 
     // Route Fitur Lapor
     Route::get('/lapor', function () {
