@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\TpsController;
 use App\Http\Controllers\BankController;
 use App\Http\Controllers\ScanController;
+use App\Http\Controllers\QuestController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurungController;
 use App\Http\Controllers\LandingController;
