@@ -20,7 +20,6 @@ class UserpointController extends Controller
             ->select('users.name', 'userpoints.points') // Pilih kolom yang dibutuhkan
             ->take(10)
             ->get();
-
         return view('pages.dashboard.leaderboard', ['users' => $topUsers]);
     }
 
