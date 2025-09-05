@@ -24,9 +24,9 @@ return new class extends Migration
                 'banjarmasin barat',
                 'banjarmasin timur'
             ]);
-            $table->json('bank_day');
-            $table->time('bank_start_time');
-            $table->time('bank_end_time');
+            $table->json('bank_day')->nullable();
+            $table->time('bank_start_time')->nullable();
+            $table->time('bank_end_time')->nullable();
             $table->text('bank_no')->nullable();
             $table->text('bank_description')->nullable();
             $table->text('image')->nullable();

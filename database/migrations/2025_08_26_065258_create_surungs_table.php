@@ -24,11 +24,11 @@ return new class extends Migration
                 'banjarmasin barat',
                 'banjarmasin timur'
             ]);
-            $table->string('worker_name');
+            $table->string('worker_name')->nullable();
             $table->string('area');
-            $table->json('surung_day');
-            $table->time('surung_start_time');
-            $table->time('surung_end_time');
+            $table->json('surung_day')->nullable();
+            $table->time('surung_start_time')->nullable();
+            $table->time('surung_end_time')->nullable();
             $table->text('surung_description')->nullable();
             $table->timestamps();
         });
