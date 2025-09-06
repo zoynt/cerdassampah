@@ -8,15 +8,15 @@
       <div class="flex items-center gap-4 flex-wrap justify-center">
         <img src="{{ asset('img/logosec.png') }}" alt="Logo" class="h-20 md:h-14 sm:h-10">
         <img src="{{ asset('img/textsec.png') }}" alt="Logo" class="h-40 md:h-28 sm:h-20">
-        <!-- <span class="text-3xl md:2xl sm:xl font-bold">BapilahSampah.id</span> -->
+        <!-- <span class="text-3xl md:2xl sm:xl font-bold">BapilahSampah</span> -->
       </div>
     </div>
 
     {{-- Tentang dan Sosial Media --}}
     <div style="font-size: 16px; line-height: 1.8;">
-      <!-- <strong style="display: block; margin-bottom: 10px;">Tentang BapilahSampah.id</strong> -->
+      <!-- <strong style="display: block; margin-bottom: 10px;">Tentang BapilahSampah</strong> -->
       <p style="margin: 0;">
-        BapilahSampah.id merupakan inisiatif berbasis teknologi yang mendukung penerapan konsep smart city,
+        BapilahSampah merupakan inisiatif berbasis teknologi yang mendukung penerapan konsep smart city,
         khususnya dalam pilar smart environment. Melalui fitur-fitur cerdas seperti pemetaan TPS, scan sampah,
         hingga edukasi interaktif, platform ini hadir untuk mendorong pengelolaan sampah yang lebih tertib,
         partisipatif, dan berkelanjutan.
@@ -31,7 +31,7 @@
 
     {{-- Copyright --}}
     <div style="text-align: center; margin-top: 35px; font-size: 16px;">
-      © Copyright 2025 <strong>BapilahSampah.id</strong> – All Rights Reserved.
+      © Copyright 2025 <strong>BapilahSampah</strong> – All Rights Reserved.
     </div>
   </div>
 

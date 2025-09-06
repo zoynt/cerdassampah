@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', 'Beranda | CerdasSampah.id')
+@section('title', 'Beranda | BapilahSampah')
 
 @section('content')
   @include('pages.landing.sections.hero')
