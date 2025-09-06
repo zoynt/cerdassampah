@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'CerdasSampah')
+@section('title', 'Game Pilah Sampah')
 
 @push('head')
     <meta name="csrf-token" content="{{ csrf_token() }}">

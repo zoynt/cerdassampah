@@ -29,31 +29,31 @@ use Illuminate\Support\HtmlString;
 class AdminPanelProvider extends PanelProvider
 {
 
-    
+
     public function panel(Panel $panel): Panel
     {
         return $panel
             ->databaseNotifications()
             ->databaseNotificationsPolling('30s')
-            
+
             ->id('admin')
             ->path('admin')
             ->colors([
-                'primary' => Color::Lime,   
+                'primary' => Color::Lime,
             ])
             ->brandLogo(fn () => new HtmlString('
             <div class="flex items-center gap-x-2">
-                <img src="' . asset('img/logobiasa.png') . '" class="h-8">
+                <img src="' . asset('img/logosec.png') . '" class="h-8">
                 <span class="text-lg font-bold tracking-tight text-gray-950 dark:text-white">
-                    CerdasSampah
+                    BapilahSampah
                 </span>
             </div>
             '))
             ->darkModeBrandLogo(fn () => new HtmlString('
             <div class="flex items-center gap-x-2">
-                <img src="' . asset('img/logoputih.png') . '" class="h-8">
+                <img src="' . asset('img/lbs.png') . '" class="h-8">
                 <span class="text-lg font-bold tracking-tight text-gray-950 dark:text-white">
-                    CerdasSampah
+                    BapilahSampah
                 </span>
             </div>
             '))

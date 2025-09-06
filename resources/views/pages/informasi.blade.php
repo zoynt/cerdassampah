@@ -39,7 +39,7 @@
                         <p class="text-lg" style="text-align: justify;">
                             Pengelolaan sampah yang tepat menjadi kunci dalam menciptakan lingkungan yang sehat dan berkelanjutan.
                             Dengan meningkatnya volume sampah rumah tangga setiap harinya, dibutuhkan kesadaran kolektif untuk memilah,
-                            mengurangi, dan mendaur ulang sampah. Melalui teknologi dan informasi yang tersedia di CerdasSampah,
+                            mengurangi, dan mendaur ulang sampah. Melalui teknologi dan informasi yang tersedia di BapilahSampah,
                             masyarakat dapat mengambil peran aktif dalam menjaga kebersihan lingkungan.
                         </p>
                     </div>
@@ -259,7 +259,7 @@
                     <!-- Gambar di Kanan (di mobile) -->
                     <div class="text-left">
                         <p class="text-lg" style="text-align: justify;">
-                        Teknologi memiliki peran besar dalam mendukung pengelolaan sampah yang lebih efisien dan transparan. Melalui aplikasi seperti CerdasSampah, masyarakat dapat melaporkan titik sampah liar, memantau jadwal pengangkutan, hingga mendapatkan informasi edukatif seputar sampah. Inovasi ini menjadi bagian dari transformasi menuju kota yang lebih bersih, cerdas, dan berkelanjutan.
+                        Teknologi memiliki peran besar dalam mendukung pengelolaan sampah yang lebih efisien dan transparan. Melalui aplikasi seperti BapilahSampah, masyarakat dapat melaporkan titik sampah liar, memantau jadwal pengangkutan, hingga mendapatkan informasi edukatif seputar sampah. Inovasi ini menjadi bagian dari transformasi menuju kota yang lebih bersih, cerdas, dan berkelanjutan.
                         </p>
                     </div>
 

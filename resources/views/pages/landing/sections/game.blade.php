@@ -45,9 +45,9 @@
         <!-- kiri: teks -->
         <div class="text-center lg:text-left lg:w-1/2 mb-10 lg:mb-0 px-4 md:px-6 lg:px-12 xl:px-16 2xl:px-20" data-aos="fade-right">
           <h2 class="text-4xl md:text-5xl font-extrabold text-green-900 mb-4 leading-tight">Kumpulkan Poin</h2>
-          <h3 class="text-2xl md:text-3xl font-extrabold text-white px-5 py-2 highlight-animate mb-4">Dapatkan Hadiah!</h3>
-          <p class="text-green-900 text-md md:text-lg mb-4">Semakin cepat dan tepat kamu bermain, semakin banyak poin yang kamu raih. Tukar poinmu dengan reward menarik atau badge edukatif, dan jadilah Pahlawan Sampah Kota</p>
-          <p class="text-green-900 font-medium mb-8 underline underline-offset-2">Main berkali-kali untuk tingkatkan skor dan koleksi hadiahnya!</p>
+          <h3 class="text-2xl md:text-3xl font-extrabold text-white px-5 py-2 highlight-animate mb-4">Raih Peringkat Teratas!</h3>
+          <p class="text-green-900 text-md md:text-lg mb-4">Buktikan kamulah yang tercepat dan terhebat! Bersaing dengan pemain lain untuk menduduki puncak papan peringkat dan raih gelar sebagai Pahlawan Kebersihan Kota Banjarmasin.</p>
+          <p class="text-green-900 font-medium mb-8 underline underline-offset-2">Main berkali-kali untuk tingkatkan peringkatmu dan buktikan kamulah yang terbaik!</p>
         </div>
 
         <!-- kanan: podium -->

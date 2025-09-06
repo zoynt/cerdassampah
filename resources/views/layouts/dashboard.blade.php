@@ -38,8 +38,9 @@
             }">
 
             <a href="{{ route('dashboard') }}" class="flex items-center px-4 mb-8">
-                <img src="{{ asset('img/logo.png') }}" alt="Logo CerdasSampah" class="w-10 h-10 mr-3" />
-                <span class="text-lg font-bold text-gray-800">CerdasSampah</span>
+                <img src="{{ asset('img/logosec.png') }}" alt="Logo CerdasSampah" class="w-10 h-10 mr-3" />
+                <!-- <img src="/img/textsec.png" alt="Logo" class="h-48 w-auto" /> -->
+                <span class="text-lg font-bold text-gray-800">BapilahSampah</span>
             </a>
 
             <nav x-data="{ ruteOpen: @json(request()->routeIs(['tps.index', 'surung-sintak.index', 'banksampah-user'])) }">
@@ -128,7 +129,7 @@
                                       d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7">
                                 </path>
                             </svg>
-                            Rute & Jadwal
+                            Pemetaan
                         </span>
                         <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': ruteOpen }" fill="none"
                              stroke="currentColor" viewBox="0 0 24 24">
@@ -152,7 +153,7 @@
                             Lokasi TPS
                         </a>
 
-                        <a href="{{ route('surung-sintak.index') }}" @class([
+                        <!-- <a href="{{ route('surung-sintak.index') }}" @class([
                             'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
                             'bg-green-700 text-white shadow-sm' => request()->routeIs('surung-sintak.index'),
                             'text-gray-500 hover:bg-gray-200' => !request()->routeIs('surung-sintak.index'),
@@ -163,7 +164,7 @@
                                       d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path>
                             </svg>
                             Surung Sintak
-                        </a>
+                        </a> -->
 
                         <a href="{{ route('banksampah-user') }}" @class([
                             'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',

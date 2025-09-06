@@ -10,10 +10,10 @@
       </div> -->
             <div class="flex items-center space-x-3">
                 <!-- Membuat Logo menjadi Link ke Beranda -->
-                <a href="/#beranda" class="flex items-center">
-                    <img src="/img/logoputih.png" alt="Logo" class="h-8 w-8" style="margin-right: 16px;" />
-                    <span class="text-white font-bold text-lg">CerdasSampah.id</span>
-                </a>
+        <a href="/#beranda" class="flex items-center">
+          <img src="/img/lbs.png" alt="Logo" class="h-8 w-8" style="margin-right: 16px;"/>
+        <img src="/img/textbs.png" alt="Logo" class="h-48 w-auto" />
+        </a>
             </div>
 
             <!-- Hamburger (Mobile) -->

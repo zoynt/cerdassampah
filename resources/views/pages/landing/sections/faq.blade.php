@@ -128,31 +128,27 @@
           style="width: 128px; height: 128px;"
         >
         <button class="text-button text-white font-semibold py-2 px-6 rounded-xl shadow-md transition">
-          Tanya Jawab Seputar CerdasSampah
+          Tanya Jawab Seputar BapilahSampah
         </button>
       </div>
 
       @php
         $faqs = [
           [
-            'q' => 'Apa itu CerdasSampah ?',
-            'a' => 'CerdasSampah adalah platform edukasi dan layanan berbasis teknologi yang membantu masyarakat dalam memilah, melaporkan, dan memahami pengelolaan sampah secara cerdas dan ramah lingkungan.',
+            'q' => 'Apa itu BapilahSampah ?',
+            'a' => 'BapilahSampah adalah platform edukasi dan layanan berbasis teknologi yang membantu masyarakat dalam memilah, melaporkan, dan memahami pengelolaan sampah secara cerdas dan ramah lingkungan.',
           ],
           [
-            'q' => 'Bagaimana cara kerja fitur Pindai Sampah di CerdasSampah ?',
+            'q' => 'Bagaimana cara kerja fitur Pindai Sampah di BapilahSampah ?',
             'a' => 'Fitur ini menggunakan teknologi Machine Learning untuk mengenali jenis sampah dari foto yang diunggah pengguna, lalu memberikan informasi klasifikasi serta tips pengelolaannya.',
           ],
           [
-            'q' => 'Bisakah saya melaporkan TPS liar melalui CerdasSampah ?',
+            'q' => 'Bisakah saya melaporkan TPS liar melalui BapilahSampah ?',
             'a' => 'Bisa! Kamu cukup mengunggah foto dan lokasi TPS liar lewat fitur pelaporan. Tim kami akan meneruskan laporan tersebut ke dinas kebersihan terkait.',
           ],
           [
-            'q' => 'Apakah game Pilah Sampah di CerdasSampah hanya untuk anak-anak ?',
+            'q' => 'Apakah game Pilah Sampah di BapilahSampah hanya untuk anak-anak ?',
             'a' => 'Tidak. Game ini dibuat untuk semua usia sebagai media belajar yang seru. Melalui game ini, kamu bisa berlatih memilih sampah organik, anorganik, dan B3 dengan cara menyenangkan.',
-          ],
-          [
-            'q' => 'Bagaimana saya tahu kapan truk sampah akan datang ke TPS terdekat ?',
-            'a' => 'Kamu bisa melihat jadwal rute pengangkutan sampah langsung di dalam aplikasi. Informasi ini membantu kamu menyesuaikan waktu membuang sampah agar tidak terjadi penumpukan dan lingkungan tetap tertib dan bersih.',
           ],
         ];
       @endphp

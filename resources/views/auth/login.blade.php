@@ -7,7 +7,7 @@
 
         <div class="flex justify-center mb-4">
             {{-- Ganti 'img/logo-maskot.png' dengan path ke logo robot Anda --}}
-            <img src="{{ asset('img/logo.png') }}" alt="Logo" class="h-20">
+            <img src="{{ asset('img/logosec.png') }}" alt="Logo" class="h-20">
         </div>
 
         <h2 class="text-2xl font-bold text-center text-gray-800 mb-8">Masuk ke Akun Anda</h2>
