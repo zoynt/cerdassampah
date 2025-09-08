@@ -5,7 +5,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 
 export default defineConfig({
     server: {
-        https: false,
+        https: true,
         host: true, // <-- UBAH BARIS INI
     },
     plugins: [

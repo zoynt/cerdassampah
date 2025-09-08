@@ -1,15 +1,33 @@
 {
+  "\u0000vite/dynamic-import-helper.js": [],
   "resources/js/app.jsx": [],
-  "resources/js/bootstrap.js": [],
   "resources/js/components/CancelGameModal.jsx": [],
-  "resources/js/components/EndScreen.jsx": [],
-  "resources/js/components/FullscreenPrompt.jsx": [],
-  "resources/js/components/GameWrapper.jsx": [],
-  "resources/js/components/HeroSection.jsx": [],
-  "resources/js/components/HowToPlayModal.jsx": [],
-  "resources/js/components/LeaderboardSection.jsx": [],
+  "resources/js/components/EndScreen.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ],
+  "resources/js/components/FullscreenPrompt.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ],
+  "resources/js/components/GameWrapper.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ],
+  "resources/js/components/HeroSection.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ],
+  "resources/js/components/HowToPlayModal.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ],
+  "resources/js/components/LeaderboardSection.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ],
   "resources/js/components/PilahSampahGame.jsx": [],
-  "resources/js/components/RewardSection.jsx": [],
-  "resources/js/components/StartScreen.jsx": [],
-  "resources/js/components/TrashTypeModal.jsx": []
+  "resources/js/components/StartScreen.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ],
+  "resources/js/components/TrashTypeModal.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ],
+  "resources/js/pages/Test.jsx": [
+    "/build/assets/Test-BhSTr3gF.js"
+  ]
 }
