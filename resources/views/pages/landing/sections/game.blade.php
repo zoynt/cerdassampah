@@ -25,7 +25,7 @@
         <p class="text-gray-600 mt-0 mb-8 text-lg md:text-xl leading-normal">
           Uji pengetahuanmu tentang jenis sampah melalui permainan interaktif yang seru dan mendidik. Game Pilah Sampah mengajakmu untuk memilah sampah ke dalam kategori organik, anorganik, dan berbahaya (B3) dengan cepat dan tepat.
         </p>
-        <a href="#masuk" class="inline-block bg-green-700 text-white font-semibold px-6 py-3 rounded-md shadow hover:bg-green-800 transition duration-300">
+        <a href="{{ route('game-pilah-sampah') }}" class="inline-block bg-green-700 text-white font-semibold px-6 py-3 rounded-md shadow hover:bg-green-800 transition duration-300">
           Mainkan Sekarang!
         </a>
       </div>
