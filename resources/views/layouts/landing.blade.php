@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@yield('title', 'CerdasSampah.id')</title>
-  <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+  <title>@yield('title', 'BapilahSampah')</title>
+    <link rel="icon" type="image/png" href="{{ asset('img/logosec.png') }}">
+
+  {{-- <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}"> --}}
 
   <!-- Google Font: Poppins -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
-
+  
   <!-- Tailwind CSS (output dari build lokal) -->
   <link rel="stylesheet" href="{{ asset('css/output.css') }}">
 

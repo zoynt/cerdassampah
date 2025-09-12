@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Pemetaan')
-  <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+  <link rel="icon" type="image/png" href="{{ asset('img/logosec.png') }}">
 
 
 @push('styles')
@@ -31,7 +31,7 @@
 
 @section('content')
     <div class="space-y-6">
-        <h1 class="text-3xl font-bold text-gray-800">Jadwal & Lokasi TPS</h1>
+        <h1 class="text-3xl font-bold text-gray-800">Lokasi TPS</h1>
 
         <div class="bg-white p-2 rounded-xl shadow-md">
             <div id="map" class="w-full rounded-lg"></div>
@@ -50,7 +50,7 @@
         <div class="bg-white p-6 rounded-xl shadow-md">
             <h2 class="text-xl font-semibold text-gray-700 mb-4">Filter Pencarian</h2>
             <form id="filter-form" action="{{ route('tps.index') }}" method="GET">
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
 
 
                     <div>
@@ -74,7 +74,7 @@
                         </div>
                     </div>
 
-                    <div>
+                    {{-- <div>
                         <label for="hari" class="block mb-2 text-sm font-medium text-gray-700">Hari</label>
                         <div class="relative">
                             <select id="hari" name="hari"
@@ -95,7 +95,7 @@
                                 </svg>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
 
 
                     <div>
@@ -142,9 +142,9 @@
                             <th scope="col" class="px-6 py-4">Nama TPS</th>
                             <th scope="col" class="px-6 py-4">Alamat</th>
                             <th scope="col" class="px-6 py-4">Kecamatan</th>
-                            <th scope="col" class="px-6 py-4">Hari Operasional</th>
+                            {{-- <th scope="col" class="px-6 py-4">Hari Operasional</th>
                             <th scope="col" class="px-6 py-4">Waktu</th>
-                            <th scope="col" class="px-6 py-4">Jenis Angkutan</th>
+                            <th scope="col" class="px-6 py-4">Jenis Angkutan</th> --}}
                         </tr>
                     </thead>
                     <tbody id="tps-table-body">

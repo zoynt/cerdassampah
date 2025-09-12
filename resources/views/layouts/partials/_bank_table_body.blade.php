@@ -5,13 +5,13 @@
         <td class="px-6 py-4 font-semibold text-gray-800">{{ $schedule->bank_name }}</td>
         <td class="px-6 py-4">{{ $schedule->bank_address }}</td>
         <td class="px-6 py-4">{{ $schedule->kecamatan }}</td>
-        <td class="px-6 py-4">
+        {{-- <td class="px-6 py-4">
             @if(is_array($schedule->bank_day))
                 {{ implode(', ', $schedule->bank_day) }}
             @endif
         </td>
         <td class="px-6 py-4">{{ date('H:i', strtotime($schedule->bank_start_time)) }} -
-            {{ date('H:i', strtotime($schedule->bank_end_time)) }} WITA</td>
+            {{ date('H:i', strtotime($schedule->bank_end_time)) }} WITA</td> --}}
     </tr>
 @empty
     <tr class="bg-white border-b">

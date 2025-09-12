@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Pemetaan')
-  <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+  <link rel="icon" type="image/png" href="{{ asset('img/logosec.png') }}">
 
 
 @push('styles')
