@@ -26,6 +26,14 @@
         .leaflet-popup-tip-container {
             display: none;
         }
+        .leaflet-popup-content a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .leaflet-popup-content a.button-link {
+            color: white;
+        }
     </style>
 @endpush
 
@@ -166,7 +174,12 @@
                             <img class="w-full h-32 object-cover" src="${loc.image_url}" alt="Foto ${loc.nama}">
                             <div class="p-3"><div class="font-bold text-base mb-2 text-gray-800">${loc.nama}</div>
                             <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat:</span> ${loc.alamat || 'Tidak ada alamat.'}</p>
-                            <p class="text-gray-500 text-xs"><span class="font-semibold">Deskripsi: </span>${loc.deskripsi || ''}</p></div></div>`;
+                            <p class="text-gray-500 text-xs"><span class="font-semibold">Deskripsi: </span>${loc.deskripsi || ''}</p>
+                            <a href="/banksampah-digital/${loc.id}" class="block w-full text-center mt-4 px-4 py-2 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors duration-300 button-link">
+                                Setorkan sampah
+                            </a>
+                            </div>
+                        </div>`;
                     marker.bindPopup(popupContent);
                     allMarkers.push(marker);
                     markerObjectsById[loc.id] = marker;
