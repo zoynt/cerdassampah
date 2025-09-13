@@ -16,7 +16,6 @@ class UserPoint extends Model
      * @var string
      */
     protected $table = 'user_points';
-     protected $primaryKey = 'user_points_id';
 
     /**
      * The attributes that are mass assignable.
