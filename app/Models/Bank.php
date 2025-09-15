@@ -21,4 +21,13 @@ class Bank extends Model
     protected $casts = [
         'bank_day' => 'array', 
     ];
+
+    public function users()
+    {
+        // ✨ Jauh lebih sederhana
+        return $this->belongsToMany(User::class, 'bank_sampah_user')
+                    ->using(BankSampahUser::class)
+                    ->withPivot('saldo', 'id')
+                    ->withTimestamps();
+    }
 }

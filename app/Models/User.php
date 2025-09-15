@@ -57,4 +57,13 @@ class User extends Authenticatable implements MustVerifyEmail
         $label = $this->name ?: $this->username ?: 'User';
         return 'https://ui-avatars.com/api/?name=' . urlencode($label) . '&background=random';
     }
+
+    public function bankSampahs()
+    {
+        // ✨ Tidak perlu lagi menyebutkan foreign keys secara eksplisit
+        return $this->belongsToMany(BankSampah::class, 'bank_sampah_user')
+                    ->using(BankSampahUser::class)
+                    ->withPivot('saldo', 'id')
+                    ->withTimestamps();
+    }
 }
