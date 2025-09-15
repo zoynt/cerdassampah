@@ -15,6 +15,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\ReverseGeocodeController;
+use App\Http\Controllers\BankSampahController;
 
 // Landing Page
 // Route::get('/', function () {
@@ -48,6 +49,16 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::get('/banksampah-user', [BankController::class, 'index'])->name('banksampah-user');
     Route::get('/lokasi-tps', [TpsController::class, 'mapIndex'])->name('lokasi-tps.index');
 
+    // --- ROUTE BARU DITAMBAHKAN DI SINI ---
+    // Bank Sampah Digital
+    Route::get('/bank-sampah/informasi', [BankSampahController::class, 'informasi'])->name('digital.informasi');
+    Route::get('/bank-sampah/riwayat', [BankSampahController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
+    Route::get('/bank-sampah/harga', [BankSampahController::class, 'harga'])->middleware('auth')->name('digital.harga');
+    Route::get('/bank-sampah/tarik-saldo', [BankSampahController::class, 'showTarikSaldoForm'])->name('digital.tarik-saldo.form');
+    Route::post('/bank-sampah/tarik-saldo', [BankSampahController::class, 'storeTarikSaldo'])->name('digital.tarik-saldo.store');
+
+    // --- AKHIR PENAMBAHAN ROUTE ---
+
     // Profil
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
@@ -67,12 +78,12 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
 
     Route::post('/api/game/points', [UserpointController::class, 'store'])
         ->name('game.points.store');
-        
+
         // Leaderboard halaman web (bukan API)
         Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
         Route::post('/leaderboard/fetch', [LeaderboardController::class, 'fetch'])->name('leaderboard.fetch');
 });
 
-   
+
 
 require __DIR__.'/auth.php';
