@@ -30,4 +30,11 @@ class Bank extends Model
                     ->withPivot('saldo', 'id')
                     ->withTimestamps();
     }
+
+    public function wasteCategories()
+    {
+        return $this->belongsToMany(WasteCategory::class, 'bank_waste_categories')
+                    ->withPivot('price_per_kg') // 💰 Sertakan kolom harga
+                    ->withTimestamps();
+    }
 }
