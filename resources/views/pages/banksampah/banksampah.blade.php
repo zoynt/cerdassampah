@@ -169,17 +169,34 @@
                     const marker = L.marker([loc.lat, loc.lng], {
                         icon: greenIcon
                     }).addTo(map);
-                    const popupContent =
-                        `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0">
-                            <img class="w-full h-32 object-cover" src="${loc.image_url}" alt="Foto ${loc.nama}">
-                            <div class="p-3"><div class="font-bold text-base mb-2 text-gray-800">${loc.nama}</div>
+                // const detailUrl = `/bank-sampah/${loc.id}`;
+                const detailUrl = `/bank-sampah/${loc.slug}`;
+                // const detailUrl = `/bank-sampah/${loc.slug}`;
+                const setorUrl = `/bank-sampah/informasi?bank_id=${loc.id}`;
+                // /bank-sampah/{bankSampah}
+
+                // Konten HTML untuk Popup
+                const popupContent =
+                    `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0">
+                        <img class="w-full h-32 object-cover" src="${loc.image_url}" alt="Foto ${loc.nama}">
+                        <div class="p-3">
+                            <div class="font-bold text-base mb-2 text-gray-800">${loc.nama}</div>
                             <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat:</span> ${loc.alamat || 'Tidak ada alamat.'}</p>
                             <p class="text-gray-500 text-xs"><span class="font-semibold">Deskripsi: </span>${loc.deskripsi || ''}</p>
-                            <a href="/banksampah-digital/${loc.id}" class="block w-full text-center mt-4 px-4 py-2 bg-green-700 text-white font-semibold rounded-lg hover:bg-green-600 transition-colors duration-300 button-link">
-                                Setorkan sampah
-                            </a>
+
+                            {{-- Wadah untuk 2 tombol berdampingan --}}
+                            <div class="mt-4 grid grid-cols-2 gap-2">
+                                {{-- Tombol Detail Bank --}}
+                                <a href="${detailUrl}" class="block text-center w-full px-4 py-2 bg-white text-green-700 text-sm font-semibold rounded-lg border border-green-200 hover:bg-green-50 transition-colors duration-300">
+                                    Detail Bank
+                                </a>
+                                {{-- Tombol Setorkan Sampah --}}
+                                <a href="${setorUrl}" class="button-link block text-center w-full px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition-colors duration-300">
+                                    Setorkan Sampah
+                                </a>
                             </div>
-                        </div>`;
+                        </div>
+                    </div>`;
                     marker.bindPopup(popupContent);
                     allMarkers.push(marker);
                     markerObjectsById[loc.id] = marker;

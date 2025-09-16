@@ -338,4 +338,67 @@ class BankSampahController extends Controller
         // 4. Redirect kembali dengan pesan sukses
         return redirect()->route('digital.informasi')->with('success', 'Permintaan penarikan saldo berhasil diajukan!');
     }
+
+    public function show($slug)
+    {
+        // =======================================================
+        // PEMBUATAN DUMMY DATA DIMULAI DI SINI
+        // =======================================================
+
+        // 1. Buat daftar semua bank sampah palsu (dengan slug)
+        $allDummyBanks = collect([
+            (object)[
+                'id' => 1, 'nama' => 'Bank Sampah KBU Banjarmasin', 'slug' => 'bank-sampah-kbu-banjarmasin',
+                'alamat' => 'Jl. Kayu Tangi Ujung, Banjarmasin Utara',
+                'deskripsi' => 'Bank Sampah KBU adalah unit pengelola sampah...',
+                'jam_operasional' => 'Senin - Sabtu (08:00 - 16:00)', 'kontak_person' => 'Bapak Udin',
+                'nomor_telepon' => '081234567890', 'latitude' => '-3.316694', 'longitude' => '114.590111',
+                'image_url' => 'https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=2070&auto=format&fit=crop',
+            ],
+            (object)[
+                'id' => 2, 'nama' => 'Bank Sampah Induk Banjarmasin', 'slug' => 'bank-sampah-induk-banjarmasin',
+                'alamat' => 'Jl. Lingkar Dalam Selatan, Banjarmasin Selatan',
+                'deskripsi' => 'Unit pusat pengelolaan sampah terpadu...',
+                'jam_operasional' => 'Senin - Jumat (08:00 - 17:00)', 'kontak_person' => 'Ibu Siti',
+                'nomor_telepon' => '081298765432', 'latitude' => '-3.342735', 'longitude' => '114.604355',
+                'image_url' => 'https://images.unsplash.com/photo-1599664223843-8e47a463c1dd?q=80&w=2070&auto=format&fit=crop',
+            ],
+            (object)[
+                'id' => 3, 'nama' => 'Bank Sampah Sekumpul', 'slug' => 'bank-sampah-sekumpul',
+                'alamat' => 'Jl. Sekumpul, Martapura',
+                'deskripsi' => 'Melayani masyarakat sekitar Sekumpul...',
+                'jam_operasional' => 'Setiap Hari (09:00 - 15:00)', 'kontak_person' => 'Bapak H. Ahmad',
+                'nomor_telepon' => '085211223344', 'latitude' => '-3.415033', 'longitude' => '114.848810',
+                'image_url' => 'https://images.unsplash.com/photo-1582408921715-18e7806367c2?q=80&w=2070&auto=format&fit=crop',
+            ],
+        ]);
+
+        // 2. Cari bank sampah palsu berdasarkan SLUG dari URL
+        $bankSampah = $allDummyBanks->firstWhere('slug', $slug);
+
+        // Jika slug tidak ditemukan di dalam koleksi dummy, tampilkan error 404
+        if (!$bankSampah) {
+            abort(404, 'Bank Sampah Tidak Ditemukan');
+        }
+
+        // 3. Buat data harga sampah palsu yang bervariasi
+        $allDummyPrices = collect([
+            ['bank_sampah_id' => 1, 'kategori' => 'Kertas & Kardus', 'nama_item' => 'Kardus', 'harga' => 2000],
+            ['bank_sampah_id' => 1, 'kategori' => 'Plastik', 'nama_item' => 'Botol PET (Bening)', 'harga' => 3500],
+            ['bank_sampah_id' => 2, 'kategori' => 'Kertas & Kardus', 'nama_item' => 'Kertas HVS', 'harga' => 2300],
+            ['bank_sampah_id' => 2, 'kategori' => 'Kaca', 'nama_item' => 'Botol Kaca Bening', 'harga' => 500],
+            ['bank_sampah_id' => 3, 'kategori' => 'Logam', 'nama_item' => 'Besi Bekas', 'harga' => 4000],
+        ]);
+
+        // 4. Filter harga hanya untuk bank sampah yang sedang dilihat
+        $hargaSampah = $allDummyPrices->where('bank_sampah_id', $bankSampah->id)
+                                    ->map(fn($item) => (object) $item)
+                                    ->groupBy('kategori');
+
+        return view('pages.banksampah.detail-banksampah', [
+            'bankSampah' => $bankSampah,
+            'hargaSampah' => $hargaSampah,
+            'daftarBank' => $allDummyBanks, // Kirim daftar semua bank ke view
+        ]);
+    }
 }

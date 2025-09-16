@@ -56,7 +56,9 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::get('/bank-sampah/harga', [BankSampahController::class, 'harga'])->middleware('auth')->name('digital.harga');
     Route::get('/bank-sampah/tarik-saldo', [BankSampahController::class, 'showTarikSaldoForm'])->name('digital.tarik-saldo.form');
     Route::post('/bank-sampah/tarik-saldo', [BankSampahController::class, 'storeTarikSaldo'])->name('digital.tarik-saldo.store');
-
+    // Route::get('/bank-sampah/{bankSampah}', [BankSampahController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/{slug}', [BankSampahController::class, 'show'])->name('digital.banksampah.show');
+    Route::get('/bank-sampah/{slug}', [BankSampahController::class, 'show'])->name('digital.banksampah.show');
     // --- AKHIR PENAMBAHAN ROUTE ---
 
     // Profil

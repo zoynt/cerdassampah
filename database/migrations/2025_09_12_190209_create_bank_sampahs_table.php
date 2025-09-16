@@ -11,12 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bank_sampahs', function (Blueprint $table) {
-            $table->id();
-            $table->string('nama');
-            $table->text('alamat');
-            $table->string('nomor_telepon')->nullable();
-            $table->timestamps();
+        Schema::table('bank_sampahs', function (Blueprint $table) {
+            $table->text('deskripsi')->nullable()->after('alamat');
+            $table->string('jam_operasional')->nullable()->after('deskripsi');
+            $table->string('kontak_person')->nullable()->after('jam_operasional');
+            $table->string('nomor_telepon')->nullable()->after('kontak_person');
+            $table->string('latitude')->nullable()->after('nomor_telepon');
+            $table->string('longitude')->nullable()->after('latitude');
+            $table->string('image_url')->nullable()->after('longitude');
         });
     }
 
