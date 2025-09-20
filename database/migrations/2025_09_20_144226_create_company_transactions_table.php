@@ -11,10 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bank_waste_categories', function (Blueprint $table) {
+        Schema::create('company_transactions', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('description')->nullable();
+            $table->foreignId('wallet_id')->constrained('company_wallets')->onDelete('cascade');
+            $table->string('transaction_code')->unique();
+            $table->decimal('amount', 10, 2)->default(0.00);
+            $table->longText('description')->nullable();
             $table->timestamps();
         });
     }
@@ -24,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bank_waste_categories');
+        Schema::dropIfExists('company_transactions');
     }
 };

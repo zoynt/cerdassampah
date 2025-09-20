@@ -22,19 +22,28 @@ class Bank extends Model
         'bank_day' => 'array', 
     ];
 
-    public function users()
+    // public function users()
+    // {
+    //     // ✨ Jauh lebih sederhana
+    //     return $this->belongsToMany(User::class, 'bank_sampah_user')
+    //                 ->using(BankSampahUser::class)
+    //                 ->withPivot('saldo', 'id')
+    //                 ->withTimestamps();
+    // }
+
+
+    public function wasteProducts()
     {
-        // ✨ Jauh lebih sederhana
-        return $this->belongsToMany(User::class, 'bank_sampah_user')
-                    ->using(BankSampahUser::class)
-                    ->withPivot('saldo', 'id')
-                    ->withTimestamps();
+        return $this->hasMany(BankWasteProduct::class, 'bank_id');
     }
 
-    public function wasteCategories()
+    public function companyWallet()
     {
-        return $this->belongsToMany(WasteCategory::class, 'bank_waste_categories')
-                    ->withPivot('price_per_kg') // 💰 Sertakan kolom harga
-                    ->withTimestamps();
+        return $this->hasOne(CompanyWallet::class, 'bank_id');
+    }
+
+    public function rekening()
+    {
+        return $this->hasMany(RekeningBankSampahUser::class, 'bank_id');
     }
 }

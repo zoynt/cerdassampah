@@ -20,6 +20,7 @@ class BankSeeder extends Seeder
         $banks = [
                 [
                     'bank_name'       => 'Bank Banjarmasin Utara',
+                    'slug'            => 'bank-banjarmasin-utara',
                     'bank_longitude'  => '114.5912',
                     'bank_latitude'   => '-3.3835',
                     'bank_address'    => 'Alamat Bank Banjarmasin Utara',
@@ -34,11 +35,12 @@ class BankSeeder extends Seeder
                     'updated_at'      => Carbon::now(),
                 ],            
                 [
-                'bank_name' => 'Bank Banjarmasin Selatan',
-                'bank_longitude' => '114.5863',
-                'bank_latitude' => '-3.4672',
-                'bank_address' => 'Alamat Bank Banjarmasin Selatan',
-                'kecamatan' => 'banjarmasin selatan',
+                    'bank_name' => 'Bank Banjarmasin Selatan',
+                    'slug' => 'bank-banjarmasin-selatan',
+                    'bank_longitude' => '114.5863',
+                    'bank_latitude' => '-3.4672',
+                    'bank_address' => 'Alamat Bank Banjarmasin Selatan',
+                    'kecamatan' => 'banjarmasin selatan',
                 'bank_day'        => json_encode(["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]),
                 'bank_start_time' => '08:30:00',
                 'bank_end_time' => '17:00:00',
@@ -50,6 +52,7 @@ class BankSeeder extends Seeder
             ],
             [
                 'bank_name' => 'Bank Banjarmasin Tengah',
+                'slug' => 'bank-banjarmasin-tengah',
                 'bank_longitude' => '114.5995',
                 'bank_latitude' => '-3.3334',
                 'bank_address' => 'Alamat Bank Banjarmasin Tengah',
@@ -65,6 +68,7 @@ class BankSeeder extends Seeder
             ],
             [
                 'bank_name' => 'Bank Banjarmasin Barat',
+                'slug' => 'bank-banjarmasin-barat',
                 'bank_longitude' => '114.5632',
                 'bank_latitude' => '-3.3921',
                 'bank_address' => 'Alamat Bank Banjarmasin Barat',
@@ -79,6 +83,7 @@ class BankSeeder extends Seeder
             ],
             [
                 'bank_name' => 'Bank Banjarmasin Timur',
+                'slug' => 'bank-banjarmasin-timur',
                 'bank_longitude' => '114.5878',
                 'bank_latitude' => '-3.4455',
                 'bank_address' => 'Alamat Bank Banjarmasin Timur',

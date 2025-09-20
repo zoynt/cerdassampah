@@ -86,4 +86,9 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return $this->hasMany(StoreReview::class);
     }
+
+    public function rekening()
+    {
+        return $this->hasMany(RekeningBankSampahUser::class, 'user_id');
+    }
 }
