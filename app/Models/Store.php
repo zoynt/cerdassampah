@@ -21,4 +21,14 @@ class Store extends Model
     {
         return $this->hasMany(Product::class);
     }
+
+    public function owner()
+    {
+        return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function reviews()
+    {
+        return $this->hasMany(StoreReview::class);
+    }
 }
