@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('slug')->unique();
             $table->string('bank_longitude');
             $table->string('bank_latitude');
-            $table->string('bank_address');
+            $table->string('alamat');
             $table->enum('kecamatan', [
                 'banjarmasin utara',
                 'banjarmasin selatan',

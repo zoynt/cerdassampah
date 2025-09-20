@@ -23,7 +23,7 @@ class BankSeeder extends Seeder
                     'slug'            => 'bank-banjarmasin-utara',
                     'bank_longitude'  => '114.5912',
                     'bank_latitude'   => '-3.3835',
-                    'bank_address'    => 'Alamat Bank Banjarmasin Utara',
+                    'alamat'    => 'Alamat Bank Banjarmasin Utara',
                     'kecamatan'       => 'banjarmasin utara',
                     'bank_day'        => json_encode(["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]),
                     'bank_start_time' => '08:00:00',
@@ -55,7 +55,7 @@ class BankSeeder extends Seeder
                 'slug' => 'bank-banjarmasin-tengah',
                 'bank_longitude' => '114.5995',
                 'bank_latitude' => '-3.3334',
-                'bank_address' => 'Alamat Bank Banjarmasin Tengah',
+                'alamat' => 'Alamat Bank Banjarmasin Tengah',
                 'kecamatan' => 'banjarmasin tengah',
                 'bank_day'        => json_encode(["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]),
                 'bank_start_time' => '09:00:00',
@@ -71,7 +71,7 @@ class BankSeeder extends Seeder
                 'slug' => 'bank-banjarmasin-barat',
                 'bank_longitude' => '114.5632',
                 'bank_latitude' => '-3.3921',
-                'bank_address' => 'Alamat Bank Banjarmasin Barat',
+                'alamat' => 'Alamat Bank Banjarmasin Barat',
                 'kecamatan' => 'banjarmasin barat',
                 'bank_day'        => json_encode(["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]),
                 'bank_start_time' => '08:00:00',
@@ -86,7 +86,7 @@ class BankSeeder extends Seeder
                 'slug' => 'bank-banjarmasin-timur',
                 'bank_longitude' => '114.5878',
                 'bank_latitude' => '-3.4455',
-                'bank_address' => 'Alamat Bank Banjarmasin Timur',
+                'alamat' => 'Alamat Bank Banjarmasin Timur',
                 'kecamatan' => 'banjarmasin timur',
                 'bank_day'  => json_encode(["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]),
                 'bank_start_time' => '08:30:00',
@@ -106,6 +106,6 @@ class BankSeeder extends Seeder
             }
         }
 
-        DB::table('banks')->insert($banks);
+        DB::table('bank_sampahs')->insert($banks);
     }
 }
