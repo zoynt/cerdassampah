@@ -106,6 +106,6 @@ class BankSeeder extends Seeder
             }
         }
 
-        DB::table('bank_sampahs')->insert($banks);
+        DB::table('banks')->insert($banks);
     }
 }

@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('harga_sampahs', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bank_sampah_id')->constrained()->onDelete('cascade');
+            $table->foreignId('bank_sampah_id')->constrained('banks')->onDelete('cascade');
             $table->string('kategori'); // Cth: Kertas & Kardus, Plastik, Logam
             $table->string('nama_item');   // Cth: Kertas Putih, Botol Plastik
             $table->integer('harga');       // Harga per kg
