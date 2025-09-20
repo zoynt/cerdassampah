@@ -48,8 +48,6 @@ public function run(): void
     // ===== Buat Role =====
     $adminRole = Role::firstOrCreate(['name' => 'admin']);
     $wargaRole = Role::firstOrCreate(['name' => 'warga']);
-    $wargaRole = Role::firstOrCreate(['name' => 'bank_sampah']);
-    $wargaRole = Role::firstOrCreate(['name' => 'marketplace']);
 
     // ===== Assign Permission ke Role =====
     $adminRole->syncPermissions([
