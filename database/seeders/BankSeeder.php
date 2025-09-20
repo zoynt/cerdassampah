@@ -33,7 +33,7 @@ class BankSeeder extends Seeder
                     'image'           => 'storage/bank/tps.jpg', // ← Pakai storage, bukan public/
                     'created_at'      => Carbon::now(),
                     'updated_at'      => Carbon::now(),
-                ],            
+                ],
                 [
                     'bank_name' => 'Bank Banjarmasin Selatan',
                     'slug' => 'bank-banjarmasin-selatan',
@@ -98,7 +98,7 @@ class BankSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ]
         ];
-        
+
         // Set default image jika null
         foreach ($banks as &$bank) {
             if (empty($bank['image'])) {
@@ -106,6 +106,6 @@ class BankSeeder extends Seeder
             }
         }
 
-        DB::table('bank_sampahs')->insert($banks);
+        DB::table('banks')->insert($banks);
     }
 }
