@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Rute & Jadwal')
-  <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+<link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
 
 
 @push('styles')
@@ -31,7 +31,7 @@
 
 @section('content')
     <div class="space-y-6">
-        <h1 class="text-3xl font-bold text-gray-800">Jadwal Surung Sintak</h1>
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Jadwal Surung Sintak</h1>
         <div class="bg-white p-2 rounded-xl shadow-md">
             <div id="map" class="w-full rounded-lg"></div>
         </div>

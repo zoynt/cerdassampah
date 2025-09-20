@@ -71,6 +71,27 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
         // Leaderboard halaman web (bukan API)
         Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
         Route::post('/leaderboard/fetch', [LeaderboardController::class, 'fetch'])->name('leaderboard.fetch');
+        Route::get('/marketplace/product', function () {
+            return view('pages.marketplace.product');
+        })->name('marketplace.product');
+        Route::get('/marketplace/product/{id}', function ($id) {
+            return view('pages.marketplace.detail');
+        })->name('marketplace.product.detail');
+        Route::get('/marketplace/checkout', function () {
+            return view('pages.marketplace.checkout');
+        })->name('marketplace.checkout');
+        Route::get('/marketplace/pembelian/detail', function () {
+            return view('pages.marketplace.purchase-detail');
+        })->name('marketplace.purchase.detail');
+        Route::get('/marketplace/history', function () {
+            return view('pages.marketplace.history');
+        })->name('marketplace.history');
+        Route::get('/marketplace/invoice', function () {
+            return view('pages.marketplace.invoice');
+        })->name('marketplace.invoice');
+        Route::get('/marketplace/store', function () {
+            return view('pages.marketplace.store');
+        })->name('marketplace.store');
 });
 
    

@@ -16,17 +16,18 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
-        body { font-family: 'Poppins', sans-serif; }
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
     </style>
 
-    {{-- 🔑 Penting untuk Inertia/Vite JS dari app.blade.php --}}
     @stack('head')
 
     @stack('styles')
 </head>
 
 <body class="text-gray-800">
-    <div x-data="{ sidebarOpen: window.innerWidth >= 768 }" class="flex h-screen bg-slate-50">
+    <div x-data="{ sidebarOpen: window.innerWidth >= 1024 }" class="flex h-screen bg-slate-50">
 
         {{-- SIDEBAR --}}
         <aside
@@ -34,7 +35,7 @@
             :class="{
                 'translate-x-0': sidebarOpen,
                 '-translate-x-full': !sidebarOpen,
-                'md:relative md:translate-x-0': sidebarOpen
+                'lg:relative lg:translate-x-0': sidebarOpen
             }">
 
             <a href="{{ route('dashboard') }}" class="flex items-center px-4 mb-8">
@@ -42,7 +43,11 @@
                 <span class="text-lg font-bold text-gray-800">CerdasSampah</span>
             </a>
 
-            <nav x-data="{ ruteOpen: @json(request()->routeIs(['tps.index', 'surung-sintak.index', 'banksampah-user'])) }">
+            <nav x-data="{
+                ruteOpen: @json(request()->routeIs(['tps.index', 'surung-sintak.index', 'banksampah-user'])),
+                marketplaceOpen: @json(request()->routeIs(['marketplace.product', 'marketplace.history']))
+            }">
+
                 <a href="{{ route('dashboard') }}" @class([
                     'flex items-center px-4 py-2.5 text-sm font-medium rounded-lg transition-colors duration-200',
                     'bg-green-700 text-white shadow-sm' => request()->routeIs('dashboard'),
@@ -50,7 +55,7 @@
                 ])>
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6">
                         </path>
                     </svg>
                     Home
@@ -63,7 +68,7 @@
                 ])>
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                         </path>
                     </svg>
                     Laporan
@@ -71,12 +76,13 @@
 
                 <a href="{{ route('laporan.history') }}" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
-                    'bg-green-700 text-white shadow-sm' => request()->routeIs('laporan.history'),
+                    'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                        'laporan.history'),
                     'text-gray-500 hover:bg-gray-200' => !request()->routeIs('laporan.history'),
                 ])>
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h4a3 3 0 013 3v1">
+                            d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h4a3 3 0 013 3v1">
                         </path>
                     </svg>
                     Histori Laporan
@@ -84,15 +90,17 @@
 
                 <a href="{{ route('game-pilah-sampah') }}" @class([
                     'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
-                    'bg-green-700 text-white shadow-sm' => request()->routeIs('game-pilah-sampah'),
-                    'text-gray-500 hover:bg-gray-200' => !request()->routeIs('game-pilah-sampah'),
+                    'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                        'game-pilah-sampah'),
+                    'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
+                        'game-pilah-sampah'),
                 ])>
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
+                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z">
                         </path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     Game Pilah Sampah
                 </a>
@@ -104,10 +112,10 @@
                 ])>
                     <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
+                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z">
                         </path>
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                              d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
                     </svg>
                     Scan Sampah
                 </a>
@@ -116,23 +124,27 @@
                     <button @click="ruteOpen = !ruteOpen" @class([
                         'flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-left rounded-lg transition-colors duration-200',
                         'bg-green-700 text-white shadow-sm' => request()->routeIs([
-                            'tps.index', 'surung-sintak.index', 'banksampah-user',
+                            'tps.index',
+                            'surung-sintak.index',
+                            'banksampah-user',
                         ]),
                         'text-gray-500 hover:bg-gray-200' => !request()->routeIs([
-                            'tps.index', 'surung-sintak.index', 'banksampah-user',
+                            'tps.index',
+                            'surung-sintak.index',
+                            'banksampah-user',
                         ]),
                     ])>
                         <span class="flex items-center">
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7">
+                                    d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7">
                                 </path>
                             </svg>
                             Rute & Jadwal
                         </span>
                         <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': ruteOpen }" fill="none"
-                             stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                            stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
 
@@ -144,38 +156,97 @@
                         ])>
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
+                                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z">
                                 </path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path>
                             </svg>
                             Lokasi TPS
                         </a>
 
                         <a href="{{ route('surung-sintak.index') }}" @class([
                             'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
-                            'bg-green-700 text-white shadow-sm' => request()->routeIs('surung-sintak.index'),
-                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs('surung-sintak.index'),
+                            'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                                'surung-sintak.index'),
+                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
+                                'surung-sintak.index'),
                         ])>
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path>
+                                    d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path>
                             </svg>
                             Surung Sintak
                         </a>
 
                         <a href="{{ route('banksampah-user') }}" @class([
                             'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
-                            'bg-green-700 text-white shadow-sm' => request()->routeIs('banksampah-user'),
+                            'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                                'banksampah-user'),
                             'text-gray-500 hover:bg-gray-200' => !request()->routeIs('banksampah-user'),
                         ])>
                             <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z"></path>
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path>
+                                    d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10l2-2h8a1 1 0 001-1z"></path>
                             </svg>
                             Bank Sampah
+                        </a>
+                    </div>
+                </div>
+                <div class="mt-2">
+                    <button @click="marketplaceOpen = !marketplaceOpen" @class([
+                        'flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-left rounded-lg transition-colors duration-200',
+                        'bg-green-700 text-white shadow-sm' => request()->routeIs([
+                            'marketplace.product',
+                            'marketplace.history',
+                        ]),
+                        'text-gray-500 hover:bg-gray-200' => !request()->routeIs([
+                            'marketplace.product',
+                            'marketplace.history',
+                        ]),
+                    ])>
+                        <span class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            Marketplace
+                        </span>
+                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': marketplaceOpen }"
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <div x-show="marketplaceOpen" x-transition class="mt-2 ml-4 space-y-2">
+                        <a href="{{ route('marketplace.product') }}" @class([
+                            'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
+                            'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                                'marketplace.product'),
+                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
+                                'marketplace.product'),
+                        ])>
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
+                            </svg>
+                            Produk
+                        </a>
+
+                        <a href="{{ route('marketplace.history') }}" @class([
+                            'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium text-gray-500 transition-colors duration-200 rounded-lg',
+                            'bg-green-700 text-white shadow-sm' => request()->routeIs(
+                                'marketplace.history'),
+                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
+                                'marketplace.history'),
+                        ])>
+                            <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+                            </svg>
+                            Riwayat Transaksi
                         </a>
                     </div>
                 </div>
@@ -183,7 +254,8 @@
         </aside>
 
         {{-- Overlay ketika sidebar terbuka di mobile --}}
-        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 md:hidden" x-cloak></div>
+        <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden"
+            x-cloak></div>
 
         {{-- MAIN WRAPPER --}}
         <div class="flex flex-col flex-1 w-full transition-transform duration-300">
@@ -200,7 +272,7 @@
                     <button @click="sidebarOpen = !sidebarOpen" class="text-white focus:outline-none">
                         <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none">
                             <path d="M4 6H20M4 12H20M4 18H11" stroke="currentColor" stroke-width="2"
-                                  stroke-linecap="round" stroke-linejoin="round"></path>
+                                stroke-linecap="round" stroke-linejoin="round"></path>
                         </svg>
                     </button>
                     <h1 class="ml-3 text-xl font-semibold">@yield('title')</h1>
@@ -208,17 +280,17 @@
 
                 <div x-data="{ dropdownOpen: false }" class="relative">
                     <button @click="dropdownOpen = !dropdownOpen"
-                            class="relative z-10 flex items-center p-1 rounded-full focus:outline-none hover:bg-black/10 transition-colors">
+                        class="relative z-10 flex items-center p-1 rounded-full focus:outline-none hover:bg-black/10 transition-colors">
 
                         <div class="w-8 h-8 rounded-full overflow-hidden border-2 border-white/50">
                             @if (Auth::user()->profile_photo_path)
                                 <img class="w-full h-full object-cover"
-                                     src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
-                                     alt="Foto Profil">
+                                    src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}"
+                                    alt="Foto Profil">
                             @else
                                 <img class="w-full h-full object-cover"
-                                     src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=random"
-                                     alt="Avatar User">
+                                    src="https://ui-avatars.com/api/?name={{ urlencode(Auth::user()->name) }}&background=random"
+                                    alt="Avatar User">
                             @endif
                         </div>
 
@@ -227,36 +299,37 @@
                             <p class="text-xs text-white/80">Warga</p>
                         </div>
                         <svg class="w-5 h-5 ml-2 hidden md:block" :class="{ 'rotate-180': dropdownOpen }"
-                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
                         </svg>
                     </button>
 
                     <div x-show="dropdownOpen" @click.away="dropdownOpen = false"
-                         x-transition:enter="transition ease-out duration-100"
-                         x-transition:enter-start="transform opacity-0 scale-95"
-                         x-transition:enter-end="transform opacity-100 scale-100"
-                         x-transition:leave="transition ease-in duration-75"
-                         x-transition:leave-start="transform opacity-100 scale-100"
-                         x-transition:leave-end="transform opacity-0 scale-95"
-                         class="absolute right-0 z-30 w-48 py-2 mt-2 origin-top-right text-gray-800 bg-white rounded-md shadow-xl"
-                         style="display: none;">
+                        x-transition:enter="transition ease-out duration-100"
+                        x-transition:enter-start="transform opacity-0 scale-95"
+                        x-transition:enter-end="transform opacity-100 scale-100"
+                        x-transition:leave="transition ease-in duration-75"
+                        x-transition:leave-start="transform opacity-100 scale-100"
+                        x-transition:leave-end="transform opacity-0 scale-95"
+                        class="absolute right-0 z-30 w-48 py-2 mt-2 origin-top-right text-gray-800 bg-white rounded-md shadow-xl"
+                        style="display: none;">
                         <a href="{{ route('profile.edit') }}"
-                           class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                            class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                             </svg>
                             Profil
                         </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <a href="{{ route('logout') }}"
-                               onclick="event.preventDefault(); this.closest('form').submit();"
-                               class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                onclick="event.preventDefault(); this.closest('form').submit();"
+                                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                 <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                          d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1">
                                     </path>
                                 </svg>
                                 Keluar
@@ -268,7 +341,10 @@
 
             {{-- KONTEN HALAMAN --}}
             <main class="relative z-10 flex-1 overflow-y-auto">
-                @if (request()->routeIs('dashboard') || request()->routeIs('scan-user') || request()->routeIs('profile.edit') || request()->routeIs('game-pilah-sampah'))
+                @if (request()->routeIs('dashboard') ||
+                        request()->routeIs('scan-user') ||
+                        request()->routeIs('profile.edit') ||
+                        request()->routeIs('game-pilah-sampah'))
                     @yield('content')
                 @else
                     <div class="py-6 px-4 sm:px-6 lg:px-8">
@@ -301,33 +377,35 @@
                 icon: 'error',
                 text: '{{ session('error') }}',
                 confirmButtonText: 'OK',
-                customClass: { confirmButton: 'btn-custom' }
+                customClass: {
+                    confirmButton: 'btn-custom'
+                }
             });
         </script>
     @endif
 
     @if (request()->routeIs('scan-user'))
         <div x-data="{ showPopup: true, currentStep: 0 }" x-show="showPopup" x-transition.opacity
-             class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" x-cloak>
+            class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4" x-cloak>
             <div class="bg-white rounded-xl shadow-lg text-center w-full max-w-md p-6">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">Langkah Mudah Menggunakan Fitur Scan</h2>
 
                 <div class="flex items-center justify-center gap-5 mb-4">
                     <button @click="currentStep = Math.max(0, currentStep - 1)"
-                            class="text-3xl text-gray-400 hover:text-green-700">&lt;</button>
+                        class="text-3xl text-gray-400 hover:text-green-700">&lt;</button>
                     <div class="flex gap-3">
                         <template x-for="i in 3">
                             <button @click="currentStep = i - 1"
-                                    :class="{
-                                        'bg-green-700 text-white': currentStep === i - 1,
-                                        'bg-gray-200 text-gray-600': currentStep !== i - 1
-                                    }"
-                                    class="w-10 h-10 rounded-full font-bold text-lg transition-colors"
-                                    x-text="i"></button>
+                                :class="{
+                                    'bg-green-700 text-white': currentStep === i - 1,
+                                    'bg-gray-200 text-gray-600': currentStep !== i - 1
+                                }"
+                                class="w-10 h-10 rounded-full font-bold text-lg transition-colors"
+                                x-text="i"></button>
                         </template>
                     </div>
                     <button @click="currentStep = Math.min(2, currentStep + 1)"
-                            class="text-3xl text-gray-400 hover:text-green-700">&gt;</button>
+                        class="text-3xl text-gray-400 hover:text-green-700">&gt;</button>
                 </div>
 
                 <div class="text-gray-600">
@@ -346,11 +424,12 @@
                 </div>
 
                 <button @click="showPopup = false"
-                        class="mt-6 w-full py-2 px-4 bg-green-700 text-white font-semibold rounded-full hover:bg-green-800 transition">
+                    class="mt-6 w-full py-2 px-4 bg-green-700 text-white font-semibold rounded-full hover:bg-green-800 transition">
                     Mengerti
                 </button>
             </div>
         </div>
     @endif
 </body>
+
 </html>

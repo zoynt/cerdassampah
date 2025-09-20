@@ -19,7 +19,7 @@
     </style>
 
     <div class="bg-white rounded-xl shadow-md p-6 sm:p-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6 text-center">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6 text-center">
             Laporan TPS Liar
         </h1>
 

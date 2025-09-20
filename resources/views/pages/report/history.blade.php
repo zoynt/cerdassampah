@@ -1,13 +1,13 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Histori Laporan')
-  <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+<link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
 
 
 @section('content')
 
     <div class="bg-white rounded-xl shadow-md p-6 sm:p-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-6">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800 mb-6">
             Histori Laporan
         </h1>
 
