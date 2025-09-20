@@ -16,6 +16,11 @@ use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\ReverseGeocodeController;
 use App\Http\Controllers\BankSampahController;
+use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\MarketplaceProfileController;
+
+
 
 // Landing Page
 // Route::get('/', function () {
@@ -60,6 +65,21 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     // Route::get('/bank-sampah/{slug}', [BankSampahController::class, 'show'])->name('digital.banksampah.show');
     Route::get('/bank-sampah/{slug}', [BankSampahController::class, 'show'])->name('digital.banksampah.show');
     // --- AKHIR PENAMBAHAN ROUTE ---
+
+    Route::get('/marketplace/penjualan', [MarketplaceController::class, 'index'])->name('marketplace.penjualan');
+    Route::get('/marketplace/produk', [ProductController::class, 'index'])->name('marketplace.produk');
+    Route::resource('products', ProductController::class);
+    Route::get('/marketplace/riwayat', [ProductController::class, 'riwayatPenjualan'])->name('marketplace.riwayat');
+    Route::get('/marketplace/penjualan/{penjualan}', [ProductController::class, 'showPenjualan'])->name('marketplace.penjualan.show');
+    Route::get('/marketplace/profile', [ProductController::class, 'createProfile'])->name('marketplace.profile.create');
+    Route::post('/marketplace/profile', [ProductController::class, 'storeProfile'])->name('marketplace.profile.store');
+    // Route::get('/marketplace/profile', [MarketplaceProfileController::class, 'edit'])->name('marketplace.profile.edit');
+    // Route::post('/marketplace/profile', [MarketplaceProfileController::class, 'update'])->name('marketplace.profile.update');
+
+    Route::get('/marketplace/profile', [MarketplaceProfileController::class, 'show'])->name('marketplace.profile.show');
+    Route::get('/marketplace/profile/edit', [MarketplaceProfileController::class, 'edit'])->name('marketplace.profile.edit');
+    Route::post('/marketplace/profile', [MarketplaceProfileController::class, 'update'])->name('marketplace.profile.update');
+
 
     // Profil
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
