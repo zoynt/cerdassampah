@@ -13,7 +13,7 @@ return new class extends Migration
     {
         // NOTE: Anda sebelumnya memakai nama tabel 'userpoints'
         // Saya pertahankan agar tidak memutus kode lain.
-        Schema::create('userpoints', function (Blueprint $table) {
+        Schema::create('user_points', function (Blueprint $table) {
             $table->id();
 
             // 1 user = 1 row (UNIQUE)
@@ -34,6 +34,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('userpoints');
+        Schema::dropIfExists('user_points');
     }
 };

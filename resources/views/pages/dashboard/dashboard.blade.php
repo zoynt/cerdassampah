@@ -4,7 +4,6 @@
 
 @section('content')
 
-    {{-- Hero Section dengan Latar Bergelombang --}}
     <div class="relative bg-gradient-to-b from-green-700 via-green-700 to-green-500 -mt-4 sm:-mt-6 text-white mb-6">
 
         <div class="relative z-10 p-8 pt-10 pb-20 flex flex-col justify-center items-center text-center">
@@ -19,8 +18,8 @@
                     </svg>
                 @endif
             </div>
-            <h2 class="text-4xl font-bold">Halo, {{ Auth::user()->username }}!</h2>
-            <p class="mt-1 text-lg text-white/90">Sudah buang sampah hari ini?</p>
+            <h2 class="text-2xl sm:text-3xl lg:text-4xl font-bold">Halo, {{ Auth::user()->username }}!</h2>
+            <p class="mt-1 text-base sm:text-lg text-white/90">Sudah buang sampah hari ini?</p>
         </div>
         <div class="flex items-center justify-center w-8 h-8 mb-4 rounded-full overflow-hidden">
         </div>
@@ -32,35 +31,55 @@
         </div>
     </div>
 
-    {{-- KONTEN KARTU --}}
-    <div class="p-4 sm:p-6 lg:p-8 -mt-16 relative z-10 ">
-        <div class="grid grid-cols-1 gap-6 mb-6 md:grid-cols-2">
-            {{-- Kartu Misi dengan Ikon Award Baru --}}
-            <div class="flex items-center justify-between p-6 bg-amber-400 rounded-2xl shadow-lg">
-                <div>
-                    <p class="font-semibold text-amber-900 text-lg">Progres Misi Harian</p>
-                    <p class="text-sm text-amber-800">{{ $completedQuests }} dari {{ $totalQuests }} misi selesai</p>
-                </div>
+    {{-- KONTEN --}}
+    <div class="p-4 sm:p-6 lg:p-8 -mt-16 relative z-10 space-y-6">
 
-                <div class="flex items-center justify-center">
-                    <svg class="w-12 h-12 text-white opacity-80" xmlns="http://www.w3.org/2000/svg" fill="none"
-                        viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <div class="relative rounded-2xl overflow-hidden">
+            <div class="absolute inset-0 opacity-50 text-white pointer-events-none">
+                <div class="absolute top-0 left-0 transform -translate-x-1/4 -translate-y-1/4">
+                    <svg class="w-[300px] h-auto" viewBox="0 0 501 501" fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.5"
+                            d="M0.553223 500.555H111.664V444.999H389.442V500.555H500.553V222.777H444.998V167.221H278.331V56.1102H222.775V167.221H56.1088L56.1088 222.777H0.553223L0.553223 500.555ZM111.664 389.444L111.664 333.888H56.1088L56.1088 278.332H111.664V222.777H167.22L167.22 278.332H222.775V333.888H167.22V389.444H111.664ZM333.887 389.444V333.888H278.331V278.332H333.887V222.777H389.442V278.332H444.998V333.888H389.442V389.444H333.887ZM333.887 333.888H389.442V278.332H333.887V333.888ZM167.22 56.1102L222.775 56.1102V0.554687L167.22 0.554687V56.1102Z" />
+                    </svg>
+                </div>
+                <div class="absolute bottom-0 right-0 transform translate-x-1/4 translate-y-1/4">
+                    <svg class="w-[501px] h-auto" viewBox="0 0 501 501" fill="currentColor"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path opacity="0.5"
+                            d="M0.553223 500.555H111.664V444.999H389.442V500.555H500.553V222.777H444.998V167.221H278.331V56.1102H222.775V167.221H56.1088L56.1088 222.777H0.553223L0.553223 500.555ZM111.664 389.444L111.664 333.888H56.1088L56.1088 278.332H111.664V222.777H167.22L167.22 278.332H222.775V333.888H167.22V389.444H111.664ZM333.887 389.444V333.888H278.331V278.332H333.887V222.777H389.442V278.332H444.998V333.888H389.442V389.444H333.887ZM333.887 333.888H389.442V278.332H333.887V333.888ZM167.22 56.1102L222.775 56.1102V0.554687L167.22 0.554687V56.1102Z" />
                     </svg>
                 </div>
             </div>
+            {{-- Akhir dari Latar SVG --}}
 
-            <div class="flex items-center justify-between p-6 bg-amber-400 rounded-2xl shadow-lg">
-                <div>
-                    <p class="text-xl font-semibold text-amber-900">{{ number_format($userPoints, 0, ',', '.') }} points</p>
-                    <p class="text-sm text-amber-800">Ayo terus kumpulkan poinmu!</p>
+            <div class="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div class="flex items-center justify-between p-6 bg-amber-400 rounded-2xl shadow-lg">
+                    <div>
+                        <p class="font-semibold text-amber-900 text-base md:text-lg">Progres Misi Harian</p>
+                        <p class="text-sm text-amber-800">{{ $completedQuests }} dari {{ $totalQuests }} misi selesai</p>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <svg class="w-12 h-12 text-white opacity-80" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
                 </div>
-                <div class="flex items-center justify-center">
-                    <svg class="w-12 h-12 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M10 1.27l2.82 5.72 6.32.92-4.57 4.45 1.08 6.3L10 15.5l-5.65 2.97 1.08-6.3-4.57-4.45 6.32-.92z" />
-                    </svg>
+                <div class="flex items-center justify-between p-6 bg-amber-400 rounded-2xl shadow-lg">
+                    <div>
+                        <p class="text-base font-semibold text-amber-900 md:text-lg">
+                            {{ number_format($userPoints, 0, ',', '.') }} points
+                        </p>
+                        <p class="text-sm text-amber-800">Ayo terus kumpulkan poinmu!</p>
+                    </div>
+                    <div class="flex items-center justify-center">
+                        <svg class="w-12 h-12 text-white opacity-80" fill="currentColor" viewBox="0 0 20 20">
+                            <path
+                                d="M10 1.27l2.82 5.72 6.32.92-4.57 4.45 1.08 6.3L10 15.5l-5.65 2.97 1.08-6.3-4.57-4.45 6.32-.92z" />
+                        </svg>
+                    </div>
                 </div>
             </div>
         </div>
@@ -142,7 +161,6 @@
                 @endforelse
             </div>
         </div>
-
         <div class="mt-8 bg-amber-400 p-6 rounded-2xl shadow-lg">
             <h2 class="text-2xl font-bold text-center text-amber-900 mb-6">Setorkan sampahmu</h2>
             <div class="grid grid-cols-1 gap-6 lg:grid-cols-3">
@@ -191,7 +209,6 @@
                 </a>
             </div>
         </div>
-
         <div class="relative bg-green-200 p-8 rounded-2xl shadow-lg overflow-hidden mt-8">
             <div class="absolute -bottom-50 right-80 opacity-50 text-white pointer-events-none ">
                 <svg class="w-[350px] h-[497px]" viewBox="0 0 400 461" fill="currentColor"
@@ -210,14 +227,16 @@
 
             <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div class="text-center lg:text-left">
-                    <span class="inline-block bg-green-700 text-white px-3 py-1 rounded-md text-3xl font-semibold">Mau
+                    <span
+                        class="inline-block bg-green-700 text-white px-3 py-1 rounded-md text-xl sm:text-2xl lg:text-3xl font-semibold">Mau
                         Daur
                         Ulang ?</span>
-                    <h2 class="text-3xl lg:text-3xl font-extrabold text-gray-800 mt-4 leading-tight">Yuk, ubah sampah jadi
+                    <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800 mt-4 leading-tight">Yuk, ubah
+                        sampah jadi
                         cuan di Cerdas Sampah!</h2>
                     <p class="mt-4 text-gray-600">Ubah sampah terpilahmu jadi peluang! Jual kardus, botol plastik, hingga
                         minyak jelantah langsung ke pengepul atau UMKM daur ulang.</p>
-                    <a href="#"
+                    <a href="{{ route('marketplace.product') }}"
                         class="inline-block mt-6 bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200">
                         Jelajahi Marketplace!
                     </a>
@@ -235,5 +254,6 @@
                 </div>
             </div>
         </div>
+
     </div>
 @endsection
