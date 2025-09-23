@@ -40,6 +40,7 @@
 <div class="space-y-6">
     <form action="{{ route('marketplace.profile.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
+        {{ Breadcrumbs::render() }}
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
             {{-- HEADER KARTU --}}
             <div class="bg-green-600 p-6">
@@ -57,7 +58,7 @@
                     {{-- Combo Box Hari Operasional --}}
                     <div x-data="{
                             open: false,
-                            hari: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
+                            hari: ['Setiap Hari', 'Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
                             selectedHari: {{ json_encode(old('hari_operasional', $marketplace->hari_operasional ?? [])) }}
                         }">
                         <label class="form-label">Hari Operasional</label>

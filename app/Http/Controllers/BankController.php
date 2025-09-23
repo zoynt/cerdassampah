@@ -63,84 +63,38 @@ class BankController extends Controller
     public function informasi(Request $request)
     {
         $user = Auth::user();
+        $daftarBank = Bank::all(); // Ambil semua bank untuk dropdown
 
-        // =======================================================
-        // PEMBUATAN DUMMY DATA DIMULAI DI SINI
-        // =======================================================
-
-        // 1. Buat data palsu untuk dropdown Bank Sampah
-        $daftarBank = collect([
-            (object)['id' => 1, 'nama' => 'Bank Sampah KBU Banjarmasin'],
-            (object)['id' => 2, 'nama' => 'Bank Sampah Induk Banjarmasin'],
-            (object)['id' => 3, 'nama' => 'Bank Sampah Sekumpul'],
-        ]);
-
-        // 2. Ambil ID bank yang dipilih dari filter di URL
+        // Tentukan bank sampah yang dipilih
         $selectedBankId = $request->input('bank_id');
-        // Tentukan bank terpilih, jika tidak ada, pilih yang pertama
-        $bankSampahTerpilih = $selectedBankId ? $daftarBank->firstWhere('id', $selectedBankId) : $daftarBank->first();
+        $bankSampahTerpilih = $selectedBankId ? Bank::find($selectedBankId) : $daftarBank->first();
 
-        // 3. Buat Kumpulan besar data transaksi palsu dengan bank_id yang berbeda-beda
-        $allDummyTransactions = new Collection();
-        for ($i = 0; $i < 20; $i++) {
-            $bankIdForThisTransaction = rand(1, 3); // Memberi ID bank acak untuk setiap transaksi
-            $date = Carbon::now()->subHours($i * 5);
+        // Cari atau buat rekening user untuk bank yang terpilih
+        $rekening = RekeningBankSampahUser::firstOrCreate(
+            ['user_id' => $user->id, 'bank_id' => $bankSampahTerpilih->id],
+            ['rekening_number' => 'REK' . $user->id . $bankSampahTerpilih->id . time(), 'saldo' => 0] // Buat no. rekening unik
+        );
 
-            if ($i % 4 == 0) { // Membuat beberapa data penarikan
-                $allDummyTransactions->push((object)[
-                    'bank_id' => $bankIdForThisTransaction,
-                    'deskripsi' => 'Penarikan Tunai',
-                    'detail' => 'Bank BRI',
-                    'tipe' => 'penarikan',
-                    'jumlah' => rand(10000, 25000),
-                    'created_at' => $date
-                ]);
-            } else { // Membuat lebih banyak data pemasukan
-                $allDummyTransactions->push((object)[
-                    'bank_id' => $bankIdForThisTransaction,
-                    'deskripsi' => 'Plastik',
-                    'detail' => '2 kg x 4.000/kg',
-                    'tipe' => 'pemasukan',
-                    'jumlah' => 8000,
-                    'created_at' => $date
-                ]);
-            }
-        }
+        // Ambil transaksi terkait rekening ini
+        $queryTransaksi = BankTransaction::where('rekening_id', $rekening->id);
 
-        // 4. Filter transaksi berdasarkan bank yang dipilih
-        $filteredTransactions = $allDummyTransactions;
-        if ($bankSampahTerpilih) {
-            $filteredTransactions = $allDummyTransactions->where('bank_id', $bankSampahTerpilih->id);
-        }
+        $transaksiTerbaru = (clone $queryTransaksi)->latest()->take(5)->get();
+        $totalMasuk = (clone $queryTransaksi)->where('transaction_amount', '>', 0)->sum('transaction_amount');
+        $totalKeluar = (clone $queryTransaksi)->where('transaction_amount', '<', 0)->sum('transaction_amount') * -1; // Jadikan positif
 
-        // 5. Ambil 5 transaksi terbaru dari data yang sudah difilter
-        $transaksiTerbaru = $filteredTransactions->sortByDesc('created_at')->take(5);
+        // Dapatkan waktu transaksi terakhir
+        $pemasukanTerakhir = (clone $queryTransaksi)->where('transaction_amount', '>', 0)->latest()->first();
+        $penarikanTerakhir = (clone $queryTransaksi)->where('transaction_amount', '<', 0)->latest()->first();
 
-        // 6. Hitung total dari data yang sudah difilter
-        $totalMasuk = $filteredTransactions->where('tipe', 'pemasukan')->sum('jumlah');
-        $totalKeluar = $filteredTransactions->where('tipe', 'penarikan')->sum('jumlah');
-
-        // 7. Saldo adalah total masuk dikurangi total keluar
-        $saldo = $totalMasuk - $totalKeluar;
-        $nomorRekening = '123490123456'; // Data statis
-
-        // 8. Dapatkan waktu terakhir dari data yang sudah difilter
-        $pemasukanTerakhir = $filteredTransactions->where('tipe', 'pemasukan')->sortByDesc('created_at')->first();
-        $penarikanTerakhir = $filteredTransactions->where('tipe', 'penarikan')->sortByDesc('created_at')->first();
-
-        $waktuMasukTerakhir = $pemasukanTerakhir ? Carbon::parse($pemasukanTerakhir->created_at)->diffForHumans() : 'N/A';
-        $waktuKeluarTerakhir = $penarikanTerakhir ? Carbon::parse($penarikanTerakhir->created_at)->diffForHumans() : 'N/A';
-
-        // =======================================================
-        // AKHIR DARI PEMBUATAN DUMMY DATA
-        // =======================================================
+        $waktuMasukTerakhir = $pemasukanTerakhir ? $pemasukanTerakhir->created_at->diffForHumans() : 'N/A';
+        $waktuKeluarTerakhir = $penarikanTerakhir ? $penarikanTerakhir->created_at->diffForHumans() : 'N/A';
 
         return view('pages.banksampah.informasi', [
             'user' => $user,
             'daftarBank' => $daftarBank,
             'bankSampahTerpilih' => $bankSampahTerpilih,
-            'saldo' => $saldo,
-            'nomorRekening' => $nomorRekening,
+            'saldo' => $rekening->saldo,
+            'nomorRekening' => $rekening->rekening_number,
             'transaksiTerbaru' => $transaksiTerbaru,
             'totalMasuk' => $totalMasuk,
             'totalKeluar' => $totalKeluar,
@@ -442,5 +396,5 @@ class BankController extends Controller
         ]);
     }
 
-    
+
 }

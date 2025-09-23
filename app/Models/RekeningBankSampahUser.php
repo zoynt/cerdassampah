@@ -11,6 +11,8 @@ class RekeningBankSampahUser extends Model
         'bank_id',
         'account_number',
         'account_holder_name',
+        'rekening_number',
+        'saldo',
     ];
 
     public function user()

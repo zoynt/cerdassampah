@@ -19,6 +19,9 @@ use App\Http\Controllers\BankSampahController;
 use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\MarketplaceProfileController;
+use App\Http\Controllers\BankSampahUserController;
+use App\Http\Controllers\BankTransactionController;
+use App\Http\Controllers\BankWasteProductController;
 
 
 
@@ -56,14 +59,14 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
 
     // --- ROUTE BARU DITAMBAHKAN DI SINI ---
     // Bank Sampah Digital
-    Route::get('/bank-sampah/informasi', [BankController::class, 'informasi'])->name('digital.informasi');
-    Route::get('/bank-sampah/riwayat', [BankController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
-    Route::get('/bank-sampah/harga', [BankController::class, 'harga'])->middleware('auth')->name('digital.harga');
+    Route::get('/bank-sampah/informasi', [BankSampahUserController::class, 'informasi'])->name('digital.informasi');
+    Route::get('/bank-sampah/riwayat', [BankTransactionController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
+    Route::get('/bank-sampah/harga', [BankWasteProductController::class, 'harga'])->middleware('auth')->name('digital.harga');
     Route::get('/bank-sampah/tarik-saldo', [BankController::class, 'showTarikSaldoForm'])->name('digital.tarik-saldo.form');
     Route::post('/bank-sampah/tarik-saldo', [BankController::class, 'storeTarikSaldo'])->name('digital.tarik-saldo.store');
+    Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // Route::get('/bank-sampah/{bankSampah}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
-    Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // --- AKHIR PENAMBAHAN ROUTE ---
 
     Route::get('/marketplace/penjualan', [MarketplaceController::class, 'index'])->name('marketplace.penjualan');

@@ -9,7 +9,6 @@
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
         </div>
 
-        {{-- Kategori Produk --}}
         <div x-data="{
                 open: false,
                 search: '{{ old('kategori', $produk->kategori ?? '') }}',
@@ -37,14 +36,12 @@
     </div>
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {{-- Harga --}}
         <div>
             <label for="harga" class="block mb-2 text-sm font-medium text-gray-700">Harga</label>
             <input type="number" name="harga" id="harga" value="{{ old('harga', $produk->harga ?? '') }}" placeholder="Contoh: 3000"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
         </div>
 
-        {{-- Stok Barang --}}
         <div>
             <label for="stok" class="block mb-2 text-sm font-medium text-gray-700">Stok Barang</label>
             <input type="number" name="stok" id="stok" value="{{ old('stok', $produk->stok ?? '') }}" placeholder="Jumlah stok saat ini"
@@ -52,9 +49,6 @@
         </div>
     </div>
 
-    {{-- ======================================================= --}}
-    {{-- BARIS BARU DENGAN BOBOT, SATUAN, DAN STATUS --}}
-    {{-- ======================================================= --}}
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
             <label for="bobot" class="block mb-2 text-sm font-medium text-gray-700">Bobot/Berat per Produk</label>
@@ -110,7 +104,7 @@
     </div>
 
     {{-- Tombol Simpan/Update --}}
-    <div class="flex justify-end">
+    <div class="flex justify-end pt-4 border-t mt-6">
         <button type="submit" class="w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
             {{ isset($produk) ? 'Update' : 'Simpan' }}
         </button>

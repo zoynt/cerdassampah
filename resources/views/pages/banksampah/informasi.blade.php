@@ -7,9 +7,6 @@
         <div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Bank Sampah Digital</h1>
 
-            {{-- ======================================================= --}}
-            {{-- PERUBAHAN 1: DROPDOWN MENJADI FORM YANG BERFUNGSI --}}
-            {{-- ======================================================= --}}
             <form id="bank-filter-form" action="{{ route('digital.informasi') }}" method="GET">
                 <div class="relative">
                     <select name="bank_id" onchange="this.form.submit()"
@@ -28,7 +25,6 @@
             </form>
         </div>
 
-        {{-- Kartu Saldo Utama --}}
         <div class="rounded-2xl shadow-lg p-6 bg-gradient-to-br from-green-600 to-teal-600 text-white space-y-6">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -87,9 +83,6 @@
         <div class="space-y-3">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Transaksi Terbaru</h2>
-                {{-- ======================================================= --}}
-                {{-- PERUBAHAN 2: LINK SEKARANG AKTIF --}}
-                {{-- ======================================================= --}}
                 <a href="{{ route('digital.riwayat') }}" class="text-sm font-medium text-green-600 hover:text-green-800">
                     Tampilkan Semua
                 </a>
