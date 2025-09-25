@@ -4,9 +4,8 @@
 
 @section('content')
     <div class="space-y-6">
-        {{-- KARTU SALDO (Tidak ada perubahan di sini) --}}
+        {{-- KARTU SALDO --}}
         <div class="rounded-2xl shadow-lg p-6 bg-gradient-to-br from-green-600 to-teal-600 text-white">
-            {{-- ... isi kartu saldo Anda ... --}}
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
                     <div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center overflow-hidden border-2 border-white/50">
@@ -38,16 +37,20 @@
                     <p class="text-sm text-gray-500 mt-1">Minimal penarikan adalah Rp 10.000.</p>
                 </div>
 
-                {{-- Input Jumlah Penarikan --}}
+                {{-- Input Jumlah Penarikan dengan Format Angka Otomatis --}}
                 <div>
-                    <label for="jumlah" class="block mb-2 text-sm font-medium text-gray-700">Jumlah Penarikan</label>
+                    <label for="formatted_jumlah" class="block mb-2 text-sm font-medium text-gray-700">Jumlah Penarikan</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-500">Rp</span>
-                        <input type="number" name="jumlah" id="jumlah" value="{{ old('jumlah') }}"
+
+                        {{-- Input tersembunyi untuk menyimpan nilai angka asli (tanpa titik) --}}
+                        <input type="hidden" name="jumlah" id="jumlah" value="{{ old('jumlah') }}">
+
+                        {{-- Input yang dilihat pengguna, dengan format --}}
+                        <input type="text" id="formatted_jumlah"
                                class="block w-full pl-10 pr-4 py-3 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
-                               placeholder="10000" required>
+                               placeholder="10.000" required>
                     </div>
-                    {{-- Kita tidak lagi memerlukan @error di sini karena akan diganti SweetAlert --}}
                 </div>
 
                 {{-- Input Metode Penarikan --}}
@@ -64,6 +67,7 @@
                            <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.24a.75.75 0 011.06.04l2.7 2.92 2.7-2.92a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" /></svg>
                         </div>
                     </div>
+                    {{-- Input Nomor Tujuan (muncul jika metode bukan tunai) --}}
                     <div x-show="metode !== 'tunai'" x-transition>
                         <label for="nomor_tujuan" class="sr-only">Nomor Tujuan</label>
                         <input type="text" name="nomor_tujuan" id="nomor_tujuan" value="{{ old('nomor_tujuan') }}"
@@ -83,8 +87,14 @@
 @endsection
 
 @push('scripts')
+    {{-- Library untuk notifikasi pop-up --}}
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {{-- Library untuk format input angka otomatis --}}
+    <script src="https://cdn.jsdelivr.net/npm/cleave.js@1.6.0/dist/cleave.min.js"></script>
+
     <script>
+        // Menampilkan notifikasi dari session (setelah redirect)
         @if (session('success'))
             Swal.fire({
                 icon: 'success',
@@ -102,5 +112,30 @@
                 text: '{{ session('error') }}',
             });
         @endif
+
+        // Inisialisasi Cleave.js untuk memformat input jumlah
+        document.addEventListener('DOMContentLoaded', function() {
+            const hiddenInput = document.getElementById('jumlah');
+            const visibleInput = document.getElementById('formatted_jumlah');
+
+            const cleave = new Cleave(visibleInput, {
+                numeral: true,
+                numeralThousandsGroupStyle: 'thousand',
+                delimiter: '.',
+                // Hapus prefix Rp agar tidak disimpan di nilai
+                numeralDecimalMark: ',',
+                numeralIntegerScale: 10,
+                numeralDecimalScale: 0,
+                onValueChanged: function (e) {
+                    // Update nilai input tersembunyi dengan angka bersihnya
+                    hiddenInput.value = e.target.rawValue;
+                }
+            });
+
+            // Jika ada nilai lama (misal: setelah validasi gagal), set nilai awal untuk input yang terlihat
+            if (hiddenInput.value) {
+                cleave.setRawValue(hiddenInput.value);
+            }
+        });
     </script>
 @endpush
