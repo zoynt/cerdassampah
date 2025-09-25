@@ -2,40 +2,53 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
-use App\Models\RekeningBankSampahUser;
 use App\Models\BankTransaction;
-use Carbon\Carbon;
+use App\Models\BankTransactionDetail; // <-- Tambahkan ini
+use App\Models\RekeningBankSampahUser;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB; // <-- Tambahkan ini
+use Illuminate\Support\Str;
 
 class BankTransactionSeeder extends Seeder
 {
     public function run(): void
     {
-        // Ambil semua rekening yang ada
-        $rekenings = RekeningBankSampahUser::all();
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        BankTransaction::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        if ($rekenings->isEmpty()) {
-            $this->command->info('Tidak ada data rekening, seeder BankTransaction dilewati.');
+        $rekeningList = RekeningBankSampahUser::all();
+
+        if ($rekeningList->isEmpty()) {
+            $this->command->info('Tidak ada data rekening, seeder transaksi dilewati.');
             return;
         }
 
-        // Buat beberapa transaksi untuk setiap rekening
-        foreach ($rekenings as $rekening) {
+        foreach ($rekeningList as $rekening) {
+            // Buat 5 transaksi pemasukan "kerangka" dengan jumlah awal 0
             for ($i = 0; $i < 5; $i++) {
-                // 1 transaksi penarikan
                 BankTransaction::create([
                     'rekening_id' => $rekening->id,
-                    'transaction_code' => 'WDR' . time() . $i,
-                    'transaction_amount' => -1 * rand(10000, 25000), // Angka negatif untuk penarikan
-                    'created_at' => Carbon::now()->subDays(rand(1, 30)),
+                    'transaction_code' => 'DEP-' . Str::upper(Str::random(10)),
+                    'description' => 'Setoran Sampah',
+                    'transaction_type' => 'pemasukan',
+                    'transaction_amount' => 0, // Akan di-update oleh DetailSeeder
+                    'created_at' => now()->subDays(rand(1, 60)),
                 ]);
+            }
 
-                // 2 transaksi pemasukan
+            // Buat 2 transaksi penarikan dengan deskripsi bervariasi
+            for ($i = 0; $i < 2; $i++) {
+                $metodePenarikan = ['Tunai', 'Transfer Bank', 'E-Wallet'][array_rand(['Tunai', 'Transfer Bank', 'E-Wallet'])];
+                $amount = rand(10000, 25000);
+
                 BankTransaction::create([
                     'rekening_id' => $rekening->id,
-                    'transaction_code' => 'DEP' . time() . $i,
-                    'transaction_amount' => rand(5000, 15000), // Angka positif untuk pemasukan
-                    'created_at' => Carbon::now()->subDays(rand(1, 30)),
+                    'transaction_code' => 'WDR-' . Str::upper(Str::random(10)),
+                    'description' => 'Penarikan via ' . $metodePenarikan, // Deskripsi dinamis
+                    'transaction_type' => 'penarikan',
+                    'transaction_amount' => -$amount, // Penarikan selalu negatif
+                    'created_at' => now()->subDays(rand(1, 30)),
                 ]);
             }
         }

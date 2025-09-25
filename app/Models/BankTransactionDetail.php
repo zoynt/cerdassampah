@@ -7,12 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class BankTransactionDetail extends Model
 {
     protected $fillable = [
-        'bank_waste_category_id',
         'transaction_id',
+        'bank_waste_product_id', // Ini adalah foreign key yang paling penting
         'weight_kg',
-        'price_per_kg',
-        'detail_description',
-        'detail_amount',
+        'price_per_kg',          // "Snapshot" harga saat transaksi
+        'subtotal',              // Hasil dari berat x harga
     ];
 
     public function transaction()
@@ -20,8 +19,8 @@ class BankTransactionDetail extends Model
         return $this->belongsTo(BankTransaction::class, 'transaction_id');
     }
 
-    public function wasteCategory()
+    public function wasteProduct()
     {
-        return $this->belongsTo(BankWasteCategory::class, 'bank_waste_category_id');
+        return $this->belongsTo(BankWasteProduct::class, 'bank_waste_product_id');
     }
 }

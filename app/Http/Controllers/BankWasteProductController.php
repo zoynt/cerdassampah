@@ -11,41 +11,78 @@ class BankWasteProductController extends Controller
     /**
      * Menampilkan halaman daftar harga sampah.
      */
-    public function harga(Request $request)
+    public function harga(Request $request, Bank $bank = null)
     {
-        // Query dasar untuk mengambil data harga, beserta relasi ke bank dan kategori
+        // Query dasar untuk mengambil data harga
         $query = BankWasteProduct::with(['bank', 'wasteCategory']);
 
-        // Filter berdasarkan Bank Sampah yang dipilih
-        if ($request->filled('bank_id')) {
-            $query->where('bank_id', $request->bank_id);
+        // Jika ada slug di URL, Laravel akan otomatis mengisi variabel $bank.
+        // Kita gunakan variabel ini untuk memfilter query.
+        if ($bank) {
+            $query->where('bank_id', $bank->id);
         }
 
-        // Filter berdasarkan pencarian nama item/produk
+        // Filter untuk pencarian teks
         if ($request->filled('search')) {
-            $query->whereHas('wasteCategory', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
-            });
+            $query->where('item_name', 'like', '%' . $request->search . '%');
         }
 
-        // Ambil semua data harga yang sudah difilter
-        $hargaList = $query->get();
-
-        // Kelompokkan hasil berdasarkan nama kategori dari relasi
+        // Eksekusi query
+        $hargaList = $query->latest()->get();
         $hargaDikelompokkan = $hargaList->groupBy('wasteCategory.name');
 
-        // Ambil daftar semua bank untuk ditampilkan di dropdown filter
+        // Ambil semua bank untuk dropdown filter
         $daftarBank = Bank::orderBy('bank_name')->get();
 
         return view('pages.banksampah.harga', [
             'hargaDikelompokkan' => $hargaDikelompokkan,
-            'daftarBank' => $daftarBank
+            'daftarBank' => $daftarBank,
+            'bankTerpilih' => $bank // Kirim bank yang terpilih ke view
         ]);
     }
 
-    public function index()
+        public function index(Request $request)
     {
-        //
+        $query = Bank::query();
+
+        if ($request->filled('kecamatan')) {
+            $query->where('kecamatan', $request->kecamatan);
+        }
+        if ($request->filled('hari')) {
+            $query->where('day', 'like', '%' . $request->hari . '%');
+        }
+
+        $bankLocations = (clone $query)->orderBy('id', 'asc')->get()->map(function ($bank) {
+            return [
+                'id' => $bank->id,
+                'nama' => $bank->bank_name,
+                'slug' => $bank->slug,
+                'alamat' => $bank->bank_address,
+                'kecamatan' => $bank->kecamatan,
+                'deskripsi' => $bank->bank_description,
+                'lat' => (float) $bank->bank_latitude,
+                'lng' => (float) $bank->bank_longitude,
+                'image_url' => $bank->image ? asset('' . $bank->image) : asset('img/tps-placeholder.jpg'),
+            ];
+        });
+
+        $schedules = $query->orderBy('id', 'asc')->paginate(5)->withQueryString();
+
+        if ($request->ajax()) {
+            return response()->json([
+                'table_html' => view('layouts.partials._bank_table_body', ['schedules' => $schedules])->render(),
+                'pagination_html' => $schedules->links()->toHtml(),
+                'map_locations' => $bankLocations
+            ]);
+        }
+
+        $kecamatans = Bank::select('kecamatan')->whereNotNull('kecamatan')->distinct()->orderBy('kecamatan')->get();
+
+        return view('pages.banksampah.banksampah', [
+            'schedules' => $schedules,
+            'bankLocations' => $bankLocations,
+            'kecamatans' => $kecamatans,
+        ]);
     }
 
     /**

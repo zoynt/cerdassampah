@@ -13,19 +13,31 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
         $this->call([
-            WasteTypeSeeder::class,
-            RolePermissionSeeder::class,
-            TpsSeeder::class,
-            SurungSeeder::class,
+            // ==========================================================
+            // URUTAN YANG BENAR:
+            // ==========================================================
+
+            // 1. Data Master (Tidak memiliki ketergantungan atau hanya ke user/role)
+            // Ini adalah data dasar yang harus ada terlebih dahulu.
+            RolePermissionSeeder::class, // Biasanya ini yang pertama, karena membuat user & role
             BankSeeder::class,
+            BankWasteCategorySeeder::class,
+            TpsSeeder::class,
+            WasteTypeSeeder::class,
+            SurungSeeder::class,
             MaterialSeeder::class,
             QuestSeeder::class,
-            RekeningBankSampahUserSeeder::class,
-            BankTransactionSeeder::class,
-            // Add other seeders here as needed
-        ]);
 
+            // 2. Data Relasi (Bergantung pada data master di atas)
+            RekeningBankSampahUserSeeder::class, // Bergantung pada User dan Bank
+            BankWasteProductSeeder::class,       // Bergantung pada Bank dan BankWasteCategory
+
+            // 3. Data Transaksi (Bergantung pada data relasi)
+            BankTransactionSeeder::class,        // Bergantung pada RekeningBankSampahUser
+
+            // 4. Detail Transaksi (Paling akhir, bergantung pada transaksi & produk)
+            BankTransactionDetailSeeder::class,  // Bergantung pada BankTransaction dan BankWasteProduct
+        ]);
     }
 }

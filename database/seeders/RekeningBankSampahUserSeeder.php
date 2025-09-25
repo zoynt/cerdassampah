@@ -2,11 +2,11 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
+use App\Models\Bank;
 use App\Models\RekeningBankSampahUser;
 use App\Models\User;
-use App\Models\Bank;
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class RekeningBankSampahUserSeeder extends Seeder
 {
@@ -15,57 +15,39 @@ class RekeningBankSampahUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Pastikan tabel users dan banks sudah terisi.
-        // Seeder ini mengasumsikan ada user dengan ID 1 & 2, dan bank dengan ID 1, 2, & 3.
-        $user1 = User::find(1);
-        $user2 = User::find(2);
-        $bank1 = Bank::find(1);
-        $bank2 = Bank::find(2);
-        $bank3 = Bank::find(3);
+        // PERBAIKAN 1: Praktik terbaik untuk membersihkan tabel sebelum seeding
+        // Nonaktifkan foreign key check untuk truncate
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        RekeningBankSampahUser::truncate();
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // Lanjutkan hanya jika data user dan bank ditemukan
-        if ($user1 && $user2 && $bank1 && $bank2 && $bank3) {
-            $rekenings = [
-                // User 1 punya rekening di 3 bank berbeda
-                [
-                    'user_id' => $user1->id,
-                    'bank_id' => $bank1->id,
-                    'rekening_number' => 'REK' . $user1->id . $bank1->id . mt_rand(100, 999),
-                    'saldo' => mt_rand(50000, 200000),
-                ],
-                [
-                    'user_id' => $user1->id,
-                    'bank_id' => $bank2->id,
-                    'rekening_number' => 'REK' . $user1->id . $bank2->id . mt_rand(100, 999),
-                    'saldo' => mt_rand(25000, 100000),
-                ],
-                [
-                    'user_id' => $user1->id,
-                    'bank_id' => $bank3->id,
-                    'rekening_number' => 'REK' . $user1->id . $bank3->id . mt_rand(100, 999),
-                    'saldo' => mt_rand(75000, 150000),
-                ],
-                // User 2 punya rekening di 2 bank
-                [
-                    'user_id' => $user2->id,
-                    'bank_id' => $bank1->id,
-                    'rekening_number' => 'REK' . $user2->id . $bank1->id . mt_rand(100, 999),
-                    'saldo' => mt_rand(10000, 50000),
-                ],
-                [
-                    'user_id' => $user2->id,
-                    'bank_id' => $bank3->id,
-                    'rekening_number' => 'REK' . $user2->id . $bank3->id . mt_rand(100, 999),
-                    'saldo' => mt_rand(30000, 60000),
-                ],
-            ];
+        // PERBAIKAN 2: Ambil SEMUA user dan bank secara dinamis
+        // Kode tidak akan error meskipun ID user atau bank berubah
+        $users = User::all();
+        $banks = Bank::all();
 
-            foreach ($rekenings as $rekening) {
-                RekeningBankSampahUser::create($rekening);
+        // Lanjutkan hanya jika ada data user dan bank
+        if ($users->isEmpty() || $banks->isEmpty()) {
+            $this->command->info('Tidak ada data User atau Bank, seeder Rekening dilewati.');
+            return; // Hentikan seeder jika tidak ada data induk
+        }
+
+        // PERBAIKAN 3: Buat rekening untuk setiap user di setiap bank secara otomatis
+        foreach ($users as $user) {
+            foreach ($banks as $bank) {
+                // Gunakan firstOrCreate untuk menghindari duplikasi jika seeder dijalankan lagi
+                RekeningBankSampahUser::firstOrCreate(
+                    [
+                        'user_id' => $user->id,
+                        'bank_id' => $bank->id,
+                    ],
+                    [
+                        // Nomor rekening dibuat unik dan lebih sulit ditebak
+                        'rekening_number' => 'REK' . $user->id . $bank->id . now()->timestamp,
+                        'saldo' => 0, // Saldo awal seharusnya selalu 0
+                    ]
+                );
             }
-        } else {
-            // Beri tahu di console jika data user/bank tidak ditemukan
-            $this->command->info('User atau Bank tidak ditemukan, seeder RekeningBankSampahUser dilewati.');
         }
     }
 }
