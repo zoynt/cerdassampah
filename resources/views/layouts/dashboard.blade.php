@@ -130,11 +130,11 @@
                         </svg>
                     </button>
                     <div x-show="digitalOpen" x-transition class="mt-2 ml-4 space-y-2">
-                        <a href="{{ route('banksampah-user') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('banksampah-user'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('banksampah-user')])>
+                        <a href="{{ route('banksampah-user') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('banksampah-user', 'digital.banksampah.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('banksampah-user', 'digital.banksampah.show')])>
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                             Bank Sampah
                         </a>
-                        <a href="{{ route('digital.informasi') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('digital.informasi'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('digital.informasi')])>
+                        <a href="{{ route('digital.informasi') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('digital.informasi', 'digital.harga', 'digital.tarik-saldo.form'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('digital.informasi', 'digital.harga', 'digital.tarik-saldo.form')])>
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             Informasi Akun
                         </a>

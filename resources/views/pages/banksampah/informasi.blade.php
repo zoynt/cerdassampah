@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Informasi Bank Sampah')
+@section('title', 'Bank Sampah Digital')
 
 @section('content')
     <div class="space-y-6">
