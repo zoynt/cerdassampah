@@ -15,6 +15,16 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\ReverseGeocodeController;
+use App\Http\Controllers\BankSampahController;
+use App\Http\Controllers\MarketplaceController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\MarketplaceProfileController;
+use App\Http\Controllers\BankSampahUserController;
+use App\Http\Controllers\BankTransactionController;
+use App\Http\Controllers\BankWasteProductController;
+use App\Http\Controllers\CompanyTransactionController;
+
+
 
 // Landing Page
 // Route::get('/', function () {
@@ -48,6 +58,38 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::get('/banksampah-user', [BankController::class, 'index'])->name('banksampah-user');
     Route::get('/lokasi-tps', [TpsController::class, 'mapIndex'])->name('lokasi-tps.index');
 
+    // --- ROUTE BARU DITAMBAHKAN DI SINI ---
+    // Bank Sampah Digital
+    Route::get('/bank-sampah/informasi/{bank:slug?}', [BankSampahUserController::class, 'informasi'])->name('digital.informasi');
+    Route::get('/bank-sampah/riwayat/{bank:slug?}', [BankTransactionController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
+    Route::get('/bank-sampah/harga/{bank:slug?}', [BankWasteProductController::class, 'harga'])->middleware('auth')->name('digital.harga');
+    Route::get('/bank-sampah/tarik-saldo/{bank:slug}', [BankSampahUserController::class, 'showTarikSaldoForm'])->middleware('auth')->name('digital.tarik-saldo.form');
+    Route::post('/bank-sampah/tarik-saldo/{bank:slug}', [BankSampahUserController::class, 'storeTarikSaldo'])->middleware('auth')->name('digital.tarik-saldo.store');
+    // Route::get('/bank-sampah/tarik-saldo', [BankSampahUserController::class, 'showTarikSaldoForm'])->name('digital.tarik-saldo.form');
+    // Route::post('/bank-sampah/tarik-saldo', [BankSampahUserController::class, 'storeTarikSaldo'])->name('digital.tarik-saldo.store');
+    Route::get('/bank-sampah/{bank:slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/riwayat', [BankTransactionController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
+    // Route::get('/bank-sampah/{bank:slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/{bankSampah}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // --- AKHIR PENAMBAHAN ROUTE ---
+
+    Route::get('/marketplace/penjualan', [MarketplaceController::class, 'index'])->name('marketplace.penjualan');
+    Route::get('/marketplace/produk', [ProductController::class, 'index'])->name('marketplace.produk');
+    Route::resource('products', ProductController::class);
+    Route::get('/marketplace/riwayat', [ProductController::class, 'riwayatPenjualan'])->name('marketplace.riwayat');
+    Route::get('/marketplace/penjualan/{penjualan}', [ProductController::class, 'showPenjualan'])->name('marketplace.penjualan.show');
+    Route::get('/marketplace/profile', [ProductController::class, 'createProfile'])->name('marketplace.profile.create');
+    Route::post('/marketplace/profile', [ProductController::class, 'storeProfile'])->name('marketplace.profile.store');
+    // Route::get('/marketplace/profile', [MarketplaceProfileController::class, 'edit'])->name('marketplace.profile.edit');
+    // Route::post('/marketplace/profile', [MarketplaceProfileController::class, 'update'])->name('marketplace.profile.update');
+
+    Route::get('/marketplace/profile', [MarketplaceProfileController::class, 'show'])->name('marketplace.profile.show');
+    Route::get('/marketplace/profile/edit', [MarketplaceProfileController::class, 'edit'])->name('marketplace.profile.edit');
+    Route::post('/marketplace/profile', [MarketplaceProfileController::class, 'update'])->name('marketplace.profile.update');
+
+
     // Profil
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profil', [ProfileController::class, 'update'])->name('profile.update');
@@ -67,12 +109,33 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
 
     Route::post('/api/game/points', [UserpointController::class, 'store'])
         ->name('game.points.store');
-        
+
         // Leaderboard halaman web (bukan API)
         Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
         Route::post('/leaderboard/fetch', [LeaderboardController::class, 'fetch'])->name('leaderboard.fetch');
+        Route::get('/marketplace/product', function () {
+            return view('pages.marketplace.product');
+        })->name('marketplace.product');
+        Route::get('/marketplace/product/{id}', function ($id) {
+            return view('pages.marketplace.detail');
+        })->name('marketplace.product.detail');
+        Route::get('/marketplace/checkout', function () {
+            return view('pages.marketplace.checkout');
+        })->name('marketplace.checkout');
+        Route::get('/marketplace/pembelian/detail', function () {
+            return view('pages.marketplace.purchase-detail');
+        })->name('marketplace.purchase.detail');
+        Route::get('/marketplace/history', function () {
+            return view('pages.marketplace.history');
+        })->name('marketplace.history');
+        Route::get('/marketplace/invoice', function () {
+            return view('pages.marketplace.invoice');
+        })->name('marketplace.invoice');
+        Route::get('/marketplace/store', function () {
+            return view('pages.marketplace.store');
+        })->name('marketplace.store');
 });
 
-   
+
 
 require __DIR__.'/auth.php';

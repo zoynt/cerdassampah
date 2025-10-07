@@ -11,6 +11,7 @@
 
             <div class="flex items-center justify-center w-8 h-8 mb-4 rounded-full overflow-hidden">
             </div>
+
             <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold leading-tight text-white">
                 Edit Profil
             </h1>
@@ -18,6 +19,7 @@
             </div>
 
         </div>
+
         <div class="absolute bottom-[-1px] left-0 w-full text-slate-50">
             <svg viewBox="0 0 1440 120" fill="currentColor" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
                 <path d="M1440,120H0V20.48c0,0,202.4,69.52,480,69.52s480-139.04,960-69.52V120Z"></path>
@@ -25,7 +27,9 @@
         </div>
     </div>
 
+
     <div class="p-4 sm:p-6 lg:p-8 -mt-16 relative z-10">
+        {{ Breadcrumbs::render() }}
         <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8">
             <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf

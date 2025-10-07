@@ -14,9 +14,10 @@ return new class extends Migration
         Schema::create('banks', function (Blueprint $table) {
             $table->id();
             $table->string('bank_name');
+            $table->string('slug')->unique();
             $table->string('bank_longitude');
             $table->string('bank_latitude');
-            $table->string('bank_address');
+            $table->string('alamat');
             $table->enum('kecamatan', [
                 'banjarmasin utara',
                 'banjarmasin selatan',
@@ -24,6 +25,7 @@ return new class extends Migration
                 'banjarmasin barat',
                 'banjarmasin timur'
             ]);
+            $table->string('kelurahan')->nullable();
             $table->json('bank_day')->nullable();
             $table->time('bank_start_time')->nullable();
             $table->time('bank_end_time')->nullable();
