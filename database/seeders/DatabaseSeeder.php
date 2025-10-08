@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use App\Exports\MySalesHistorySeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -36,15 +37,14 @@ class DatabaseSeeder extends Seeder
             ProductImageSeeder::class,
             StoreReviewSeeder::class,
             OrderItemSeeder::class,
-            MySalesHistorySeeder::class,
+            
+            //MySalesHistorySeeder::class,
              RekeningBankSampahUserSeeder::class, // Bergantung pada User dan Bank
             BankWasteProductSeeder::class,       // Bergantung pada Bank dan BankWasteCategory
 
-            // 3. Data Transaksi (Bergantung pada data relasi)
             BankTransactionSeeder::class,        // Bergantung pada RekeningBankSampahUser
 
-            // 4. Detail Transaksi (Paling akhir, bergantung pada transaksi & produk)
-            BankTransactionDetailSeeder::class, 
+            BankTransactionDetailSeeder::class,  // Bergantung pada BankTransaction dan BankWasteProduct
         ]);
 
             // 2. Data Relasi (Bergantung pada data master di atas
