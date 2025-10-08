@@ -16,8 +16,10 @@ use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\ReverseGeocodeController;
 use App\Http\Controllers\BankSampahController;
-use App\Http\Controllers\MarketplaceController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StoreProfileController;
+use App\Http\Controllers\StoreController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\MarketplaceProfileController;
 use App\Http\Controllers\BankSampahUserController;
 use App\Http\Controllers\BankTransactionController;
@@ -75,19 +77,52 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // --- AKHIR PENAMBAHAN ROUTE ---
 
-    Route::get('/marketplace/penjualan', [MarketplaceController::class, 'index'])->name('marketplace.penjualan');
-    Route::get('/marketplace/produk', [ProductController::class, 'index'])->name('marketplace.produk');
-    Route::resource('products', ProductController::class);
-    Route::get('/marketplace/riwayat', [ProductController::class, 'riwayatPenjualan'])->name('marketplace.riwayat');
-    Route::get('/marketplace/penjualan/{penjualan}', [ProductController::class, 'showPenjualan'])->name('marketplace.penjualan.show');
-    Route::get('/marketplace/profile', [ProductController::class, 'createProfile'])->name('marketplace.profile.create');
-    Route::post('/marketplace/profile', [ProductController::class, 'storeProfile'])->name('marketplace.profile.store');
-    // Route::get('/marketplace/profile', [MarketplaceProfileController::class, 'edit'])->name('marketplace.profile.edit');
-    // Route::post('/marketplace/profile', [MarketplaceProfileController::class, 'update'])->name('marketplace.profile.update');
+     // Marketplace
 
-    Route::get('/marketplace/profile', [MarketplaceProfileController::class, 'show'])->name('marketplace.profile.show');
-    Route::get('/marketplace/profile/edit', [MarketplaceProfileController::class, 'edit'])->name('marketplace.profile.edit');
-    Route::post('/marketplace/profile', [MarketplaceProfileController::class, 'update'])->name('marketplace.profile.update');
+    // Route Marketplace Umum (Pembelian)
+    Route::get('/marketplace/product', [ProductController::class, 'index'])->name('marketplace.products.all'); 
+    Route::get('/marketplace/product/{product}', [ProductController::class, 'show'])->name('marketplace.products.show'); // Detail produk tunggal (diganti dari marketplace.product.detail)
+    Route::get('/marketplace/checkout', [ProductController::class, 'showCheckout'])->name('marketplace.checkout');
+    Route::get('/marketplace/pembelian/{order}', [OrderController::class, 'showPurchaseDetail'])->name('marketplace.purchase.detail');
+    Route::post('/marketplace/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('marketplace.order.cancel');
+    Route::post('/marketplace/checkout/{product}', [OrderController::class, 'placeOrder'])->name('marketplace.order.place');
+    Route::get('/marketplace/invoice/{order}', [OrderController::class, 'showInvoice'])->name('marketplace.invoice.show');
+    Route::get('/marketplace/history', [OrderController::class, 'purchaseHistory'])->name('marketplace.history');
+    Route::get('/marketplace/rating/{order}', [ProductController::class, 'showRatingForm'])->name('marketplace.rating.show');
+    Route::post('/marketplace/rating/{order}', [ProductController::class, 'storeRating'])->name('marketplace.rating.store');
+
+
+    // Route Marketplace Penjual (Seller/Toko)
+
+    // Daftar Produk Toko Saya (List/Read)
+    Route::get('/marketplace/products/list', [ProductController::class, 'storeProducts'])->name('marketplace.products.list');
+    
+    // CRUD Produk (Create, Store, Edit, Update, Delete)
+    Route::get('/marketplace/products/create', [ProductController::class, 'create'])->name('marketplace.products.create'); 
+    Route::post('/marketplace/products', [ProductController::class, 'store'])->name('marketplace.products.store'); 
+    Route::get('/marketplace/products/{product}/edit', [ProductController::class, 'edit'])->name('marketplace.products.edit'); 
+    Route::put('/marketplace/products/{product}', [ProductController::class, 'update'])->name('marketplace.products.update'); 
+    // Route::delete('/marketplace/products/{produk}', [ProductController::class, 'destroy'])->name('marketplace.products.destroy'); 
+
+    // Penjualan & Riwayat Toko
+    //Route::get('/marketplace/penjualan', [MarketplaceController::class, 'index'])->name('marketplace.penjualan');
+    Route::get('/marketplace/riwayat', [ProductController::class, 'riwayatPenjualan'])->name('marketplace.riwayat');
+    Route::get('/marketplace/riwayat/export', [ProductController::class, 'exportSalesHistory'])->name('marketplace.riwayat.export');
+    Route::post('/marketplace/orders/{order}/complete', [OrderController::class, 'markAsCompleted'])->name('marketplace.order.complete');
+    //Route::get('/marketplace/penjualan/{penjualan}', [ProductController::class, 'showPenjualan'])->name('marketplace.penjualan.show');
+    
+    // Profil Toko (Marketplace Profile)
+    Route::get('/store/profile/create', [StoreProfileController::class, 'create'])->name('store.profile.create'); 
+    Route::post('/store/profile', [StoreProfileController::class, 'store'])->name('store.profile.store'); 
+    Route::get('/store/profile/{store}', [StoreProfileController::class, 'show'])->name('store.profile.show');
+    Route::get('/store/profile/{store}/edit', [StoreProfileController::class, 'edit'])->name('store.profile.edit');
+    Route::put('/store/profile', [StoreProfileController::class, 'update'])->name('store.profile.update');
+
+    // Halaman Toko (Publik)
+    Route::get('marketplace/store/{store}', [StoreController::class, 'show'])
+    ->name('marketplace.store.show');
+    Route::get('/my-store/dashboard', [StoreProfileController::class, 'redirectToMyStore'])->name('mystore.dashboard');
+    
 
 
     // Profil
@@ -109,31 +144,11 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
 
     Route::post('/api/game/points', [UserpointController::class, 'store'])
         ->name('game.points.store');
+        
 
         // Leaderboard halaman web (bukan API)
         Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
         Route::post('/leaderboard/fetch', [LeaderboardController::class, 'fetch'])->name('leaderboard.fetch');
-        Route::get('/marketplace/product', function () {
-            return view('pages.marketplace.product');
-        })->name('marketplace.product');
-        Route::get('/marketplace/product/{id}', function ($id) {
-            return view('pages.marketplace.detail');
-        })->name('marketplace.product.detail');
-        Route::get('/marketplace/checkout', function () {
-            return view('pages.marketplace.checkout');
-        })->name('marketplace.checkout');
-        Route::get('/marketplace/pembelian/detail', function () {
-            return view('pages.marketplace.purchase-detail');
-        })->name('marketplace.purchase.detail');
-        Route::get('/marketplace/history', function () {
-            return view('pages.marketplace.history');
-        })->name('marketplace.history');
-        Route::get('/marketplace/invoice', function () {
-            return view('pages.marketplace.invoice');
-        })->name('marketplace.invoice');
-        Route::get('/marketplace/store', function () {
-            return view('pages.marketplace.store');
-        })->name('marketplace.store');
 });
 
 

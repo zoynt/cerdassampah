@@ -38,6 +38,13 @@ public function run(): void
 
         // Guest (opsional, biasanya tanpa login)
         'view_public_tps_map',
+
+        // seller
+        'create products',
+        'edit products',
+        'delete products',
+        'view products',
+        'view sales'
     ];
 
     // Buat permission kalau belum ada
@@ -59,6 +66,14 @@ public function run(): void
         'view_dashboard',
     ]);
 
+    $wargaRole->syncPermissions([
+        'scan_waste',
+        'report_illegal_tps',
+        'view_tps_map',
+        'play_games',
+        'view_own_reports',
+    ]);
+    
     $wargaRole->syncPermissions([
         'scan_waste',
         'report_illegal_tps',
@@ -96,5 +111,26 @@ public function run(): void
         ]
     );
     $warga->assignRole($wargaRole);
+
+    $sellerRole = Role::create(['name' => 'seller']);
+    $sellerRole->givePermissionTo([
+        'create products',
+        'edit products',
+        'delete products',
+        'view products',
+        'view sales'
+    ]);
+
+    $seller = User::firstOrCreate(
+    ['email' => 'seller@mail.test'],
+        [
+            'name' => 'Seller User',
+            'username' => 'seller',
+            'password' => bcrypt('password123'),
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
+        ]
+    );
+    $seller->assignRole($sellerRole);
 }
 }
