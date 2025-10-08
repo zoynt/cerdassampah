@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        User::factory(10)->create();
         $this->call([
             WasteTypeSeeder::class,
             RolePermissionSeeder::class,
@@ -22,7 +22,14 @@ class DatabaseSeeder extends Seeder
             BankSeeder::class,
             MaterialSeeder::class,
             QuestSeeder::class,
-            // Add other seeders here as needed
+            ProductCategorySeeder::class,
+            StoreSeeder::class,
+            ProductSeeder::class,
+            OrderSeeder::class, 
+            ProductImageSeeder::class,
+            StoreReviewSeeder::class,
+            OrderItemSeeder::class,
+            MySalesHistorySeeder::class,
         ]);
 
     }

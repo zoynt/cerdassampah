@@ -45,12 +45,11 @@
                         </thead>
                         <tbody>
                             <template x-for="(transaction, index) in paginatedTransactions" :key="transaction.id">
-                                <tr @click="window.location.href = '{{ route('marketplace.purchase.detail') }}'"
+                                <tr @click="window.location.href = transaction.detailUrl"
                                     class="bg-white border-b hover:bg-gray-50 cursor-pointer transition-colors duration-200">
                                     <td class="px-6 py-4" x-text="(currentPage - 1) * itemsPerPage + index + 1"></td>
                                     <td class="px-6 py-4 font-medium text-gray-900" x-text="transaction.produk"></td>
                                     <td class="px-6 py-4" x-text="transaction.penjual"></td>
-                                    {{-- [PENAMBAHAN] Kolom Toko --}}
                                     <td class="px-6 py-4" x-text="transaction.toko"></td>
                                     <td class="px-6 py-4" x-text="`Rp ${transaction.hargaSatuan.toLocaleString('id-ID')}`">
                                     </td>
@@ -60,7 +59,9 @@
                                         <span class="px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
                                             :class="{
                                                 'bg-green-100 text-green-800': transaction.status === 'Selesai',
-                                                'bg-yellow-100 text-yellow-800': transaction.status === 'Pending'
+                                                'bg-blue-100 text-blue-800': transaction.status === 'Diproses',
+                                                'bg-yellow-100 text-yellow-800': transaction.status === 'Pending',
+                                                'bg-red-100 text-red-800': transaction.status === 'Dibatalkan'
                                             }"
                                             x-text="transaction.status">
                                         </span>
@@ -69,7 +70,6 @@
                             </template>
                             <template x-if="paginatedTransactions.length === 0">
                                 <tr>
-                                    {{-- [MODIFIKASI] Colspan diubah menjadi 8 --}}
                                     <td colspan="8" class="text-center py-6 text-gray-500">Data tidak ditemukan.</td>
                                 </tr>
                             </template>
@@ -80,7 +80,7 @@
                 {{-- Tampilan Mobile (Card) --}}
                 <div class="md:hidden space-y-4">
                     <template x-for="transaction in paginatedTransactions" :key="transaction.id">
-                        <div @click="window.location.href = '{{ route('marketplace.purchase.detail') }}'"
+                        <div @click="window.location.href = transaction.detailUrl"
                             class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm active:bg-gray-50">
                             <div class="flex justify-between items-start mb-2">
                                 <div>
@@ -124,28 +124,34 @@
                 </div>
 
                 {{-- Paginasi --}}
-                <div class="mt-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
-                    <div class="flex items-center gap-2">
-                        <span>Baris per halaman:</span>
-                        <select x-model.number="itemsPerPage"
-                            class="border border-gray-300 rounded-md p-1 focus:ring-green-500 focus:border-green-500">
-                            <template x-for="option in perPageOptions">
-                                <option :value="option" x-text="option"></option>
+                <template x-if="totalPages > 1">
+                    <div class="mt-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
+                        {{-- Bagian "Baris per halaman" --}}
+                        <div class="flex items-center gap-2">
+                            <span>Baris per halaman:</span>
+                            <select x-model.number="itemsPerPage"
+                                class="border border-gray-300 rounded-md p-1 focus:ring-green-500 focus:border-green-500">
+                                <template x-for="option in perPageOptions">
+                                    <option :value="option" x-text="option"></option>
+                                </template>
+                            </select>
+                        </div>
+
+                        {{-- Bagian tombol halaman --}}
+                        <div class="flex items-center gap-2">
+                            <button @click="prevPage" :disabled="currentPage === 1"
+                                class="px-2 py-1 disabled:opacity-50">Sebelumnya</button>
+                            <template x-for="page in totalPages" :key="page">
+                                <button @click="goToPage(page)"
+                                    :class="{ 'bg-green-600 text-white': currentPage === page, 'bg-gray-200': currentPage !==
+                                            page }"
+                                    class="w-8 h-8 rounded-md" x-text="page"></button>
                             </template>
-                        </select>
+                            <button @click="nextPage" :disabled="currentPage === totalPages"
+                                class="px-2 py-1 disabled:opacity-50">Selanjutnya</button>
+                        </div>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <button @click="prevPage" :disabled="currentPage === 1"
-                            class="px-2 py-1 disabled:opacity-50">Sebelumnya</button>
-                        <template x-for="page in totalPages" :key="page">
-                            <button @click="goToPage(page)"
-                                :class="{ 'bg-green-600 text-white': currentPage === page, 'bg-gray-200': currentPage !== page }"
-                                class="w-8 h-8 rounded-md" x-text="page"></button>
-                        </template>
-                        <button @click="nextPage" :disabled="currentPage === totalPages"
-                            class="px-2 py-1 disabled:opacity-50">Selanjutnya</button>
-                    </div>
-                </div>
+                </template>
             </div>
         </div>
     </div>
@@ -159,84 +165,13 @@
                 perPageOptions: [5, 10, 15, 20],
                 itemsPerPage: 5,
                 currentPage: 1,
-                // [PENAMBAHAN] Data 'toko' ditambahkan di sini
-                transactions: [{
-                        id: 1,
-                        penjual: 'Budi Santoso',
-                        toko: 'Toko Cerdas',
-                        produk: 'Kaleng Sarden',
-                        hargaSatuan: 2500,
-                        jumlah: 10,
-                        total: 25000,
-                        status: 'Selesai'
-                    },
-                    {
-                        id: 2,
-                        penjual: 'Budi Santoso',
-                        toko: 'Toko Cerdas',
-                        produk: 'Botol Plastik',
-                        hargaSatuan: 2500,
-                        jumlah: 20,
-                        total: 50000,
-                        status: 'Selesai'
-                    },
-                    {
-                        id: 3,
-                        penjual: 'Alex Wijaya',
-                        toko: 'Warung Berkah',
-                        produk: 'Kardus Tebal',
-                        hargaSatuan: 2000,
-                        jumlah: 15,
-                        total: 30000,
-                        status: 'Selesai'
-                    },
-                    {
-                        id: 4,
-                        penjual: 'Siti Aminah',
-                        toko: 'Lapak Barokah',
-                        produk: 'Koran Lama',
-                        hargaSatuan: 1000,
-                        jumlah: 50,
-                        total: 50000,
-                        status: 'Selesai'
-                    },
-                    {
-                        id: 5,
-                        penjual: 'Alex Wijaya',
-                        toko: 'Warung Berkah',
-                        produk: 'Jerigen',
-                        hargaSatuan: 5000,
-                        jumlah: 5,
-                        total: 25000,
-                        status: 'Selesai'
-                    },
-                    {
-                        id: 6,
-                        penjual: 'Rina Marlina',
-                        toko: 'Toko Cerdas',
-                        produk: 'Buku Tulis Bekas',
-                        hargaSatuan: 1200,
-                        jumlah: 30,
-                        total: 36000,
-                        status: 'Selesai'
-                    },
-                    {
-                        id: 7,
-                        penjual: 'Alex Wijaya',
-                        toko: 'Warung Berkah',
-                        produk: 'Kaleng Cat',
-                        hargaSatuan: 3000,
-                        jumlah: 10,
-                        total: 30000,
-                        status: 'Pending'
-                    }
-                ],
+                transactions: @json($transactions),
+
                 get filteredTransactions() {
                     if (this.searchQuery === '') return this.transactions;
                     return this.transactions.filter(t =>
                         t.penjual.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
                         t.produk.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                        // [MODIFIKASI] Pencarian berdasarkan toko ditambahkan
                         t.toko.toLowerCase().includes(this.searchQuery.toLowerCase())
                     );
                 },
