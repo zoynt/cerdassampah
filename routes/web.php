@@ -20,6 +20,11 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StoreProfileController;
 use App\Http\Controllers\StoreController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\MarketplaceProfileController;
+use App\Http\Controllers\BankSampahUserController;
+use App\Http\Controllers\BankTransactionController;
+use App\Http\Controllers\BankWasteProductController;
+use App\Http\Controllers\CompanyTransactionController;
 
 
 
