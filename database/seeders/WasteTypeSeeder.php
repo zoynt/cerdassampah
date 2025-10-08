@@ -14,13 +14,18 @@ class WasteTypeSeeder extends Seeder
     public function run(): void
     {
         $wasteTypes = [
-            ['type_name' => 'baterai', 'waste_description' => 'Baterai bekas dan tidak terpakai'],
-            ['type_name' => 'organik', 'waste_description' => 'Sisa makanan dan limbah organik lainnya'],
-            ['type_name' => 'kaca', 'waste_description' => 'Botol dan pecahan kaca'],
-            ['type_name' => 'logam', 'waste_description' => 'Kaleng dan limbah logam lainnya'],
-            ['type_name' => 'kertas', 'waste_description' => 'Kertas bekas dan limbah kertas lainnya'],
-            ['type_name' => 'plastik', 'waste_description' => 'Sampah plastik dan kemasan plastik'],
-            ['type_name' => 'residu', 'waste_description' => 'Sisa-sisa limbah yang tidak dapat didaur ulang'],
+            [
+                'type_name' => 'Organik',
+                'waste_description' => 'Sampah yang berasal dari sisa makhluk hidup dan mudah terurai secara alami, seperti sisa makanan, daun, dan ranting.'
+            ],
+            [
+                'type_name' => 'Anorganik',
+                'waste_description' => 'Sampah yang sulit terurai dan dapat didaur ulang, seperti plastik, kertas, kaca, dan logam.'
+            ],
+            [
+                'type_name' => 'Residu',
+                'waste_description' => 'Sampah sisa yang tidak dapat didaur ulang maupun dikomposkan, serta limbah B3 (Bahan Berbahaya dan Beracun).'
+            ],
         ];
 
         DB::table('waste_types')->insert($wasteTypes);
