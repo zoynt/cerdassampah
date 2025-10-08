@@ -9,6 +9,7 @@ class BankWasteProduct extends Model
     protected $fillable = [
         'bank_id',
         'waste_category_id',
+        'item_name',
         'price_per_kg',
     ];
 
@@ -20,5 +21,5 @@ class BankWasteProduct extends Model
     public function wasteCategory()
     {
         return $this->belongsTo(BankWasteCategory::class, 'waste_category_id');
-    }   
+    }
 }

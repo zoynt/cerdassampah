@@ -3,7 +3,7 @@
         data-id="{{ $schedule->id }}" data-lat="{{ $schedule->bank_latitude }}" data-lng="{{ $schedule->bank_longitude }}">
         <td class="px-6 py-4 font-medium text-gray-900">{{ $loop->iteration + $schedules->firstItem() - 1 }}</td>
         <td class="px-6 py-4 font-semibold text-gray-800">{{ $schedule->bank_name }}</td>
-        <td class="px-6 py-4">{{ $schedule->bank_address }}</td>
+        <td class="px-6 py-4">{{ $schedule->alamat }}</td>
         <td class="px-6 py-4">{{ $schedule->kecamatan }}</td>
         <td class="px-6 py-4">
             @if(is_array($schedule->bank_day))

@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('bank_transaction_details', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bank_waste_category_id')->constrained('bank_waste_categories')->onDelete('cascade');
             $table->foreignId('transaction_id')->constrained('bank_transactions')->onDelete('cascade');
-            $table->decimal('weight_kg', 10, 2)->default(0.00);
-            $table->decimal('price_per_kg', 10, 2)->default(0.00);
-            $table->string('detail_description');
-            $table->decimal('detail_amount', 10, 2)->default(0.00);
+            $table->foreignId('bank_waste_product_id')->constrained('bank_waste_products')->onDelete('cascade');
+            $table->decimal('weight_kg', 8, 2); // Berat (misal: 10.50 kg)
+            $table->decimal('price_per_kg', 15, 2); // Harga "snapshot" saat transaksi
+            $table->decimal('subtotal', 15, 2); // Total (berat x harga)
+
             $table->timestamps();
         });
     }

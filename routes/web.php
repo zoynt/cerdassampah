@@ -57,14 +57,19 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
 
     // --- ROUTE BARU DITAMBAHKAN DI SINI ---
     // Bank Sampah Digital
-    Route::get('/bank-sampah/informasi', [BankController::class, 'informasi'])->name('digital.informasi');
-    Route::get('/bank-sampah/riwayat', [BankController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
-    Route::get('/bank-sampah/harga', [BankController::class, 'harga'])->middleware('auth')->name('digital.harga');
-    Route::get('/bank-sampah/tarik-saldo', [BankController::class, 'showTarikSaldoForm'])->name('digital.tarik-saldo.form');
-    Route::post('/bank-sampah/tarik-saldo', [BankController::class, 'storeTarikSaldo'])->name('digital.tarik-saldo.store');
+    Route::get('/bank-sampah/informasi/{bank:slug?}', [BankSampahUserController::class, 'informasi'])->name('digital.informasi');
+    Route::get('/bank-sampah/riwayat/{bank:slug?}', [BankTransactionController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
+    Route::get('/bank-sampah/harga/{bank:slug?}', [BankWasteProductController::class, 'harga'])->middleware('auth')->name('digital.harga');
+    Route::get('/bank-sampah/tarik-saldo/{bank:slug}', [BankSampahUserController::class, 'showTarikSaldoForm'])->middleware('auth')->name('digital.tarik-saldo.form');
+    Route::post('/bank-sampah/tarik-saldo/{bank:slug}', [BankSampahUserController::class, 'storeTarikSaldo'])->middleware('auth')->name('digital.tarik-saldo.store');
+    // Route::get('/bank-sampah/tarik-saldo', [BankSampahUserController::class, 'showTarikSaldoForm'])->name('digital.tarik-saldo.form');
+    // Route::post('/bank-sampah/tarik-saldo', [BankSampahUserController::class, 'storeTarikSaldo'])->name('digital.tarik-saldo.store');
+    Route::get('/bank-sampah/{bank:slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/riwayat', [BankTransactionController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
+    // Route::get('/bank-sampah/{bank:slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // Route::get('/bank-sampah/{bankSampah}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
-    Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // --- AKHIR PENAMBAHAN ROUTE ---
 
      // Marketplace

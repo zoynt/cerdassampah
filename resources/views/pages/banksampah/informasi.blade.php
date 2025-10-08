@@ -1,23 +1,23 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Informasi Bank Sampah')
+@section('title', 'Bank Sampah Digital')
 
 @section('content')
     <div class="space-y-6">
         <div>
             <h1 class="text-3xl font-bold text-gray-800 mb-2">Bank Sampah Digital</h1>
 
-            {{-- ======================================================= --}}
-            {{-- PERUBAHAN 1: DROPDOWN MENJADI FORM YANG BERFUNGSI --}}
-            {{-- ======================================================= --}}
             <form id="bank-filter-form" action="{{ route('digital.informasi') }}" method="GET">
                 <div class="relative">
-                    <select name="bank_id" onchange="this.form.submit()"
-                        class="block w-full pl-4 pr-10 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500">
-                        <option value="">Pilih Bank Sampah</option>
+                    {{-- PERBAIKAN: Gunakan javascript untuk redirect ke URL slug --}}
+                    <select name="bank_slug"
+                            onchange="if (this.value) { window.location.href = '{{ url('/bank-sampah/informasi') }}/' + this.value; }"
+                            class="block w-full pl-4 pr-10 py-3 text-gray-700 bg-white border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500">
+
                         @foreach ($daftarBank as $bank)
-                            <option value="{{ $bank->id }}" @selected($bankSampahTerpilih && $bankSampahTerpilih->id == $bank->id)>
-                                {{ $bank->nama }}
+                            {{-- PERBAIKAN: 'value' dari option sekarang adalah slug --}}
+                            <option value="{{ $bank->slug }}" @selected($bankSampahTerpilih && $bankSampahTerpilih->id == $bank->id)>
+                                {{ $bank->bank_name }}
                             </option>
                         @endforeach
                     </select>
@@ -28,7 +28,6 @@
             </form>
         </div>
 
-        {{-- Kartu Saldo Utama --}}
         <div class="rounded-2xl shadow-lg p-6 bg-gradient-to-br from-green-600 to-teal-600 text-white space-y-6">
             <div class="flex items-center gap-4">
                 <div class="flex-shrink-0">
@@ -45,7 +44,8 @@
                     <p class="text-3xl sm:text-4xl font-bold">Rp {{ number_format($saldo, 0, ',', '.') }}</p>
                     <p class="text-xs opacity-80 mt-1">Nomor Rekening: {{ $nomorRekening }}</p>
                     @if($bankSampahTerpilih)
-                        <p class="text-xs opacity-80">{{ $bankSampahTerpilih->nama }}</p>
+                        {{-- PERBAIKAN: Gunakan bank_name --}}
+                        <p class="text-xs opacity-80">{{ $bankSampahTerpilih->bank_name }}</p>
                     @endif
                 </div>
             </div>
@@ -68,8 +68,8 @@
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <a href="{{ route('digital.harga') }}" class="block text-center w-full py-3 bg-amber-400 text-amber-900 font-semibold rounded-lg hover:bg-amber-500 transition shadow">Cek Harga Sampah</a>
-                <a href="{{ route('digital.tarik-saldo.form', request()->query()) }}" class="block text-center w-full py-3 bg-amber-400 text-amber-900 font-semibold rounded-lg hover:bg-amber-500 transition shadow">Tarik Saldo</a>
+                <a href="{{ route('digital.harga', ['bank' => $bankSampahTerpilih->slug]) }}" class="block text-center w-full py-3 bg-amber-400 text-amber-900 font-semibold rounded-lg hover:bg-amber-500 transition shadow">Cek Harga Sampah</a>
+                <a href="{{ route('digital.tarik-saldo.form', ['bank' => $bankSampahTerpilih->slug]) }}" class="block text-center w-full py-3 bg-amber-400 text-amber-900 font-semibold rounded-lg hover:bg-amber-500 transition shadow">Tarik Saldo</a>
             </div>
         </div>
 
@@ -84,33 +84,45 @@
             </div>
         </div>
 
-        <div class="space-y-3">
             <div class="flex justify-between items-center">
                 <h2 class="text-2xl font-bold text-gray-800">Transaksi Terbaru</h2>
-                {{-- ======================================================= --}}
-                {{-- PERUBAHAN 2: LINK SEKARANG AKTIF --}}
-                {{-- ======================================================= --}}
-                <a href="{{ route('digital.riwayat') }}" class="text-sm font-medium text-green-600 hover:text-green-800">
+                <a href="{{ route('digital.riwayat', ['bank' => $bankSampahTerpilih->slug]) }}" class="text-sm font-medium text-green-600 hover:text-green-800">
                     Tampilkan Semua
                 </a>
             </div>
 
+            {{-- PERBAIKAN UTAMA: Tampilkan detail transaksi --}}
             @forelse ($transaksiTerbaru as $transaksi)
-                <div @class(['flex justify-between items-center p-4 rounded-xl border', 'bg-green-50 border-green-200' => $transaksi->tipe == 'pemasukan', 'bg-red-50 border-red-200' => $transaksi->tipe == 'penarikan'])>
-                    <div>
-                        <p class="font-bold text-gray-800">{{ $transaksi->deskripsi }}</p>
-                        <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($transaksi->created_at)->translatedFormat('d M Y') }}</p>
-                        <p class="text-sm text-gray-500">{{ $transaksi->detail }}</p>
+                <div @class(['p-4 rounded-xl border', 'bg-green-50 border-green-200' => $transaksi->transaction_type == 'pemasukan', 'bg-red-50 border-red-200' => $transaksi->transaction_type == 'penarikan'])>
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-gray-800">{{ $transaksi->description }}</p>
+                            <p class="text-sm text-gray-500">{{ \Carbon\Carbon::parse($transaksi->created_at)->translatedFormat('d M Y, H:i') }}</p>
+
+                            {{-- Tampilkan detail item jika ini adalah transaksi pemasukan --}}
+                            @if($transaksi->transaction_type == 'pemasukan' && $transaksi->details->isNotEmpty())
+                                <div class="mt-2 text-xs text-gray-600 border-l-2 border-gray-200 pl-2 space-y-1">
+                                    @foreach($transaksi->details as $detail)
+                                        <p>
+                                            {{ $detail->wasteProduct->item_name }}
+                                            ({{ $detail->weight_kg }} kg x Rp {{ number_format($detail->price_per_kg, 0, ',', '.') }})
+                                        </p>
+                                    @endforeach
+                                </div>
+                            @endif
+                        </div>
+
+                        {{-- PERBAIKAN: Gunakan transaction_type dan transaction_amount --}}
+                        @if ($transaksi->transaction_type == 'pemasukan')
+                            <p class="font-semibold text-green-600 whitespace-nowrap">+ Rp {{ number_format($transaksi->transaction_amount, 0, ',', '.') }}</p>
+                        @else
+                            <p class="font-semibold text-red-600 whitespace-nowrap">- Rp {{ number_format($transaksi->transaction_amount, 0, ',', '.') }}</p>
+                        @endif
                     </div>
-                    @if ($transaksi->tipe == 'pemasukan')
-                        <p class="font-semibold text-green-600">+ Rp {{ number_format($transaksi->jumlah, 0, ',', '.') }}</p>
-                    @else
-                        <p class="font-semibold text-red-600">- Rp {{ number_format($transaksi->jumlah, 0, ',', '.') }}</p>
-                    @endif
                 </div>
             @empty
                 <div class="text-center p-6 bg-gray-50 rounded-xl">
-                    <p class="text-gray-500">Belum ada transaksi.</p>
+                    <p class="text-gray-500">Belum ada transaksi di bank sampah ini.</p>
                 </div>
             @endforelse
         </div>

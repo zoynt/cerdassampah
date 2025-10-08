@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
             $table->foreignId('bank_id')->constrained('banks')->onDelete('cascade');
-
+            $table->string('rekening_number');
             $table->decimal('saldo', 10, 2)->default(0.00); // 10 total digit, 2 di belakang koma
             $table->timestamps();
         });

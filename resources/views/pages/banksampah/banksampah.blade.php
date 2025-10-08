@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Rute & Jadwal')
+@section('title', 'Jadwal Bank Sampah')
   <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
 
 
@@ -172,7 +172,7 @@
                 // const detailUrl = `/bank-sampah/${loc.id}`;
                 const detailUrl = `/bank-sampah/${loc.slug}`;
                 // const detailUrl = `/bank-sampah/${loc.slug}`;
-                const setorUrl = `/bank-sampah/informasi?bank_id=${loc.id}`;
+                const setorUrl = `/bank-sampah/informasi/${loc.slug}`;
                 // /bank-sampah/{bankSampah}
 
                 // Konten HTML untuk Popup

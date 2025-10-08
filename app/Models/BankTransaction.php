@@ -10,6 +10,8 @@ class BankTransaction extends Model
         'rekening_id',
         'transaction_code',
         'transaction_amount',
+        'transaction_type',
+        'description',
     ];
 
     public function rekening()

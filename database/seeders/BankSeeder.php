@@ -19,28 +19,28 @@ class BankSeeder extends Seeder
 
         $banks = [
                 [
-                    'bank_name'       => 'Bank Banjarmasin Utara',
-                    'slug'            => 'bank-banjarmasin-utara',
-                    'bank_longitude'  => '114.5912',
-                    'bank_latitude'   => '-3.3835',
-                    'alamat'    => 'Alamat Bank Banjarmasin Utara',
-                    'kecamatan'       => 'banjarmasin utara',
-                    'bank_day'        => json_encode(["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]),
-                    'bank_start_time' => '08:00:00',
-                    'bank_end_time'   => '16:00:00',
-                    'bank_description'=> 'Bank yang terletak di Banjarmasin Utara.',
-                    'bank_no'         => '1234567890', // Pastikan kolom ini ADA di database
-                    'image'           => 'storage/bank/tps.jpg', // ← Pakai storage, bukan public/
-                    'created_at'      => Carbon::now(),
-                    'updated_at'      => Carbon::now(),
-                ],            
+                'bank_name'       => 'Bank Banjarmasin Utara',
+                'slug'            => 'bank-banjarmasin-utara',
+                'bank_longitude'  => '114.5912',
+                'bank_latitude'   => '-3.3835',
+                'alamat'    => 'Alamat Bank Banjarmasin Utara',
+                'kecamatan'       => 'banjarmasin utara',
+                'bank_day'        => json_encode(["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]),
+                'bank_start_time' => '08:00:00',
+                'bank_end_time'   => '16:00:00',
+                'bank_description'=> 'Bank yang terletak di Banjarmasin Utara.',
+                'bank_no'         => '1234567890', // Pastikan kolom ini ADA di database
+                'image'           => 'storage/bank/tps.jpg', // ← Pakai storage, bukan public/
+                'created_at'      => Carbon::now(),
+                'updated_at'      => Carbon::now(),
+                ],
                 [
-                    'bank_name' => 'Bank Banjarmasin Selatan',
-                    'slug' => 'bank-banjarmasin-selatan',
-                    'bank_longitude' => '114.5863',
-                    'bank_latitude' => '-3.4672',
-                    'bank_address' => 'Alamat Bank Banjarmasin Selatan',
-                    'kecamatan' => 'banjarmasin selatan',
+                'bank_name' => 'Bank Banjarmasin Selatan',
+                'slug' => 'bank-banjarmasin-selatan',
+                'bank_longitude' => '114.5863',
+                'bank_latitude' => '-3.4672',
+                'bank_address' => 'Alamat Bank Banjarmasin Selatan',
+                'kecamatan' => 'banjarmasin selatan',
                 'bank_day'        => json_encode(["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"]),
                 'bank_start_time' => '08:30:00',
                 'bank_end_time' => '17:00:00',
@@ -98,7 +98,7 @@ class BankSeeder extends Seeder
                 'updated_at' => Carbon::now(),
             ]
         ];
-        
+
         // Set default image jika null
         foreach ($banks as &$bank) {
             if (empty($bank['image'])) {

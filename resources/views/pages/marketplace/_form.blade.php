@@ -59,7 +59,6 @@
                 required>
         </div>
 
-        {{-- Kategori Produk --}}
         <div x-data="{
                 open: false,
                 search: '{{ old('kategori', optional($produk->category)->name ?? '') }}',
@@ -90,7 +89,6 @@
 
     {{-- ... sisa input harga, stok, dll ... --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {{-- Harga --}}
         <div>
             <label for="harga" class="block mb-2 text-sm font-medium text-gray-700">Harga</label>
             <input type="number" name="harga" id="harga"
@@ -99,7 +97,6 @@
                 required>
         </div>
 
-        {{-- Stok Barang --}}
         <div>
             <label for="stok" class="block mb-2 text-sm font-medium text-gray-700">Stok Barang</label>
             <input type="number" name="stok" id="stok"

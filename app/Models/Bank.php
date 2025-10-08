@@ -19,7 +19,7 @@ class Bank extends Model
     // ];
 
     protected $casts = [
-        'bank_day' => 'array', 
+        'bank_day' => 'array',
     ];
 
     // public function users()
@@ -34,6 +34,7 @@ class Bank extends Model
 
     public function wasteProducts()
     {
+        // Sesuaikan 'App\Models\BankWasteProduct' jika nama model Anda berbeda
         return $this->hasMany(BankWasteProduct::class, 'bank_id');
     }
 
