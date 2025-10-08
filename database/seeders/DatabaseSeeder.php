@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        User::factory(10)->create();
         $this->call([
             // ==========================================================
             // URUTAN YANG BENAR:
@@ -28,6 +29,15 @@ class DatabaseSeeder extends Seeder
             SurungSeeder::class,
             MaterialSeeder::class,
             QuestSeeder::class,
+            ProductCategorySeeder::class,
+            StoreSeeder::class,
+            ProductSeeder::class,
+            OrderSeeder::class, 
+            ProductImageSeeder::class,
+            StoreReviewSeeder::class,
+            OrderItemSeeder::class,
+            MySalesHistorySeeder::class,
+        ]);
 
             // 2. Data Relasi (Bergantung pada data master di atas)
             RekeningBankSampahUserSeeder::class, // Bergantung pada User dan Bank

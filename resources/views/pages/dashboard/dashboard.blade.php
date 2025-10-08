@@ -236,7 +236,7 @@
                         cuan di Cerdas Sampah!</h2>
                     <p class="mt-4 text-gray-600">Ubah sampah terpilahmu jadi peluang! Jual kardus, botol plastik, hingga
                         minyak jelantah langsung ke pengepul atau UMKM daur ulang.</p>
-                    <a href="{{ route('marketplace.product') }}"
+                    <a href="{{ route('marketplace.products.all') }}"
                         class="inline-block mt-6 bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200">
                         Jelajahi Marketplace!
                     </a>

@@ -67,11 +67,6 @@ class User extends Authenticatable implements MustVerifyEmail
                     ->withTimestamps();
     }
 
-    public function stores()
-    {
-        return $this->hasOne(Store::class);
-    }
-
     public function orders()
     {
         return $this->hasMany(Order::class, 'buyer_id');
@@ -90,5 +85,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function rekening()
     {
         return $this->hasMany(RekeningBankSampahUser::class, 'user_id');
+    }
+    public function store()
+    {
+        return $this->hasOne(Store::class);
     }
 }

@@ -10,11 +10,53 @@
     <div x-data="marketplace()" x-init="$watch('searchQuery', () => { visibleItemsCount = itemsPerLoad });
     $watch('selectedCategory', () => { visibleItemsCount = itemsPerLoad });">
         <div class="space-y-6">
-            {{-- Header Halaman Toko --}}
-            <div class="bg-green-700 text-white p-6 rounded-xl shadow-lg">
-                {{-- [MODIFIKASI] Ukuran font judul toko --}}
-                <h1 class="text-2xl md:text-3xl font-bold text-center">Hijau Market</h1>
+            <div class="relative h-64 rounded-xl overflow-hidden shadow-lg">
+                <img src="{{ $store->image_path ? asset('storage/' . $store->image_path) : asset('img/placeholder.png') }}"
+                    alt="Foto Toko {{ $store->name }}" class="absolute inset-0 w-full h-full object-cover">
+
+                <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+                <div class="relative h-full flex flex-col items-center justify-center text-center text-white p-4">
+                    <h1 class="text-3xl md:text-4xl font-bold">{{ $store->name }}</h1>
+                    <div class="flex flex-col md:flex-row items-center justify-center mt-2 space-y-2 md:space-y-0 md:space-x-4 text-sm">
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path
+                                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
+                                </path>
+                            </svg>
+                            @if ($store->reviews->count() > 0)
+                                <span>{{ $storeRating }}</span>
+                            @else
+                                <span class="font-normal text-gray-300">Belum dinilai</span>
+                            @endif
+                        </div>
+
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4">
+                                </path>
+                            </svg>
+                            <span>{{ $totalSold }} Produk Terjual</span>
+                        </div>
+
+                        <div class="flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd"
+                                    d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                                    clip-rule="evenodd"></path>
+                            </svg>
+                            <span>{{ $store->address }}</span>
+                        </div>
+                    </div>
+                    <a href="{{ route('store.profile.show', $store) }}"
+                        class="mt-4 px-4 py-2 bg-white bg-opacity-20 text-white font-semibold text-sm rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition-colors">
+                        Lihat Info Toko
+                    </a>
+                </div>
             </div>
+
 
             {{-- Filter --}}
             <div class="bg-white p-6 rounded-xl shadow-md">
@@ -37,8 +79,7 @@
                                 class="block w-full pl-10 pr-4 py-2.5 text-sm md:text-base text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                         </div>
                     </div>
-                    {{-- Dropdown Kategori --}}
-                    {{-- Dropdown Kategori --}}
+
                     <div>
                         <label for="category-filter" class="block text-sm font-medium text-gray-700">Kategori</label>
 
@@ -74,19 +115,19 @@
                 <h2 class="text-lg md:text-xl font-semibold">Produk</h2>
             </div>
 
-            {{-- Daftar Produk --}}
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 md:gap-5">
+
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-5">
                 <template x-for="product in displayProducts" :key="product.id">
                     <a :href="`/marketplace/product/${product.id}`" class="block group">
                         <div
-                            class="bg-white border border-gray-100 rounded-xl overflow-hidden transform group-hover:-translate-y-1 transition-all duration-300 shadow-sm group-hover:shadow-2xl flex flex-col h-full">
-                            {{-- [MODIFIKASI] Tinggi dan ukuran ikon di kartu produk --}}
-                            <div class="bg-green-100 w-full h-32 md:h-36 flex items-center justify-center">
-                                <div x-html="categories.find(c => c.id === product.category).icon"
-                                    class="w-16 h-16 md:w-20 md:h-20 text-green-400"></div>
+                            class="bg-white border border-gray-100 rounded-xl overflow-hidden transform group-hover:-translate-y-1 transition-all duration-300 shadow-sm group-hover:shadow-2xl flex flex-row md:flex-col h-full">
+
+                            {{-- Bagian Gambar --}}
+                            <div class="w-1/2 md:w-full h-full md:h-36 lg:h-36 overflow-hidden">
+                                <img :src="product.image" :alt="product.name" class="w-full h-full object-cover">
                             </div>
-                            <div class="p-3 md:p-4 flex flex-col flex-grow">
-                                {{-- [MODIFIKASI] Ukuran font judul dan harga produk --}}
+
+                            <div class="p-3 md:p-4 flex flex-col flex-grow w-1/2 md:w-full">
                                 <h3 class="font-bold text-gray-800 text-sm md:text-md" x-text="product.name"></h3>
                                 <p class="text-xs text-gray-500">1.35 Km</p>
                                 <div class="my-2 space-y-1 text-xs text-gray-600">
@@ -98,7 +139,13 @@
                                                     d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z">
                                                 </path>
                                             </svg>
-                                            <span x-text="product.rating.toFixed(1)"></span>
+                                            <span x-text="product.rating > 0 ? product.rating.toFixed(1) : 'Belum dinilai'"
+                                                :class="{
+                                                    'text-gray-600': product.rating > 0,
+                                                    'text-gray-500 text-xs': product
+                                                        .rating <= 0
+                                                }">
+                                            </span>
                                         </div>
                                         <div class="flex items-center">
                                             <svg class="w-4 h-4 text-green-700 mr-1" fill="none" stroke="currentColor"
@@ -110,15 +157,16 @@
                                         </div>
                                     </div>
                                     <div class="flex items-center pt-1">
-                                        <svg class="w-4 h-4 text-gray-400 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                                        <svg class="w-4 h-4 text-gray-400 mr-1.5" viewBox="0 0 20 20"
+                                            fill="currentColor">
                                             <path
                                                 d="M1 10c.41.29.96.43 1.5.43c.55 0 1.09-.14 1.5-.43c.62-.46 1-1.17 1-2c0 .83.37 1.54 1 2c.41.29.96.43 1.5.43c.55 0 1.09-.14 1.5-.43c.62-.46 1-1.17 1-2c0 .83.37 1.54 1 2c.41.29.96.43 1.51.43c.54 0 1.08-.14 1.49-.43c.62-.46 1-1.17 1-2c0 .83.37 1.54 1 2c.41.29.96.43 1.5.43c.55 0 1.09-.14 1.5-.43c.63-.46 1-1.17 1-2V7l-3-7H4L0 7v1c0 .83.37 1.54 1 2zm2 8.99h5v-5h4v5h5v-7c-.37-.05-.72-.22-1-.43c-.63-.45-1-.73-1-1.56c0 .83-.38 1.11-1 1.56c-.41.3-.95.43-1.49.44c-.55 0-1.1-.14-1.51-.44c-.63-.45-1-.73-1-1.56c0 .83-.38 1.11-1 1.56c-.41.3-.95.43-1.5.44c-.54 0-1.09-.14-1.5-.44c-.63-.45-1-.73-1-1.57c0 .84-.38 1.12-1 1.57c-.29.21-.63.38-1 .44v6.99z" />
-                                        </svg>
-                                        <span x-text="product.store"></span>
+                                        </svg><span x-text="product.store"></span>
                                     </div>
                                 </div>
                                 <p class="font-black text-gray-800 text-lg md:text-xl mt-auto"
-                                    x-text="`Rp ${product.price.toLocaleString('id-ID')}`"></p>
+                                    x-text="`Rp ${parseInt(product.price).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}`">
+                                </p>
                             </div>
                         </div>
                     </a>
@@ -139,81 +187,15 @@
     <script>
         function marketplace() {
             return {
+                isStoreInfoModalOpen: false,
                 searchQuery: '',
                 selectedCategory: '',
                 itemsPerLoad: 8,
                 visibleItemsCount: 8,
-                categories: [{
-                        id: 'kertas',
-                        name: 'Kertas & Kardus',
-                        icon: `<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path></svg>`
-                    },
-                    {
-                        id: 'plastik',
-                        name: 'Plastik',
-                        icon: `<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6"></path></svg>`
-                    },
-                    {
-                        id: 'logam',
-                        name: 'Logam',
-                        icon: `<svg class="w-full h-full" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20.63 8.37l-5.63-5.63a2.98 2.98 0 00-4.24 0L3.37 10.13a2.98 2.98 0 000 4.24l5.63 5.63a2.98 2.98 0 004.24 0l7.39-7.39a2.98 2.98 0 000-4.24zM10 14l-4-4m4 4l-2-6"></path></svg>`
-                    }
-                ],
-                products: [{
-                        id: 2,
-                        name: 'Kertas HVS Bekas',
-                        category: 'kertas',
-                        price: 1500,
-                        rating: 4.9,
-                        sold: 210,
-                        store: 'Hijau Market'
-                    },
-                    {
-                        id: 5,
-                        name: 'Majalah',
-                        category: 'kertas',
-                        price: 1300,
-                        rating: 4.6,
-                        sold: 75,
-                        store: 'Hijau Market'
-                    },
-                    {
-                        id: 6,
-                        name: 'Botol Air Mineral',
-                        category: 'plastik',
-                        price: 2500,
-                        rating: 4.9,
-                        sold: 500,
-                        store: 'Hijau Market'
-                    },
-                    {
-                        id: 10,
-                        name: 'Tutup Botol',
-                        category: 'plastik',
-                        price: 500,
-                        rating: 4.7,
-                        sold: 1000,
-                        store: 'Hijau Market'
-                    },
-                    {
-                        id: 14,
-                        name: 'Paku Karatan',
-                        category: 'logam',
-                        price: 1000,
-                        rating: 4.5,
-                        sold: 30,
-                        store: 'Hijau Market'
-                    },
-                    {
-                        id: 16,
-                        name: 'Karton Box',
-                        category: 'kertas',
-                        price: 2200,
-                        rating: 4.8,
-                        sold: 112,
-                        store: 'Hijau Market'
-                    }
-                ],
+
+                products: @json($products),
+                categories: @json($categories),
+
                 get filteredProducts() {
                     const searchMatch = (product) => product.name.toLowerCase().includes(this.searchQuery
                         .toLowerCase());
