@@ -27,7 +27,6 @@ use App\Http\Controllers\BankWasteProductController;
 use App\Http\Controllers\CompanyTransactionController;
 
 
-
 // Landing Page
 // Route::get('/', function () {
 //     return view('pages.landing.index');
