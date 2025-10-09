@@ -19,7 +19,7 @@
                 @csrf
                 <div class="mb-6 flex flex-col items-center sm:items-start">
                     <label for="file" class="block text-lg font-semibold text-gray-600">Unggah Foto Sampah</label>
-                    <div class="flex items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg mt-2 cursor-pointer" id="upload-area" onclick="document.getElementById('file').click()">
+                    <div class="flex items-center justify-center w-full h-40 border-2 border-dashed border-gray-300 rounded-lg mt-2 cursor-pointer" id="upload-area" onclick="document.getElementById('file-input').click()">
                         <div class="flex flex-col items-center justify-center w-full text-center" id="upload-content">
                             <svg xmlns="http://www.w3.org/2000/svg" width="50" height="33" viewBox="0 0 50 33" fill="none" id="upload-icon">
                                 <path d="M47.1056 15.5849C43.9543 12.3535 39.9359 9.09895 37.0498 5.62873C36.4114 4.86114 35.6959 4.15187 34.9106 3.51294C32.1178 1.24087 28.6148 -0.000809 25 3.95457e-07C20.9023 3.95457e-07 17.1713 1.56676 14.385 4.12812C11.931 6.38397 8.99308 8.30236 6.11843 9.9898C5.03637 10.625 4.04884 11.4234 3.19477 12.3653C1.13744 14.6343 -0.000357712 17.576 8.43599e-08 20.625C8.43599e-08 27.4519 5.60417 33 12.5 33H39.5833C45.3333 33 50 28.38 50 22.6875C50 19.9226 48.8988 17.4237 47.1056 15.5849ZM39.5833 28.875H12.5C7.89583 28.875 4.16667 25.1831 4.16667 20.625C4.16667 16.3969 7.35417 12.87 11.5833 12.4369C12.963 12.2965 14.2032 11.4751 14.8542 10.2506C15.8124 8.40438 17.2666 6.85565 19.0567 5.77488C20.8468 4.69411 22.9033 4.12321 25 4.125C30.4583 4.125 35.1667 7.96125 36.2292 13.2619C36.5985 15.0901 38.142 16.4473 40.0025 16.5797L40.0417 16.5825C41.6078 16.6868 43.0759 17.3745 44.1505 18.5072C45.225 19.6399 45.8263 21.1336 45.8333 22.6875C45.8333 26.0906 43.0208 28.875 39.5833 28.875ZM19.3418 15.9141C18.3589 16.8871 19.048 18.5625 20.431 18.5625C21.286 18.5625 21.9792 19.2556 21.9792 20.1107V21.7292C21.9792 23.3975 23.3316 24.75 25 24.75C26.6684 24.75 28.0208 23.3975 28.0208 21.7292V20.1107C28.0208 19.2556 28.714 18.5625 29.569 18.5625C30.952 18.5625 31.6411 16.8871 30.6582 15.9141L27.4112 12.6996C26.0756 11.3774 23.9244 11.3774 22.5888 12.6996L19.3418 15.9141Z" fill="#757575" />
@@ -28,7 +28,7 @@
                             <img id="uploaded-image" src="" alt="Preview Gambar" class="hidden mt-2 max-w-full h-auto rounded-lg">
                         </div>
                     </div>
-                    <input type="file" id="file" name="image" class="hidden" accept=".png, .jpg, .jpeg">
+                    <input type="file" id="file-input" name="file" class="hidden" accept=".png, .jpg, .jpeg">
                 </div>
 
                 <div class="mt-6">
@@ -46,7 +46,16 @@
 
         <div id="scan-results-container" class="hidden text-left mt-8" data-aos="fade-up">
             <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Hasil Scan</h2>
-            <div id="accordion-container" class="space-y-3"></div>
+
+            <!-- <div class="mb-8 p-4 bg-white rounded-xl shadow-lg border">
+                <img id="result-image-display" src="" alt="Hasil Deteksi Sampah" class="w-full h-auto rounded-lg">
+            </div> -->
+
+            <div class="w-full mx-auto mb-8 p-4 bg-white rounded-xl shadow-lg border">
+                <img id="result-image-display" src="" alt="Hasil Deteksi Sampah" class="w-full h-auto rounded-lg">
+            </div>
+            
+            <div id="accordion-container" class="space-y-5"></div>
         </div>
 
         <div id="steps-popup" class="steps-popup-overlay" style="display: none;">
@@ -340,6 +349,30 @@
     #scan-sampah-btn.is-error:hover {
         background-color: #b91c1c; /* Warna merah lebih gelap saat hover */
     }
+
+    .animated-ellipsis::after {
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: bottom;
+    animation: ellipsis-animation 1.4s infinite;
+    content: "\\2026"; /* karakter elipsis Unicode (...) */
+    width: 0px;
+    }
+
+    @keyframes ellipsis-animation {
+    0% {
+        content: ".";
+    }
+    33% {
+        content: "..";
+    }
+    66% {
+        content: "...";
+    }
+    100% {
+        content: ".";
+    }
+    }
 </style>
 
 @push('scripts')
@@ -357,214 +390,262 @@
 
         // --- Inisialisasi Variabel ---
         const API_URL = "{{ route('scan.scan') }}";
-        const scanForm = document.getElementById('scan-form');
-        const fileInput = document.getElementById('file');
-        const uploadedImage = document.getElementById('uploaded-image');
-        const uploadArea = document.getElementById('upload-area');
-        const scanButton = document.getElementById('scan-sampah-btn');
-        const errorAlert = document.getElementById('error-alert');
-        const errorMessage = document.getElementById('error-message');
-        const resultsContainer = document.getElementById('scan-results-container');
-        const accordionContainer = document.getElementById('accordion-container');
+    const scanForm = document.getElementById('scan-form');
+    const fileInput = document.getElementById('file-input');
+    const uploadedImage = document.getElementById('uploaded-image');
+    const uploadArea = document.getElementById('upload-area');
+    const scanButton = document.getElementById('scan-sampah-btn');
+    const errorAlert = document.getElementById('error-alert');
+    const errorMessage = document.getElementById('error-message');
+    const resultsContainer = document.getElementById('scan-results-container');
+    const accordionContainer = document.getElementById('accordion-container');
+    const resultImageDisplay = document.getElementById('result-image-display');
 
-        // --- Event Listener untuk Preview Gambar ---
-        fileInput.addEventListener('change', function() {
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    uploadedImage.src = e.target.result;
-                    uploadedImage.classList.remove('hidden');
-                    uploadArea.classList.add('file-selected');
-                };
-                reader.readAsDataURL(fileInput.files[0]);
-            }
-        });
-
-        // --- Event Listener untuk Tombol Scan ---
-        scanForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            if (!fileInput.files.length) {
-                Swal.fire('Perhatian!', 'Silakan pilih gambar terlebih dahulu!', 'warning');
-                return;
-            }
-
-            setBusy(true);
-            errorAlert.classList.add('hidden');
-            resultsContainer.classList.add('hidden');
-
-            const USE_DUMMY_DATA = true;
-
-            if (USE_DUMMY_DATA) {
-                const dummyData = {
-                    predictions: [{
-                        label: "Botol Plastik",
-                        type: "Anorganik",
-                        description: "Plastik PET adalah jenis plastik yang paling banyak didaur ulang. Mendaur ulangnya menghemat energi yang besar.",
-                        imageUrl: "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=2070&auto=format&fit=crop",
-                        handlingTips: ["Pisahkan tutup dari botol.", "Pastikan botol dalam keadaan kosong, bersih, dan kering."],
-                        recyclingTips: ["Dapat diolah kembali menjadi botol baru.", "Diubah menjadi serat poliester untuk bahan pakaian."]
-                    }, {
-                        label: "Sisa Makanan",
-                        type: "Organik",
-                        description: "Sampah organik seperti sisa makanan dapat diolah menjadi kompos yang sangat baik untuk menyuburkan tanah.",
-                        imageUrl: "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=2070&auto=format&fit=crop",
-                        handlingTips: ["Pisahkan dari sampah anorganik.", "Gunakan wadah tertutup untuk menghindari bau dan hama."],
-                        recyclingTips: ["Olah menjadi pupuk kompos menggunakan komposter."]
-                    }, {
-                        label: "Baterai Bekas",
-                        type: "B3",
-                        description: "Baterai bekas mengandung logam berat seperti merkuri dan kadmium yang sangat berbahaya jika dibuang sembarangan.",
-                        imageUrl: "https://images.unsplash.com/photo-1611284446314-60a58ac0deb9?q=80&w=2070&auto=format&fit=crop",
-                        handlingTips: ["Kumpulkan secara terpisah dari sampah lain.", "Tutup bagian kutubnya dengan selotip."],
-                        recyclingTips: ["Bawa ke titik pengumpulan sampah elektronik (e-waste) atau dropbox B3 terdekat."]
-                    }]
-                };
-
-                // Simulasi waktu loading selama 1.5 detik
-                setTimeout(() => {
-                    renderAccordionResults(dummyData.predictions);
-                    setBusy(false);
-                }, 1500);
-
-            } else {
-                // --- INI KODE UNTUK SCAN SEBENARNYA (JIKA USE_DUMMY_DATA = false) ---
-                const formData = new FormData(scanForm);
-                fetch(API_URL, {
-                        method: 'POST',
-                        body: formData,
-                        headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Accept': 'application/json', },
-                    })
-                    .then(async (res) => {
-                        if (!res.ok) {
-                            const errorData = await res.json().catch(() => ({ message: `Server Error: ${res.status}` }));
-                            throw new Error(errorData.message || 'Server AI gagal memproses gambar.');
-                        }
-                        return res.json();
-                    })
-                    .then(data => {
-                        renderAccordionResults(data.predictions);
-                    })
-                    .catch(err => {
-                        showErrorAlert(err.message);
-                    })
-                    .finally(() => {
-                        setBusy(false);
-                    });
-            }
-        });
-
-        function setBusy(state) {
-            scanButton.disabled = state;
-            scanButton.innerHTML = state ? 'Menganalisis...' : 'Scan Sampah';
+    // --- Event Listener untuk Preview Gambar ---
+    fileInput.addEventListener('change', function() {
+        if (fileInput.files.length > 0) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                uploadedImage.src = e.target.result;
+                uploadedImage.classList.remove('hidden');
+                uploadArea.classList.add('file-selected');
+            };
+            reader.readAsDataURL(fileInput.files[0]);
         }
+    });
 
-        function showErrorAlert(message) {
-            errorMessage.textContent = message;
-            errorAlert.classList.remove('hidden');
-            setTimeout(() => {
-                errorAlert.classList.add('hidden');
-            }, 5000);
+    // --- Event Listener untuk Tombol Scan ---
+    scanForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (!fileInput.files.length) {
+            Swal.fire('Perhatian!', 'Silakan pilih gambar terlebih dahulu!', 'warning');
+            return;
         }
+        setBusy(true);
+        errorAlert.classList.add('hidden');
+        resultsContainer.classList.add('hidden');
 
-        function renderAccordionResults(results) {
-            resultsContainer.classList.remove('hidden');
-            accordionContainer.innerHTML = '';
+        const formData = new FormData(scanForm);
 
-            if (!Array.isArray(results) || results.length === 0) {
-                accordionContainer.innerHTML = '<p class="text-center text-gray-500 py-4">Tidak ada objek yang terdeteksi.</p>';
-            } else {
-                results.forEach((result, index) => {
-                    const handlingList = (result.handlingTips || []).map(tip => `<li>${tip}</li>`).join('');
-                    const recyclingList = (result.recyclingTips || []).map(tip => `<li>${tip}</li>`).join('');
-
-                    let typeColor = '#6b7280';
-                    const typeLowerCase = (result.type || '').toLowerCase();
-
-                    if (typeLowerCase === 'organik') {
-                        typeColor = '#11b44cff';
-                    } else if (typeLowerCase === 'anorganik') {
-                        typeColor = '#e9e500ff';
-                    } else if (typeLowerCase === 'b3') {
-                        typeColor = '#f91111ff';
+        fetch("{{ route('scan.scan') }}", {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+            })
+            .then(async (res) => {
+                if (!res.ok) {
+                    const errorData = await res.json().catch(() => ({
+                        message: `Server Error: ${res.status}`
+                    }));
+                    throw new Error(errorData.message || 'Terjadi kesalahan saat memproses gambar.');
+                }
+                return res.json();
+            })
+            .then(data => {
+                if (data && data.success) {
+                    // Tampilkan gambar hasil utama dari server AI
+                    if (data.result_image_url) {
+                        resultImageDisplay.src = data.result_image_url;
+                        resultImageDisplay.style.display = 'block';
+                    } else {
+                        resultImageDisplay.style.display = 'none';
                     }
 
-                    const typeLabel = `<p class="text-sm font-semibold" style="color: ${typeColor};">${result.type}</p>`;
+                    // Render akordion untuk detail prediksi
+                renderAccordionResults(data.predictions);
+                } else {
+                    throw new Error(data.message || 'Format respons tidak valid atau tidak ada prediksi.');
+                }
+            })
+            .catch(err => {
+                showErrorAlert(err.message);
+            })
+            .finally(() => {
+                setBusy(false);
+            });
+    });
 
-                    const accordionItemHTML = `
-                        <div class="accordion-item bg-white border border-gray-200 rounded-xl overflow-hidden shadow-md transition-all hover:shadow-lg mb-4">
-                            <button class="accordion-header w-full flex justify-between items-center py-5 px-6 text-left">
-                                <div class="flex items-center gap-4">
-                                    <img src="${result.imageUrl || '/placeholder.jpg'}" alt="${result.label}" class="w-16 h-16 rounded-lg object-cover flex-shrink-0 border-2 border-white shadow-sm bg-gray-100">
-                                    <div>
-                                        <p class="text-lg font-bold text-gray-800">${'Objek ' + (index + 1)}: ${result.label}</p>
-                                        ${typeLabel}
+    // --- Fungsi-fungsi Helper ---
+
+    let ellipsisInterval = null;
+
+    // ... (Event Listener untuk Preview Gambar tetap sama)
+    fileInput.addEventListener('change', function() { /* ... */ });
+
+    // --- Event Listener untuk Tombol Scan ---
+    scanForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        // ... (validasi file tetap sama)
+        setBusy(true); // Memulai animasi
+        
+        // ... (sisa logika fetch API tetap sama)
+        const formData = new FormData(scanForm);
+        fetch("{{ route('scan.scan') }}", { /* ... */ })
+            .then(async (res) => { /* ... */ })
+            .then(data => { /* ... */ })
+            .catch(err => { /* ... */ })
+            .finally(() => {
+                setBusy(false); // Menghentikan animasi
+            });
+    });
+
+    // --- [DIUBAH] Fungsi setBusy dengan animasi JavaScript ---
+    function setBusy(state) {
+        scanButton.disabled = state;
+
+        // Selalu hentikan interval sebelumnya untuk mencegah tumpang tindih
+        clearInterval(ellipsisInterval);
+
+        if (state) {
+            // Tampilan saat proses scan/loading sedang berjalan
+            let dotCount = 1;
+            
+            // Set HTML awal dengan span target untuk teks
+            scanButton.innerHTML = `
+                <div class="flex items-center justify-center">
+                    <span id="loading-text">Menganalisis.</span>
+                </div>
+            `;
+            
+            const loadingTextElement = scanButton.querySelector('#loading-text');
+
+            // Mulai interval untuk menganimasikan titik-titik
+            ellipsisInterval = setInterval(() => {
+                dotCount = (dotCount % 3) + 1; // Membuat siklus: 1, 2, 3, 1, 2, 3, ...
+                if (loadingTextElement) {
+                   loadingTextElement.textContent = 'Menganalisis' + '.'.repeat(dotCount);
+                }
+            }, 400); // Ganti teks setiap 400 milidetik
+
+        } else {
+            // Kembalikan ke tampilan semula jika sudah selesai
+            scanButton.innerHTML = 'Scan Sampah';
+        }
+    }
+
+    function showErrorAlert(message) {
+        errorMessage.textContent = message;
+        errorAlert.classList.remove('hidden');
+        setTimeout(() => {
+            errorAlert.classList.add('hidden');
+        }, 5000);
+    }
+
+    function renderAccordionResults(results) {
+        resultsContainer.classList.remove('hidden');
+        accordionContainer.innerHTML = '';
+
+    // TAMBAHKAN KODE INI
+    const labelColorMap = {
+        'Organik': '#11b44cff',
+        'Anorganik': '#f6f101ff',
+        'Residu': '#fc5f5fff',
+        // Tambahkan label lain jika ada di masa depan
+    }
+
+        if (!Array.isArray(results) || results.length === 0) {
+            accordionContainer.innerHTML = '<p class="text-center text-gray-500 py-4">Tidak ada objek yang terdeteksi.</p>';
+        } else {
+            results.forEach((result, index) => {
+                const handlingList = (result.handlingTips || []).map(tip => `<li>${tip}</li>`).join('');
+                const recyclingList = (result.recyclingTips || []).map(tip => `<li>${tip}</li>`).join('');
+
+                // Label Akurasi (Perubahan di sini)
+                const accuracyLabel = result.confidence 
+                    ? `<p class="text-md font-bold text-gray-500">Akurasi: ${Math.round(result.confidence * 100)}%</p>` 
+                    : '<p class="text-md font-bold text-gray-500">Akurasi tidak tersedia</p>';
+                
+                // Judul Utama (Perubahan di sini)
+                const resultLabel = result.label;
+
+                const accordionItemHTML = `
+                    <div class="accordion-item bg-white border border-gray-200 rounded-xl overflow-hidden shadow-lg transition-all duration-300 hover:shadow-xl hover:-translate-y-1">
+                        <button class="accordion-header w-full flex justify-between items-center py-5 px-6 text-left">
+                            <div>
+                                <p class="text-lg font-bold text-gray-800">
+                                    ${'Objek ' + (index + 1)}: <span style="color: ${labelColorMap[result.label] || 'inherit'}">${resultLabel}</span>
+                                </p>
+                                ${accuracyLabel}
+                            </div>
+                            <div class="pr-2">
+                                <svg class="accordion-chevron w-6 h-6 text-gray-400 transition-transform duration-300 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                            </div>
+                        </button>
+                        <div class="accordion-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
+                            <div class="p-6 bg-green-50 border-t border-green-200 space-y-4">
+                                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <svg  class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+                                        fill="currentColor" viewBox="0 0 24 24" >
+                                        <path d="M11 11h2v6h-2zM11 7h2v2h-2z"></path><path d="M12 22c5.51 0 10-4.49 10-10S17.51 2 12 2 2 6.49 2 12s4.49 10 10 10m0-18c4.41 0 8 3.59 8 8s-3.59 8-8 8-8-3.59-8-8 3.59-8 8-8"></path>
+                                        </svg>
+                                        <h3 class="font-semibold text-base text-gray-800">Deskripsi & Fakta Menarik</h3>
                                     </div>
+                                    <p class="text-gray-600 text-sm leading-relaxed pl-9">${result.description || 'Deskripsi untuk item ini tidak tersedia.'}</p>
                                 </div>
-                                <div class="pr-2">
-                                    <svg class="accordion-chevron w-6 h-6 text-gray-400 transition-transform duration-300 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" /></svg>
+                                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <svg class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+                                        fill="currentColor" viewBox="0 0 24 24" >
+                                        <path d="m11 11.59-1.29-1.3-1.42 1.42 2.71 2.7 4.71-4.7-1.42-1.42z"></path><path d="M12 3C6.49 3 2 6.59 2 11c0 2.91 1.9 5.51 5 6.93V23l5.34-4c5.36-.14 9.66-3.68 9.66-8s-4.49-8-10-8m0 14h-.33L9 19v-2.42l-.64-.25C5.67 15.29 4 13.25 4 10.99c0-3.31 3.59-6 8-6s8 2.69 8 6-3.59 6-8 6Z"></path>
+                                        </svg>
+                                        <h3 class="font-semibold text-base text-gray-800">Saran Penanganan</h3>
+                                    </div>
+                                    <ol class="list-decimal list-inside text-gray-600 space-y-2 text-sm">${handlingList}</ol>
                                 </div>
-                            </button>
-                            <div class="accordion-content max-h-0 overflow-hidden transition-all duration-500 ease-in-out">
-                                <div class="p-6 bg-green-50 border-t border-green-200 space-y-4">
-                                    <img src="${result.imageUrl || '/placeholder.jpg'}" alt="Detail ${result.label}" class="w-full h-48 object-cover rounded-lg shadow-md border border-gray-200">
-                                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                                        <div class="flex items-center gap-3 mb-3">
-                                            <svg class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" /></svg>
-                                            <h3 class="font-semibold text-base text-gray-800">Deskripsi & Fakta Menarik</h3>
-                                        </div>
-                                        <p class="text-gray-600 text-sm leading-relaxed pl-9">${result.description || 'Deskripsi untuk item ini tidak tersedia.'}</p>
+                                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                    <div class="flex items-center gap-3 mb-3">
+                                        <svg  class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+                                        fill="currentColor" viewBox="0 0 24 24" >
+                                        <path d="m20.39,14.04l-1.75.97.84,1.51c.09.16.13.33.13.51,0,.17-.05.33-.14.48-.09.15-.21.27-.35.36-.15.09-.33.14-.51.14h-6.6v-2l-4,3,4,3v-2h6.6c.54,0,1.07-.14,1.53-.42.43-.26.79-.62,1.05-1.06.26-.44.4-.93.41-1.43.02-.53-.11-1.07-.38-1.54l-.84-1.51Z"></path><path d="m4.89,17.86c-.14-.08-.26-.21-.35-.36-.09-.15-.14-.31-.14-.48,0-.17.04-.35.13-.51l3.35-6.03,1.72,1-.6-4.96-4.6,1.96,1.74,1-3.37,6.06c-.26.48-.39,1.01-.38,1.54.01.5.16,1,.42,1.44.26.44.62.81,1.05,1.06.46.27.99.42,1.53.42h1.65v-2h-1.65c-.19,0-.36-.05-.51-.14Z"></path><path d="m11.13,4.63c.09-.17.22-.3.38-.39.3-.17.69-.17.99,0,.16.09.28.22.38.39l3.27,5.88-1.74,1,4.6,1.96.6-4.96-1.72,1-3.25-5.85c-.27-.49-.67-.89-1.14-1.16-.89-.5-2.06-.5-2.96,0-.48.27-.87.67-1.14,1.16l-.81,1.46,1.75.97.81-1.46Z"></path>
+                                        </svg>
+                                        <h3 class="font-semibold text-base text-gray-800">Daur Ulang</h3>
                                     </div>
-                                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                                        <div class="flex items-center gap-3 mb-3">
-                                            <svg class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" /></svg>
-                                            <h3 class="font-semibold text-base text-gray-800">Saran Penanganan</h3>
-                                        </div>
-                                        <ol class="list-decimal list-inside text-gray-600 space-y-2 text-sm">${handlingList}</ol>
-                                    </div>
-                                    <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
-                                        <div class="flex items-center gap-3 mb-3">
-                                            <svg class="w-6 h-6 text-green-600" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M15.312 11.424a5.5 5.5 0 01-9.224 4.152l.163-.284A4.5 4.5 0 0014.223 12h-2.223a.75.75 0 010-1.5h3.646a.75.75 0 01.75.75v3.646a.75.75 0 01-1.5 0v-2.19zM4.688 8.576a5.5 5.5 0 019.224-4.152l-.163.284A4.5 4.5 0 005.777 8h2.223a.75.75 0 010 1.5H4.354a.75.75 0 01-.75-.75V5.104a.75.75 0 011.5 0v2.19z" clip-rule="evenodd" /></svg>
-                                            <h3 class="font-semibold text-base text-gray-800">Daur Ulang</h3>
-                                        </div>
-                                        <ol class="list-decimal list-inside text-gray-600 space-y-2 text-sm">${recyclingList}</ol>
-                                    </div>
+                                    <ol class="list-decimal list-inside text-gray-600 space-y-2 text-sm">${recyclingList}</ol>
                                 </div>
                             </div>
                         </div>
-                    `;
-                    accordionContainer.innerHTML += accordionItemHTML;
-                });
-                addAccordionListeners();
-            }
-            resultsContainer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    </div>
+                `;
+                accordionContainer.innerHTML += accordionItemHTML;
+            });
+            addAccordionListeners();
         }
+        resultsContainer.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+        });
+    }
 
-        function addAccordionListeners() {
-            const accordionHeaders = document.querySelectorAll('.accordion-header');
-            accordionHeaders.forEach(header => {
-                header.addEventListener('click', () => {
-                    const content = header.nextElementSibling;
-                    const chevron = header.querySelector('.accordion-chevron');
-                    const isActive = header.classList.contains('active');
-                    document.querySelectorAll('.accordion-header.active').forEach(activeHeader => {
-                        if (activeHeader !== header) {
-                           activeHeader.classList.remove('active');
-                           activeHeader.nextElementSibling.style.maxHeight = null;
-                           activeHeader.querySelector('.accordion-chevron').classList.remove('rotate-180');
-                        }
-                    });
-                    if (!isActive) {
-                        header.classList.add('active');
-                        content.style.maxHeight = content.scrollHeight + "px";
-                        chevron.classList.add('rotate-180');
-                    } else {
-                        header.classList.remove('active');
-                        content.style.maxHeight = null;
-                        chevron.classList.remove('rotate-180');
+    function addAccordionListeners() {
+        const accordionHeaders = document.querySelectorAll('.accordion-header');
+        accordionHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const content = header.nextElementSibling;
+                const chevron = header.querySelector('.accordion-chevron');
+                const isActive = header.classList.contains('active');
+                document.querySelectorAll('.accordion-header.active').forEach(activeHeader => {
+                    if (activeHeader !== header) {
+                        activeHeader.classList.remove('active');
+                        activeHeader.nextElementSibling.style.maxHeight = null;
+                        activeHeader.querySelector('.accordion-chevron').classList.remove('rotate-180');
                     }
                 });
+                if (!isActive) {
+                    header.classList.add('active');
+                    content.style.maxHeight = content.scrollHeight + "px";
+                    chevron.classList.add('rotate-180');
+                } else {
+                    header.classList.remove('active');
+                    content.style.maxHeight = null;
+                    chevron.classList.remove('rotate-180');
+                }
             });
-        }
+        });
+    }
     });
 
     // --- Logika untuk Popup ---

@@ -41,7 +41,7 @@
                 </ul>
             </div>
         @endif
-
+        
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
             <div class="bg-green-600 p-6">
                 <h1 class="text-2xl font-bold text-white">
