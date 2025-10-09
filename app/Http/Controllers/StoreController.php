@@ -15,15 +15,31 @@ class StoreController extends Controller
      * * @param Store $store
      * @return \Illuminate\View\View
      */
-    public function show(Store $store)
+        public function show(Store $store)
     {
+        // Variabel untuk menentukan status buka/tutup
+        $isStoreOpen = false; 
+
+        // Cek #1: Apakah toko diaktifkan oleh pemiliknya?
+        if ($store->is_active) {
+            // Jika aktif, baru cek #2: Apakah buka hari ini?
+            $today = strtolower(\Carbon\Carbon::now()->locale('id')->dayName);
+            $isOpenToday = is_array($store->operational_days) && in_array($today, array_map('strtolower', $store->operational_days));
+            
+            if ($isOpenToday) {
+                $isStoreOpen = true;
+            }
+        }
+
         $totalSold = \App\Models\OrderItem::whereHas('product', function ($query) use ($store) {
             $query->where('store_id', $store->id);
         })->whereHas('order', function ($query) {
             $query->where('status', 'completed');
         })->sum('quantity');
+
         $store->load(['reviews', 'products' => function ($query) {
-            $query->with(['category', 'images'])
+            $query->where('status', 'available') 
+                ->with(['category', 'images'])
                 ->withSum(['orderItems as sold_count' => function ($subQuery) {
                     $subQuery->whereHas('order', function ($q) {
                         $q->where('status', 'completed');
@@ -58,6 +74,7 @@ class StoreController extends Controller
 
         return view('pages.marketplace.store', [
             'store' => $store,
+            'isStoreOpen' => $isStoreOpen,
             'products' => $productsFormatted,
             'categories' => $categories,
             'storeRating' => number_format($storeRating ?? 0, 1),

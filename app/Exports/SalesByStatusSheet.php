@@ -24,10 +24,20 @@ class SalesByStatusSheet implements FromQuery, WithHeadings, WithMapping, WithTi
     public function query()
     {
         $store = Auth::user()->store;
-        return Order::query()
+        $query = Order::query()
             ->where('seller_id', $store->user_id)
-            ->where('status', $this->status)
             ->with(['buyer', 'orderItems.product']);
+
+        // Jika status yang diminta adalah 'pending' (untuk sheet 'Pesanan Baru'),
+        // kita sertakan juga status 'processing'.
+        if ($this->status === 'pending') {
+            $query->whereIn('status', ['pending', 'processing']);
+        } else {
+            // Untuk sheet lain, gunakan status yang spesifik.
+            $query->where('status', $this->status);
+        }
+
+        return $query;
     }
 
     /**
@@ -42,6 +52,7 @@ class SalesByStatusSheet implements FromQuery, WithHeadings, WithMapping, WithTi
             'Produk Dibeli',
             'Jumlah Item',
             'Total Harga',
+            'Status', // Menambahkan kolom status untuk kejelasan
         ];
     }
 
@@ -56,7 +67,8 @@ class SalesByStatusSheet implements FromQuery, WithHeadings, WithMapping, WithTi
             optional($order->buyer)->name ?? 'Pembeli Dihapus',
             $order->orderItems->pluck('product.name')->join(', '),
             $order->orderItems->sum('quantity'),
-            $order->total_amount,
+            number_format($order->total_amount, 0, ',', '.'),
+            ucfirst($order->status), // Menambahkan data status di setiap baris
         ];
     }
 
@@ -67,7 +79,7 @@ class SalesByStatusSheet implements FromQuery, WithHeadings, WithMapping, WithTi
     {
         if ($this->status === 'pending') return 'Pesanan Baru';
         if ($this->status === 'completed') return 'Selesai';
-        if ($this->status === 'canceled') return 'Dibatalkan'; // Sesuaikan dengan 'cancelled' jika ejaan di DB berbeda
+        if ($this->status === 'canceled') return 'Dibatalkan';
 
         return 'Lainnya';
     }

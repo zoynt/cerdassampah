@@ -21,10 +21,10 @@ class ProductSeeder extends Seeder
         $plastikId = DB::table('product_categories')->where('slug', 'plastik')->value('id');
         $logamId = DB::table('product_categories')->where('slug', 'logam')->value('id');
 
-        // Mendapatkan ID toko dari database berdasarkan nama
-        $tokoDaurUlangId = DB::table('stores')->where('name', 'Toko Daur Ulang')->value('id');
-        $hijauMarketId = DB::table('stores')->where('name', 'Hijau Market')->value('id');
-        $kreasiBekasId = DB::table('stores')->where('name', 'Kreasi Bekas')->value('id');
+        // Mendapatkan ID toko dari database berdasarkan nama (BENAR)
+        $tokoDaurUlangId = DB::table('stores')->where('name', 'Toko Daur Ulang Jaya')->value('id');
+        $hijauMarketId = DB::table('stores')->where('name', 'Hijau Market Banjarmasin')->value('id');
+        $kreasiBekasId = DB::table('stores')->where('name', 'Kreasi Bekas Banjar')->value('id');
 
         Product::insert([
             // Produk Awal

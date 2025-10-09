@@ -134,7 +134,11 @@
             <select name="status" id="status"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500">
                 @foreach ($statusList as $status)
-                    <option value="{{ $status }}" @selected(old('status', $produk->exists ? ($produk->status == 'available' ? 'Tersedia' : 'Habis') : 'Tersedia') == $status)>
+                    <option value="{{ $status }}" @selected(old('status', $produk->exists ? match($produk->status) {
+                        'sold' => 'Habis',
+                        'draft' => 'Diarsipkan',
+                        default => 'Tersedia',
+                    } : 'Tersedia') == $status)>
                         {{ $status }}
                     </option>
                 @endforeach

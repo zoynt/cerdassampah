@@ -252,6 +252,7 @@ class OrderController extends Controller
         // Buat instance Guzzle Client
         $client = new Client([
             'base_uri' => $baseUrl,
+            'timeout'  => 5.0, // Tambahkan timeout agar tidak terlalu lama menunggu
         ]);
 
         try {
@@ -266,13 +267,39 @@ class OrderController extends Controller
 
             $body = json_decode($response->getBody()->getContents());
 
-            // Periksa status transaksi dari respons API
+            // 1. [Pemeriksaan Keamanan] Cek dulu apakah properti transaction_status ada
+            if (!isset($body->transaction_status)) {
+                Log::warning('Order ' . $order->order_number . ' tidak ditemukan di Midtrans. Pesan: ' . ($body->status_message ?? 'Unknown error'));
+                return; // Hentikan eksekusi
+            }
+
+            // Jika properti ada, baru lanjutkan
             $newStatus = $body->transaction_status;
 
             // Logika update status (sama seperti di callback)
             if ($newStatus == 'capture' || $newStatus == 'settlement') {
-                $order->payment_status = 'success';
-                $order->status = 'processing';
+                
+                // Hanya jalankan update jika status pembayaran belum 'success'
+                // untuk mencegah pengurangan stok ganda
+                if ($order->payment_status !== 'success') {
+                    $order->payment_status = 'success';
+                    $order->status = 'processing';
+                    
+                    // 2. [Logika Pengurangan Stok]
+                    foreach ($order->orderItems as $item) {
+                        // Pastikan produk masih ada sebelum mengurangi stok
+                        if ($item->product) {
+                            $item->product->decrement('stock', $item->quantity);
+
+                            // 3. [Logika Status Produk Habis]
+                            // Cek jika stok habis setelah dikurangi, lalu ubah status produk
+                            if ($item->product->stock <= 0) {
+                                $item->product->status = 'sold'; // Ganti 'habis' jika nama status Anda berbeda
+                                $item->product->save();
+                            }
+                        }
+                    }
+                }
             } elseif ($newStatus == 'pending') {
                 $order->payment_status = 'pending';
             } elseif ($newStatus == 'deny' || $newStatus == 'cancel') {
@@ -288,15 +315,21 @@ class OrderController extends Controller
                 $order->payment_method = $body->payment_type;
             }
 
-            // Simpan perubahan ke database
+            // Simpan semua perubahan pada order
             $order->save();
 
         } catch (RequestException $e) {
-            // Tangani jika order tidak ditemukan di Midtrans atau terjadi error lain
-            Log::error('Gagal mengecek status Midtrans: ' . $e->getMessage());
+            // Tangani jika terjadi error koneksi atau status 404 dari Midtrans
+            if ($e->hasResponse()) {
+                $responseBody = $e->getResponse()->getBody()->getContents();
+                Log::error('Gagal mengecek status Midtrans untuk order ' . $order->order_number . '. Respons: ' . $responseBody);
+            } else {
+                Log::error('Gagal koneksi ke Midtrans saat mengecek order ' . $order->order_number . '. Error: ' . $e->getMessage());
+            }
         }
     }
     
+
     public function markAsCompleted(Order $order)
     {
         // Otorisasi: Pastikan user yang login adalah PENJUAL dari order ini

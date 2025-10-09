@@ -17,7 +17,21 @@
                 <div class="absolute inset-0 bg-black bg-opacity-50"></div>
                 <div class="relative h-full flex flex-col items-center justify-center text-center text-white p-4">
                     <h1 class="text-3xl md:text-4xl font-bold">{{ $store->name }}</h1>
-                    <div class="flex flex-col md:flex-row items-center justify-center mt-2 space-y-2 md:space-y-0 md:space-x-4 text-sm">
+                    <div class="mt-3">
+                        @if ($isStoreOpen)
+                            <span
+                                class="px-4 py-1.5 text-xs font-semibold rounded-full bg-green-500/80 text-white backdrop-blur-sm">
+                                Toko Buka
+                            </span>
+                        @else
+                            <span
+                                class="px-4 py-1.5 text-xs font-semibold rounded-full bg-red-500/80 text-white backdrop-blur-sm">
+                                Toko Tutup
+                            </span>
+                        @endif
+                    </div>
+                    <div
+                        class="flex flex-col md:flex-row items-center justify-center mt-2 space-y-2 md:space-y-0 md:space-x-4 text-sm">
                         <div class="flex items-center">
                             <svg class="w-4 h-4 text-yellow-400 mr-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path

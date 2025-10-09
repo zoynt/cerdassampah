@@ -179,43 +179,47 @@
             </a>
 
             {{-- Tombol khusus untuk status 'completed' --}}
-            @if ($order->status == 'completed')
-                @if ($hasReviewed)
-                    <a href="{{ route('marketplace.rating.show', $order) }}"
-                        class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-yellow-500 text-white hover:bg-yellow-600">
-                        Edit Ulasan
-                    </a>
-                @else
-                    <a href="{{ route('marketplace.rating.show', $order) }}"
+            @if (Auth::id() === $order->buyer_id)
+
+                {{-- Tombol khusus untuk status 'completed' --}}
+                @if ($order->status == 'completed')
+                    @if ($hasReviewed)
+                        <a href="{{ route('marketplace.rating.show', $order) }}"
+                            class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-yellow-500 text-white hover:bg-yellow-600">
+                            Edit Ulasan
+                        </a>
+                    @else
+                        <a href="{{ route('marketplace.rating.show', $order) }}"
+                            class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-green-700 text-white hover:bg-green-600">
+                            Beri Ulasan
+                        </a>
+                    @endif
+
+                    {{-- Tombol khusus untuk status 'pending' --}}
+                @elseif ($order->status == 'pending')
+                    {{-- Tombol "Bayar Sekarang" dan "Batalkan" tetap di sini karena hanya relevan untuk pembeli --}}
+                    <form action="{{ route('marketplace.order.cancel', $order) }}" method="POST" class="w-full sm:w-auto"
+                        onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                        @csrf
+                        <button type="submit"
+                            class="w-full text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-red-600 text-white hover:bg-red-700">
+                            Batalkan
+                        </button>
+                    </form>
+
+                    <button id="pay-now-button"
                         class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-green-700 text-white hover:bg-green-600">
+                        Bayar Sekarang
+                    </button>
+
+                    {{-- Tombol disabled untuk status lainnya (processing/canceled) --}}
+                @else
+                    <a
+                        class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-200 text-gray-500 cursor-not-allowed">
                         Beri Ulasan
                     </a>
                 @endif
-
-                {{-- Tombol khusus untuk status 'pending' --}}
-            @elseif ($order->status == 'pending')
-                <form action="{{ route('marketplace.order.cancel', $order) }}" method="POST" class="w-full sm:w-auto"
-                    onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
-                    @csrf
-                    <button type="submit"
-                        class="w-full text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-red-600 text-white hover:bg-red-700">
-                        Batalkan
-                    </button>
-                </form>
-
-                <button id="pay-now-button"
-                    class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-green-700 text-white hover:bg-green-600">
-                    Bayar Sekarang
-                </button>
-
-                {{-- Tombol disabled untuk status lainnya (processing/canceled) --}}
-            @else
-                <a
-                    class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-200 text-gray-500 cursor-not-allowed">
-                    Beri Ulasan
-                </a>
-            @endif
-
+                @endif
         </div>
     </div>
 @endsection

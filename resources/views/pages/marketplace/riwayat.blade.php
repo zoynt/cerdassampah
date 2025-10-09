@@ -99,7 +99,6 @@
                 </a>
             </div>
 
-            {{-- [PERBAIKAN SIDEBAR] Bungkus kartu tabel dengan div ini --}}
             <div class="grid grid-cols-[minmax(0,_1fr)]">
                 <div class="bg-white rounded-2xl shadow-lg">
                     <div class="border-b border-gray-200">
@@ -108,11 +107,6 @@
                                 :class="{ 'border-green-600 text-green-600': activeStatus === 'pending', 'border-transparent text-gray-500 hover:text-gray-700': activeStatus !== 'pending' }"
                                 class="shrink-0 border-b-2 px-1 py-4 text-sm font-medium">
                                 Pesanan Baru
-                            </button>
-                            <button @click="activeStatus = 'processing'" type="button"
-                                :class="{ 'border-blue-600 text-blue-600': activeStatus === 'processing', 'border-transparent text-gray-500 hover:text-gray-700': activeStatus !== 'processing' }"
-                                class="shrink-0 border-b-2 px-1 py-4 text-sm font-medium">
-                                Pesanan Diproses
                             </button>
                             <button @click="activeStatus = 'completed'" type="button"
                                 :class="{ 'border-green-600 text-green-600': activeStatus === 'completed', 'border-transparent text-gray-500 hover:text-gray-700': activeStatus !== 'completed' }"
@@ -159,15 +153,19 @@
                                         </td>
                                         <td class="px-6 py-4">
                                             <template x-if="item.status === 'pending' || item.status === 'processing'">
-                                                <form :action="`/marketplace/orders/${item.order_id}/complete`"
-                                                    method="POST"
-                                                    onsubmit="return confirm('Apakah Anda yakin ingin menyelesaikan pesanan ini?');">
-                                                    @csrf
-                                                    <button type="submit"
-                                                        class="px-4 py-1.5 bg-green-200 text-green-800 font-semibold rounded-full hover:bg-green-300 text-xs">
-                                                        Selesaikan
-                                                    </button>
-                                                </form>
+                                                <div class="flex items-center gap-2">
+                                                    <form :action="`/marketplace/orders/${item.order_id}/complete`"
+                                                        method="POST"
+                                                        onsubmit="return confirm('Apakah Anda yakin ingin menyelesaikan pesanan ini?');">
+                                                        @csrf
+                                                        <button type="submit"
+                                                            class="px-4 py-1.5 bg-green-200 text-green-800 font-semibold rounded-full hover:bg-green-300 text-xs whitespace-nowrap">
+                                                            Selesaikan
+                                                        </button>
+                                                    </form>
+                                                    <a :href="item.detailUrl"
+                                                        class="px-4 py-1.5 bg-blue-100 text-blue-800 font-semibold rounded-full hover:bg-blue-200 text-xs">Detail</a>
+                                                </div>
                                             </template>
 
                                             <template x-if="item.status === 'completed' || item.status === 'canceled'">
@@ -288,7 +286,15 @@
                 itemsPerPage: 5,
                 currentPage: 1,
                 get filteredPenjualans() {
-                    const byStatus = this.penjualans.filter(item => item.status === this.activeStatus);
+                    let byStatus;
+                    if (this.activeStatus === 'pending') {
+                        // Jika tab 'Pesanan Baru' aktif, tampilkan 'pending' DAN 'processing'
+                        byStatus = this.penjualans.filter(item => item.status === 'pending' || item.status === 'processing');
+                    } else {
+                        // Untuk tab lain, perilakunya tetap sama
+                        byStatus = this.penjualans.filter(item => item.status === this.activeStatus);
+                    }
+
                     if (this.selectedCategory === '') {
                         return byStatus;
                     }

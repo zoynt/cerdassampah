@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Exports\SalesHistoryExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MultiSheetSalesExport;
 
@@ -22,7 +21,13 @@ class ProductController extends Controller
 {
         public function index(Request $request) 
     {
-        $productsQuery = Product::with(['category', 'store.reviews', 'images'])
+        $today = strtolower(\Carbon\Carbon::now()->locale('id')->dayName);
+        $productsQuery = Product::where('status', 'available')
+            ->whereHas('store', function ($query) use ($today) {
+                $query->where('is_active', true)
+                    ->whereRaw('LOWER(operational_days) LIKE ?', ['%"' . $today . '"%']);
+            })
+            ->with(['category', 'store.reviews', 'images'])
             ->withSum(['orderItems as sold_count' => function ($query) {
                 $query->whereHas('order', function ($q) {
                     $q->where('status', 'completed');
@@ -30,6 +35,7 @@ class ProductController extends Controller
             }], 'quantity')
             ->latest();
 
+        // Sisa kode di bawah ini tidak perlu diubah
         $allProducts = $productsQuery->get();
 
         $productsFormatted = $allProducts->map(function ($product) {
@@ -62,7 +68,19 @@ class ProductController extends Controller
     }
     public function show(Product $product)
     {
- 
+        $isStoreOpen = false; // Default: anggap toko tutup
+        
+        // Pastikan produk memiliki relasi ke toko sebelum dicek
+        if ($product->store && $product->store->is_active) {
+            // Jika toko aktif, baru kita cek hari operasionalnya
+            $today = strtolower(\Carbon\Carbon::now()->locale('id')->dayName);
+            $isOpenToday = is_array($product->store->operational_days) && in_array($today, array_map('strtolower', $product->store->operational_days));
+
+            if ($isOpenToday) {
+                $isStoreOpen = true;
+            }
+        }
+    
         $product->load(['images', 'store.reviews.user', 'orderItems.order']);
 
         $reviewsFormatted = $product->store->reviews->map(function ($review) {
@@ -77,6 +95,7 @@ class ProductController extends Controller
 
         return view('pages.marketplace.detail', [
             'product' => $product,
+            'isStoreOpen' => $isStoreOpen,
             'reviewsFormatted' => $reviewsFormatted,
         ]);
     }
@@ -113,7 +132,7 @@ class ProductController extends Controller
         }
 
         $kategoriList = ProductCategory::pluck('name')->all();
-        $statusList = ['Tersedia', 'Habis'];
+        $statusList = ['Tersedia', 'Habis', 'Diarsipkan'];
 
         return view('pages.marketplace.create', [
             'produk' => new Product(), 
@@ -156,7 +175,11 @@ class ProductController extends Controller
             'stock' => $validatedData['stok'],
             'weight_per_item' => $validatedData['bobot'],
             'selling_unit' => $validatedData['satuan_berat'],
-            'status' => ($validatedData['status'] == 'Tersedia') ? 'available' : 'sold_out',
+            'status' => match($validatedData['status']) {
+                'Habis' => 'sold',
+                'Diarsipkan' => 'draft',
+                default => 'available',
+            },
             'description' => $validatedData['deskripsi'],
         ];
 
@@ -290,7 +313,7 @@ class ProductController extends Controller
         }
 
         $kategoriList = ProductCategory::pluck('name')->all();
-        $statusList = ['Tersedia', 'Habis'];
+        $statusList = ['Tersedia', 'Habis', 'Diarsipkan'];
         
         return view('pages.marketplace.edit', [
             'produk' => $product,
@@ -331,7 +354,11 @@ class ProductController extends Controller
             'stock' => $validatedData['stok'],
             'weight_per_item' => $validatedData['bobot'],
             'selling_unit' => $validatedData['satuan_berat'],
-            'status' => ($validatedData['status'] == 'Tersedia') ? 'available' : 'sold_out',
+            'status' => match($validatedData['status']) {
+                'Habis' => 'sold',
+                'Diarsipkan' => 'draft',
+                default => 'available',
+            },
             'description' => $validatedData['deskripsi'],
         ];
 
