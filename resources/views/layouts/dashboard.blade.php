@@ -46,8 +46,7 @@
                     'educationOpen' => request()->routeIs(['game-pilah-sampah', 'scan-user']),
                     'ruteOpen' => request()->routeIs(['tps.index', 'surung-sintak.index']),
                     'digitalOpen' => request()->routeIs(['digital.informasi', 'banksampah-user', 'digital.harga', 'digital.riwayat', 'digital.banksampah.show', 'digital.tarik-saldo.form']),
-                    'marketOpen' => request()->routeIs(['marketplace.profile.show', 'marketplace.profile.edit', 'marketplace.penjualan', 'marketplace.history', 'marketplace.product','marketplace.product.detail', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice','marketplace.store']),
-                ];
+                    'marketOpen' => request()->routeIs(['store.profile.show', 'store.profile.edit', 'marketplace.history', 'marketplace.products.all','marketplace.products.show', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice.show','marketplace.products.list','marketplace.riwayat', 'store.profile.create','marketplace.products.create', 'marketplace.products.edit','marketplace.store.show','mystore.dashboard']),                ];
             @endphp
 
             <nav x-data='{{ json_encode($alpineData) }}'>
@@ -159,7 +158,6 @@
                         <a href="{{ route('marketplace.products.all', 'marketplace.checkout', 'marketplace.purchase.detail') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('marketplace.products.all', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice.show','marketplace.products.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('marketplace.products.all',  'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice.show','marketplace.store.show','marketplace.products.show')])>
                             <svg  class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             fill="currentColor" viewBox="0 0 24 24" >
-                            <!--Boxicons v3.0 https://boxicons.com | License  https://docs.boxicons.com/free-->
                             <path d="M21.93 7.66c-.02-.05-.04-.11-.07-.16a.6.6 0 0 0-.06-.08c-.03-.04-.06-.09-.1-.12-.03-.03-.06-.04-.09-.07-.04-.03-.07-.06-.11-.09h-.01l-9-5.01a.99.99 0 0 0-.97 0L2.59 7.1s-.06.02-.09.04a.99.99 0 0 0-.49.86v8c0 .36.2.7.51.87l9 5 .15.06c.03.01.06.03.09.03a1.1 1.1 0 0 0 .5 0c.03 0 .06-.02.09-.03.05-.02.1-.03.15-.06l9-5c.32-.18.51-.51.51-.87V8c0-.09-.01-.18-.04-.26 0-.03-.02-.05-.03-.08ZM12 4.15l6.94 3.86-2.24 1.25-6.84-3.91L12 4.16ZM7.82 6.48l6.84 3.91-2.65 1.47L5.09 8l2.74-1.52ZM4 9.7l7 3.89v5.71l-7-3.89zm16 5.71-7 3.89v-5.71l3-1.67V15l2-1v-3.19l2-1.11z"></path>
                             </svg>
                             Produk

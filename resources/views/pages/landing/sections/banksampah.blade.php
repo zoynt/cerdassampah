@@ -8,6 +8,12 @@
         </div>
         <div class="relative bg-green-300 rounded-xl overflow-hidden px-6 lg:px-16 py-12 mt-16 z-0" data-aos="zoom-in">
 
+            <!-- <div class="absolute top-0 right-0 z-20" style="width: 250px; height: 250px; overflow: hidden;">
+                <div class="absolute text-2xl text-center text-white font-bold py-2.5 shadow-md bg-red-600"
+                    style="width: 300px; transform: rotate(30deg); right: -50px; top: 28px;">
+                    Versi Demo
+                </div>
+            </div> -->
             <img src="/img/bank.png" alt="Kota Kiri"
                 class="hidden lg:block absolute bottom-0 left-0 w-[300px] z-[-1] pointer-events-none select-none" />
 
