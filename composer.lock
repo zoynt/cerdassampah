@@ -5206,17 +5206,13 @@
         {
             "name": "psy/psysh",
             "version": "v0.12.12",
-            "version": "v0.12.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/bobthecow/psysh.git",
                 "reference": "cd23863404a40ccfaf733e3af4db2b459837f7e7"
-                "reference": "cd23863404a40ccfaf733e3af4db2b459837f7e7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/bobthecow/psysh/zipball/cd23863404a40ccfaf733e3af4db2b459837f7e7",
-                "reference": "cd23863404a40ccfaf733e3af4db2b459837f7e7",
                 "url": "https://api.github.com/repos/bobthecow/psysh/zipball/cd23863404a40ccfaf733e3af4db2b459837f7e7",
                 "reference": "cd23863404a40ccfaf733e3af4db2b459837f7e7",
                 "shasum": ""
@@ -5282,9 +5278,7 @@
             "support": {
                 "issues": "https://github.com/bobthecow/psysh/issues",
                 "source": "https://github.com/bobthecow/psysh/tree/v0.12.12"
-                "source": "https://github.com/bobthecow/psysh/tree/v0.12.12"
             },
-            "time": "2025-09-20T13:46:31+00:00"
             "time": "2025-09-20T13:46:31+00:00"
         },
         {
@@ -11354,7 +11348,6 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-main": "6.3-dev"
                     "dev-main": "6.3-dev"
                 }
             },
