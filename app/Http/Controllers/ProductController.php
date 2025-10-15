@@ -13,23 +13,28 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
-use App\Exports\SalesHistoryExport;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\MultiSheetSalesExport;
+
 
 
 class ProductController extends Controller
 {
         public function index(Request $request) 
     {
-        $productsQuery = Product::with(['category', 'store.reviews', 'images'])
+        $today = strtolower(\Carbon\Carbon::now()->locale('id')->dayName);
+        $productsQuery = Product::where('status', 'available')
+            ->whereHas('store', function ($query) use ($today) {
+                $query->where('is_active', true)
+                    ->whereRaw('LOWER(operational_days) LIKE ?', ['%"' . $today . '"%']);
+            })
+            ->with(['category', 'store.reviews', 'images'])
             ->withSum(['orderItems as sold_count' => function ($query) {
                 $query->whereHas('order', function ($q) {
                     $q->where('status', 'completed');
                 });
             }], 'quantity')
             ->latest();
-
         $allProducts = $productsQuery->get();
 
         $productsFormatted = $allProducts->map(function ($product) {
@@ -38,6 +43,7 @@ class ProductController extends Controller
 
             return [
                 'id' => $product->id,
+                'slug' => Str::slug($product->name),
                 'name' => $product->name,
                 'category_id' => $product->product_category_id,
                 'category' => optional($product->category)->slug, 
@@ -48,6 +54,10 @@ class ProductController extends Controller
                 'rating' => number_format($averageRating ?? 0, 1),
                 'sold' => (int)($product->sold_count ?? 0),
                 'image' => $firstImage ? asset('storage/' . $firstImage->image_path) : asset('img/placeholder.png'),
+                'store_slug' => optional($product->store)->slug, 
+                
+                'store_lat' => optional($product->store)->latitude,
+                'store_lng' => optional($product->store)->longitude,
             ];
         });
 
@@ -60,9 +70,110 @@ class ProductController extends Controller
             'categories' => $categories
         ]);
     }
-    public function show(Product $product)
+    public function guest(Request $request) 
     {
- 
+        $today = strtolower(\Carbon\Carbon::now()->locale('id')->dayName);
+        $productsQuery = Product::where('status', 'available')
+            ->whereHas('store', function ($query) use ($today) {
+                $query->where('is_active', true)
+                    ->whereRaw('LOWER(operational_days) LIKE ?', ['%"' . $today . '"%']);
+            })
+            ->with(['category', 'store.reviews', 'images'])
+            ->withSum(['orderItems as sold_count' => function ($query) {
+                $query->whereHas('order', function ($q) {
+                    $q->where('status', 'completed');
+                });
+            }], 'quantity')
+            ->latest();
+        $allProducts = $productsQuery->get();
+
+        $productsFormatted = $allProducts->map(function ($product) {
+            $firstImage = $product->images->first();
+            $averageRating = $product->store ? $product->store->reviews->avg('rating') : 0;
+
+            return [
+                'id' => $product->id,
+                'slug' => Str::slug($product->name),
+                'name' => $product->name,
+                'category_id' => $product->product_category_id,
+                'category' => optional($product->category)->slug, 
+                'price' => (int)$product->price,
+                'stock' => $product->stock,
+                'satuan_berat' => $product->selling_unit ?? 'Tidak Ada',
+                'store' => optional($product->store)->name ?? 'Toko Tidak Dikenal',
+                'rating' => number_format($averageRating ?? 0, 1),
+                'sold' => (int)($product->sold_count ?? 0),
+                'image' => $firstImage ? asset('storage/' . $firstImage->image_path) : asset('img/placeholder.png'),
+                'store_slug' => optional($product->store)->slug, 
+                
+                'store_lat' => optional($product->store)->latitude,
+                'store_lng' => optional($product->store)->longitude,
+            ];
+        });
+
+        $categories = ProductCategory::all()->map(function ($category) {
+            return [ 'id' => $category->id, 'name' => $category->name, 'icon' => $category->icon ];
+        });
+        
+        return view('pages.store.store', [
+            'products' => $productsFormatted,
+            'categories' => $categories
+        ]);
+    }
+    public function showguest(Store $store, $product_slug)
+    {
+        $id = \Illuminate\Support\Str::of($product_slug)->afterLast('-');
+        $slugFromUrl = \Illuminate\Support\Str::of($product_slug)->beforeLast('-');
+        $product = $store->products()->find($id);
+        if (!$product || (string) $slugFromUrl !== \Illuminate\Support\Str::slug($product->name)) {
+            abort(404);
+        }
+        $isStoreOpen = false; 
+        if ($product->store && $product->store->is_active) {
+            $today = strtolower(\Carbon\Carbon::now()->locale('id')->dayName);
+            $isOpenToday = is_array($product->store->operational_days) && in_array($today, array_map('strtolower', $product->store->operational_days));
+
+            if ($isOpenToday) {
+                $isStoreOpen = true;
+            }
+        }
+    
+        $product->load(['images', 'store.reviews.user', 'orderItems.order']);
+
+        $reviewsFormatted = $product->store->reviews->map(function ($review) {
+            return [
+                'id' => $review->id,
+                'name' => optional($review->user)->name ?? 'Pengguna', 
+                'rating' => $review->rating,
+                'comment' => $review->review,
+                'date' => $review->created_at->diffForHumans(),
+            ];
+        });
+
+        return view('pages.store.detail', [
+            'product' => $product,
+            'isStoreOpen' => $isStoreOpen,
+            'reviewsFormatted' => $reviewsFormatted,
+        ]);
+    }
+    public function show(Store $store, $product_slug)
+    {
+        $id = \Illuminate\Support\Str::of($product_slug)->afterLast('-');
+        $slugFromUrl = \Illuminate\Support\Str::of($product_slug)->beforeLast('-');
+        $product = $store->products()->find($id);
+        if (!$product || (string) $slugFromUrl !== \Illuminate\Support\Str::slug($product->name)) {
+            abort(404);
+        }
+            $isStoreOpen = false; 
+        if ($product->store && $product->store->is_active) {
+            $today = strtolower(\Carbon\Carbon::now()->locale('id')->dayName);
+            $isOpenToday = is_array($product->store->operational_days) && in_array($today, array_map('strtolower', $product->store->operational_days));
+
+            if ($isOpenToday) {
+                $isStoreOpen = true;
+            }
+        }
+    
         $product->load(['images', 'store.reviews.user', 'orderItems.order']);
 
         $reviewsFormatted = $product->store->reviews->map(function ($review) {
@@ -77,6 +188,7 @@ class ProductController extends Controller
 
         return view('pages.marketplace.detail', [
             'product' => $product,
+            'isStoreOpen' => $isStoreOpen,
             'reviewsFormatted' => $reviewsFormatted,
         ]);
     }
@@ -113,10 +225,10 @@ class ProductController extends Controller
         }
 
         $kategoriList = ProductCategory::pluck('name')->all();
-        $statusList = ['Tersedia', 'Habis'];
+        $statusList = ['Tersedia', 'Diarsipkan'];
 
         return view('pages.marketplace.create', [
-            'produk' => new Product(), 
+            'product' => new Product(), 
             'kategoriList' => $kategoriList,
             'statusList' => $statusList,
         ]);
@@ -148,6 +260,14 @@ class ProductController extends Controller
 
         $category = ProductCategory::where('name', $validatedData['kategori'])->firstOrFail();
 
+        $status = match($validatedData['status']) {
+            'Diarsipkan' => 'draft',
+            default => 'available',
+        };
+        if ((float)$validatedData['stok'] <= 0) {
+            $status = 'sold';
+        }
+
         $dataToStore = [
             'store_id' => $store->id,
             'product_category_id' => $category->id,
@@ -156,11 +276,10 @@ class ProductController extends Controller
             'stock' => $validatedData['stok'],
             'weight_per_item' => $validatedData['bobot'],
             'selling_unit' => $validatedData['satuan_berat'],
-            'status' => ($validatedData['status'] == 'Tersedia') ? 'available' : 'sold_out',
+            'status' => $status, 
             'description' => $validatedData['deskripsi'],
         ];
 
-        // MENGGUNAKAN METODE PENYIMPANAN MANUAL YANG SUDAH PASTI BERHASIL
         $product = new Product();
         $product->fill($dataToStore);
         $product->save();
@@ -178,80 +297,67 @@ class ProductController extends Controller
 
         return redirect()->route('marketplace.products.list')->with('success', 'Produk berhasil ditambahkan!');
     }
-    public function showCheckout(Request $request)
+    public function showCheckout(Request $request, Store $store, $product_slug)
     {
-        // Validasi untuk memastikan parameter product dan quantity ada
-        $request->validate([
-            'product' => 'required|exists:products,id',
-            'quantity' => 'required|integer|min:1',
-            'image_id' => 'nullable|exists:product_images,id' // Validasi image_id
-        ]);
+            $id = \Illuminate\Support\Str::of($product_slug)->afterLast('-');
+            $product = $store->products()->with('images')->findOrFail($id);
+            $validated = $request->validate([
+                'quantity' => 'required|numeric|min:0.5',
+                'image_name' => 'nullable|string'
+            ]);
 
-        // Ambil data dari URL
-        $productId = $request->query('product');
-        $quantity = $request->query('quantity');
-        $selectedImageId = $request->query('image_id');
-
-        // Cari produk dari database beserta relasi tokonya
-        $product = Product::with(['store', 'images'])->findOrFail($productId);
-        
-        // Tentukan gambar mana yang akan ditampilkan di checkout
-        $checkoutImage = null;
-        if ($selectedImageId) {
-            // Cari gambar yang dipilih berdasarkan ID
-            $checkoutImage = $product->images->find($selectedImageId);
+            $quantity = $validated['quantity'];
+            $selectedImageName = $request->query('image_name');
+            $checkoutImage = null;
+            if ($selectedImageName) {
+                $checkoutImage = $product->images->first(function ($image) use ($selectedImageName) {
+                    return basename($image->image_path) === $selectedImageName;
+                });
+            }
+            if (!$checkoutImage) {
+                $checkoutImage = $product->images->first();
+            }
+            return view('pages.marketplace.checkout', [
+                'product' => $product,
+                'quantity' => $quantity,
+                'checkoutImage' => $checkoutImage
+            ]);
         }
-        
-        // Jika tidak ada gambar yang dipilih atau ID-nya tidak valid, gunakan gambar pertama sebagai fallback
-        if (!$checkoutImage) {
-            $checkoutImage = $product->images->first();
-        }
-
-        // Kirim data produk, kuantitas, dan GAMBAR YANG DIPILIH ke view
-        return view('pages.marketplace.checkout', [
-            'product' => $product,
-            'quantity' => $quantity,
-            'checkoutImage' => $checkoutImage
-        ]);
-    }
     /**
      * Menampilkan riwayat penjualan untuk toko milik user yang sedang login.
      */
     public function riwayatPenjualan(Request $request)
     {
-        // 1. Dapatkan toko milik user (TIDAK BERUBAH)
-        $store = Auth::user()->store;
-        if (!$store) {
-            return redirect()->route('store.profile.create')->with('info', 'Anda harus memiliki toko untuk melihat riwayat penjualan.');
-        }
+        $store = Auth::user()->store; 
 
-        // 2. [UBAH] Ambil SEMUA pesanan (tanpa filter status di sini)
+    if (!$store) {
+        return redirect()->route('store.profile.create')
+            ->with('info', 'Anda harus memiliki toko untuk melihat riwayat penjualan.');
+    }
     $query = \App\Models\Order::where('seller_id', $store->user_id)
                 ->with(['buyer', 'orderItems.product.category'])
                 ->latest();
-
-    // 3. [UBAH] Format semua data untuk dikirim ke Alpine.js
     $penjualansForJs = $query->get()->map(function($order) {
+        $firstItem = $order->orderItems->first();
         return [
             'order_id' => $order->id,
             'pembeli' => optional($order->buyer)->name ?? 'Pembeli Dihapus',
             'produk_list' => $order->orderItems->pluck('product.name')->join(', '),
-            'kategori' => optional($order->orderItems->first()->product->category)->name ?? '-', // Ambil kategori pertama
+            'kategori' => optional($order->orderItems->first()->product->category)->name ?? '-', 
             'jumlah_item' => $order->orderItems->sum('quantity'),
+            'selling_unit' => optional($firstItem->product)->selling_unit,
             'total' => (int)$order->total_amount,
             'status' => $order->status,
-            'detailUrl' => route('marketplace.purchase.detail', ['order' => $order->id])
+            'translated_status' => $order->translated_status,
+            'detailUrl' => route('marketplace.purchase.detail', ['order' => $order->order_number])
         ];
     });
-
-        // --- Kalkulasi untuk kartu statistik & grafik (TIDAK BERUBAH BANYAK) ---
-        // Logikanya tetap sama, hanya memastikan query-nya benar
         $completedQuery = \App\Models\OrderItem::whereHas('product', function ($q) use ($store) {
             $q->where('store_id', $store->id);
         })->whereHas('order', function ($q) {
             $q->where('status', 'completed');
         });
-        $totalProduk = (clone $completedQuery)->sum('quantity');
+        $totalProduk = (int) (clone $completedQuery)->sum('quantity');
         $totalPenjualan = (clone $completedQuery)->sum(DB::raw('price * quantity'));
         $salesLast7Days = (clone $completedQuery)
             ->where('created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
@@ -265,7 +371,6 @@ class ProductController extends Controller
             $chartLabels[] = Carbon::parse($date)->translatedFormat('d M'); 
             $chartData[] = $salesLast7Days[$date]->total_sales ?? 0;
         }
-        // --- Akhir Kalkulasi Statistik ---
 
         return view('pages.marketplace.riwayat', [
         'penjualans' => $penjualansForJs,
@@ -281,19 +386,18 @@ class ProductController extends Controller
     /**
      * Menampilkan form untuk mengedit produk.
      */
-    public function edit(Product $product)
+    public function edit($product_slug)
     {
-        
-        
+        $id = \Illuminate\Support\Str::of($product_slug)->afterLast('-');
+        $product = \App\Models\Product::findOrFail($id);
         if ($product->store_id !== Auth::user()->store->id) {
             abort(403, 'AKSES DITOLAK');
         }
 
         $kategoriList = ProductCategory::pluck('name')->all();
-        $statusList = ['Tersedia', 'Habis'];
-        
+        $statusList = ['Tersedia', 'Diarsipkan'];
         return view('pages.marketplace.edit', [
-            'produk' => $product,
+            'product' => $product,
             'kategoriList' => $kategoriList,
             'statusList' => $statusList,
         ]);
@@ -302,11 +406,17 @@ class ProductController extends Controller
     /**
      * Memperbarui produk di database.
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $product_slug)
     {
+        $id = \Illuminate\Support\Str::of($product_slug)->afterLast('-');
+        $product = \App\Models\Product::findOrFail($id);
+
         if ($product->store_id !== Auth::user()->store->id) {
             abort(403);
         }
+        $request->merge([
+            'bobot' => str_replace(',', '.', $request->input('bobot'))
+        ]);
 
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
@@ -324,6 +434,14 @@ class ProductController extends Controller
 
         $category = ProductCategory::where('name', $validatedData['kategori'])->firstOrFail();
 
+        $status = match($validatedData['status']) {
+            'Diarsipkan' => 'draft',
+            default => 'available',
+        };
+        if ((float)$validatedData['stok'] <= 0) {
+            $status = 'sold';
+        }
+
         $dataToUpdate = [
             'product_category_id' => $category->id,
             'name' => $validatedData['nama'],
@@ -331,7 +449,7 @@ class ProductController extends Controller
             'stock' => $validatedData['stok'],
             'weight_per_item' => $validatedData['bobot'],
             'selling_unit' => $validatedData['satuan_berat'],
-            'status' => ($validatedData['status'] == 'Tersedia') ? 'available' : 'sold_out',
+            'status' => $status, 
             'description' => $validatedData['deskripsi'],
         ];
 
@@ -347,15 +465,11 @@ class ProductController extends Controller
                 $image->delete();
             }
         }
-
-        // 2. Proses gambar baru yang di-upload (logika "Ganti Semua")
         if ($request->hasFile('gambar')) {
-            // Hapus semua gambar lama
             foreach ($product->images as $oldImage) {
                 Storage::disk('public')->delete($oldImage->image_path);
                 $oldImage->delete();
             }
-            // Simpan semua gambar baru
             foreach ($request->file('gambar') as $key => $file) {
                 $path = $file->store('products', 'public');
                 ProductImage::create([
@@ -371,21 +485,16 @@ class ProductController extends Controller
     public function exportSalesHistory(Request $request)
     {
         $fileName = 'riwayat-penjualan-semua-status-' . date('Y-m-d') . '.xlsx';
-
-        // Panggil class export multi-sheet yang baru
         return Excel::download(new MultiSheetSalesExport(), $fileName);
     }
     public function showRatingForm(Order $order)
     {
-        // Pastikan hanya pembeli yang bisa mengakses
         if (Auth::id() !== $order->buyer_id) {
             abort(403, 'Akses Ditolak');
         }
         $review = StoreReview::where('order_id', $order->id)
                             ->where('user_id', Auth::id())
                             ->first();
-
-        // Kirim data order dan review (bisa jadi null jika belum ada)
         return view('pages.marketplace.rating', [
             'order' => $order,
             'review' => $review
@@ -397,19 +506,13 @@ class ProductController extends Controller
      */
     public function storeRating(Request $request, Order $order)
     {
-        // 1. Validasi Input
         $validated = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'nullable|string|max:1000',
         ]);
-
-        // 2. Otorisasi (pastikan lagi user adalah pembeli)
         if (Auth::id() !== $order->buyer_id) {
             abort(403, 'Akses Ditolak');
         }
-
-        // 3. Dapatkan ID toko dari item pertama dalam order
-        // Asumsi: 1 order hanya berasal dari 1 toko
         $store_id = $order->orderItems->first()->product->store_id;
 
         // 4. Simpan ulasan
@@ -434,16 +537,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        // Otorisasi
         if ($product->store_id !== Auth::user()->store->id) {
             abort(403);
         }
-
         foreach ($product->images as $image) {
             Storage::disk('public')->delete($image->image_path);
         }
         $product->delete();
-
         return redirect()->route('marketplace.products.list')->with('success', 'Produk berhasil dihapus!');
     }
 }

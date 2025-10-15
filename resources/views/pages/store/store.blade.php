@@ -1,24 +1,22 @@
-@extends('layouts.dashboard')
-
-@section('title', 'Marketplace')
+@extends('layouts.marketplace')
+@section('hero-background')
+    <div class="absolute top-0 left-0 w-full h-48 bg-green-500 -z-10"></div>
+@endsection
 
 @push('head')
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 
     <style>
-        /* [MODIFIKASI] Menetapkan rasio aspek agar tinggi konsisten */
+        /* CSS untuk Swiper bisa tetap di sini jika diperlukan */
         .mySwiper {
             aspect-ratio: 16 / 8;
-            /* Rasio untuk layar lebar */
         }
 
         @media (min-width: 1024px) {
             .mySwiper {
                 aspect-ratio: 22 / 8;
-                /* Rasio lebih lebar untuk desktop besar */
                 max-height: 400px;
-                /* Batas tinggi maksimum */
             }
         }
 
@@ -47,11 +45,14 @@
 @endpush
 
 @section('content')
-    <div x-data="marketplace()">
-        <div class="space-y-6">
+    {{-- <div class="absolute top-0 left-0 w-full h-48 bg-green-500 -z-10"></div> --}}
+    <div x-data="marketplace()" class="bg-transparent min-h-screen"> {{-- Pastikan ini bg-transparent --}}
+        <div class="container mx-auto px-4 py-8 space-y-6">
+
+
+            {{-- Bagian Swiper/Carousel --}}
             <div class="swiper mySwiper rounded-xl shadow-md overflow-hidden relative z-0 w-full">
                 <div class="swiper-wrapper">
-
                     <div class="swiper-slide">
                         <div class="relative bg-green-200 p-8 h-full">
                             <div class="absolute -bottom-50 right-80 opacity-50 text-white pointer-events-none ">
@@ -70,27 +71,21 @@
                             </div>
                             <div class="relative z-10 grid grid-cols-1 lg:grid-cols-2 items-center h-full">
                                 <div class="text-center lg:text-left">
-
                                     <a href="{{ route('mystore.dashboard') }}"
                                         class="hidden sm:inline-block bg-green-700 text-white px-3 py-1 rounded-md text-xs sm:text-sm md:text-2xl lg:text-2xl font-semibold">
                                         Mau Jual Sampah Terpilahmu?
                                     </a>
-
                                     <h2 class="text-lg sm:text-2xl md:text-3xl font-bold text-gray-800 leading-tight">
                                         Saatnya buka toko dan jadi penjual di Cerdas Sampah!
                                     </h2>
-
                                     <p class="hidden md:block mt-1 text-gray-600">
                                         Jual sampah terpilahmu dengan mudah, dapatkan keuntungan, dan ikut serta menciptakan
                                         lingkungan yang lebih bersih.
                                     </p>
-
                                     <a href="{{ route('mystore.dashboard') }}"
                                         class="inline-block mt-6 bg-white text-gray-800 font-bold py-2 px-4 text-xs sm:py-3 sm:px-6 sm:text-base rounded-lg shadow-md hover:bg-gray-100  transition-colors duration-200">
                                         Buka tokomu sekarang!
                                     </a>
-
-
                                 </div>
                                 <div class="hidden lg:flex justify-center items-center">
                                     <div
@@ -106,7 +101,6 @@
                             </div>
                         </div>
                     </div>
-
                     <div class="swiper-slide">
                         <a href="{{ route('mystore.dashboard') }}">
                             <img src="{{ asset('img/iklan1.jpg') }}" alt="Iklan 1" class="w-full h-full object-cover">
@@ -118,18 +112,16 @@
                         </a>
                     </div>
                 </div>
-
                 <div class="swiper-button-next"></div>
                 <div class="swiper-button-prev"></div>
                 <div class="swiper-pagination"></div>
             </div>
 
-            {{-- Bagian Filter --}}
+            {{-- Bagian Filter dan Search --}}
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h2 class="text-lg md:text-xl font-semibold text-gray-700 mb-1">Produk</h2>
                 <p class="text-sm text-gray-500 mb-4">Cari produk daur ulang yang Anda butuhkan.</p>
                 <div class="flex items-center gap-4">
-                    {{-- Tombol Filter --}}
                     <div x-data="{ open: false }" class="relative">
                         <button @click="open = !open"
                             class="flex-shrink-0 px-4 py-4 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-green-500">
@@ -170,10 +162,10 @@
                 </div>
             </div>
 
+            {{-- Bagian Kategori --}}
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h2 class="text-lg md:text-xl font-semibold text-gray-700 mb-4">Kategori Pilihan</h2>
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    {{-- Tombol Semua --}}
                     <button @click="selectedCategory = ''"
                         :class="{ 'bg-green-700 text-white shadow-lg scale-105': selectedCategory === '', 'bg-gray-100 text-gray-600 hover:bg-gray-200': selectedCategory !== '' }"
                         class="p-4 rounded-lg flex flex-col items-center justify-center text-center transition-transform transform duration-200">
@@ -185,10 +177,8 @@
                         </svg>
                         <span class="font-semibold text-xs md:text-sm">Semua</span>
                     </button>
-
-                    {{-- Tombol Kategori Lainnya --}}
                     <template x-for="category in categories" :key="category.id">
-                        <button @click="selectedCategory = category.id" {{-- [PERBAIKAN] Kondisi :class harus membandingkan ID dengan ID --}}
+                        <button @click="selectedCategory = category.id"
                             :class="{
                                 'bg-green-700 text-white shadow-lg scale-105': selectedCategory === category
                                     .id,
@@ -202,15 +192,13 @@
                 </div>
             </div>
 
+            {{-- Daftar Produk --}}
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Daftar Produk</h2>
                 {{-- Grid untuk mengatur jumlah kolom --}}
                 <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-5">
                     <template x-for="product in displayProducts" :key="product.id">
-                        {{-- <a :href="`/marketplace/product/${product.id}` --}}
-                        {{-- <a href="{{ route('marketplace.products.show', $product->store->slug) }}" --}}
-                        {{-- <a :href="`/marketplace/product/${product.id}`" class="block group"> --}}
-                            <a :href="`/${product.store_slug}/${product.slug}-${product.id}`" class="block group">
+                        <a :href="`{{ url('/produk') }}/${product.store_slug}/${product.slug}-${product.id}`" class="block group">
 
                             <div
                                 class="bg-white border border-gray-100 rounded-xl overflow-hidden transform group-hover:-translate-y-1 transition-all duration-300 shadow-sm group-hover:shadow-2xl flex flex-row md:flex-col h-full">
@@ -298,8 +286,6 @@
                 quickFilters: ['Plastik', 'Botol', 'Kardus', 'Logam', 'Besi', 'Koran'],
                 products: @json($products),
                 categories: @json($categories),
-                userLocation: null,
-
                 init() {
                     this.getUserLocation();
                 },
@@ -331,7 +317,6 @@
                                 this.userLocation.lat, this.userLocation.lng,
                                 product.store_lat, product.store_lng
                             );
-                            // Simpan jarak di dalam objek produk
                             product.distance = distance.toFixed(2);
                         } else {
                             product.distance = null;
@@ -340,7 +325,7 @@
                 },
 
                 getHaversineDistance(lat1, lon1, lat2, lon2) {
-                    const R = 6371; // Radius bumi dalam km
+                    const R = 6371; 
                     const dLat = (lat2 - lat1) * Math.PI / 180;
                     const dLon = (lon2 - lon1) * Math.PI / 180;
                     const a =
@@ -355,11 +340,8 @@
                     if (!this.products) return [];
                     return this.products.filter(product => {
                         const searchMatch = product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-
-                        // [PERBAIKAN] Logika filter kategori diubah untuk membandingkan ID
                         const categoryMatch = this.selectedCategory === '' || product.category_id === this
                             .selectedCategory;
-
                         return searchMatch && categoryMatch;
                     });
                 },
@@ -370,7 +352,6 @@
             }
         }
 
-        // Inisialisasi Swiper setelah halaman siap
         document.addEventListener('DOMContentLoaded', function() {
             new Swiper(".mySwiper", {
                 loop: true,
