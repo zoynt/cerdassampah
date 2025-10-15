@@ -7,18 +7,17 @@
         <h1 class="text-3xl font-bold text-gray-800">Form Edit Produk</h1>
 
         @php
-            // Menyiapkan semua data awal yang dibutuhkan oleh Alpine.js
             $alpineData = [
-                'categoryName' => old('kategori', optional($produk->category)->name ?? ''),
+                'categoryName' => old('kategori', optional($product->category)->name ?? ''),
                 'categoryList' => $kategoriList,
-                'existingImages' => $produk->images->map(fn($img) => ['url' => asset('storage/' . $img->image_path)])
+                'existingImages' => $product->images->map(fn($img) => ['url' => asset('storage/' . $img->image_path)]),
             ];
         @endphp
 
-        <form action="{{ route('marketplace.products.update', $produk->id) }}" method="POST" enctype="multipart/form-data" x-data="formManager({{ Js::from($alpineData) }})">
+        <form action="{{ route('marketplace.products.update', ['product_slug' => Str::slug($product->name) . '-' . $product->id]) }}"
+            method="POST" enctype="multipart/form-data" x-data="formManager({{ Js::from($alpineData) }})">
             @method('PUT')
             @include('pages.marketplace._form')
         </form>
     </div>
 @endsection
-

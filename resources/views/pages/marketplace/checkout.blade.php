@@ -6,7 +6,7 @@
     {{-- Leaflet CSS --}}
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-   
+
     <style>
         #map {
             height: 450px;
@@ -75,16 +75,31 @@
                         <h2 class="text-xl md:text-2xl font-bold text-gray-800">{{ $product->name }}</h2>
 
                         {{-- [UBAH] Tampilkan detail kuantitas dan harga satuan --}}
-                        <div class="text-gray-600 mt-2 text-sm">{{ $quantity }} barang x Rp
-                            {{ number_format($product->price, 0, ',', '.') }}</div>
+                        <div class="text-gray-600 mt-2 text-sm">
+                            {{-- Cek apakah satuan adalah 'Buah' --}}
+                            @if ($product->selling_unit === 'Buah')
+                                {{ (int) $quantity }}
+                            @else
+                                {{-- Jika bukan, format sebagai desimal dengan koma --}}
+                                {{ number_format((float) $quantity, 1, ',', '.') }}
+                            @endif
+
+                            {{-- Tampilkan satuan yang benar, bukan kata "barang" --}}
+                            {{ $product->selling_unit }} x Rp {{ number_format($product->price, 0, ',', '.') }}
+                        </div>
 
                         <hr class="my-4">
 
                         <div class="flex items-center justify-between mt-2">
                             <span class="text-base text-gray-500">Total Harga</span>
                             <span class="font-bold text-base md:text-lg text-gray-800">
-                                {{-- [UBAH] Hitung total harga berdasarkan kuantitas --}}
-                                Rp {{ number_format($product->price * $quantity, 0, ',', '.') }}
+                                @php
+                                    // Tentukan pembagi. Jika 'Buah', pembaginya 1. Jika lain, gunakan weight_per_item.
+                                    $divider = ($product->selling_unit === 'Buah' || $product->weight_per_item == 0) ? 1 : $product->weight_per_item;
+                                    $totalPrice = $product->price * ($quantity / $divider);
+                                @endphp
+
+                                Rp {{ number_format($totalPrice, 0, ',', '.') }}
                             </span>
                         </div>
                         <hr class="my-4">
@@ -130,7 +145,11 @@
                                 <div>
                                     <p class="text-xs text-gray-500">Berat/Bobot</p>
                                     <p class="font-semibold text-gray-800">
-                                        {{ (int) ($product->weight_per_item ?? 0) }}
+                                        @if ($product->selling_unit === 'Buah')
+                                            {{ (int) $product->weight_per_item }}
+                                        @else
+                                            {{ number_format((float) $product->weight_per_item, 1, ',', '.') }}
+                                        @endif
                                         {{ $product->selling_unit ?? 'Satuan' }}
                                     </p>
                                 </div>
@@ -187,7 +206,11 @@
                 <div class="flex flex-col gap-2 sm:flex-row sm:justify-between sm:items-center mb-4">
                     <span class="text-base md:text-lg font-semibold text-gray-700">Total Pembayaran</span>
                     <span class="text-xl md:text-2xl font-bold text-green-800">
-                        {{ 'Rp ' . number_format($product->price * $quantity, 0, ',', '.') }}
+                        @php
+                            $divider = ($product->selling_unit === 'Buah' || $product->weight_per_item == 0) ? 1 : $product->weight_per_item;
+                            $totalPrice = $product->price * ($quantity / $divider);
+                        @endphp
+                        Rp {{ number_format($totalPrice, 0, ',', '.') }}
                     </span>
                 </div>
 
@@ -209,7 +232,7 @@
 @push('scripts')
     {{-- Leaflet JS --}}
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-     <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
+    <script type="text/javascript" src="https://app.sandbox.midtrans.com/snap/snap.js"
         data-client-key="{{ config('midtrans.client_key') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -330,7 +353,7 @@
             };
 
             // Kirim request AJAX ke backend untuk mendapatkan Snap Token
-            fetch('{{ route('marketplace.order.place', $product) }}', {
+            fetch('{{ route('marketplace.order.place', ['store' => $product->store, 'product_slug' => Str::slug($product->name) . '-' . $product->id]) }}', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',

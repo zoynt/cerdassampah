@@ -112,20 +112,36 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 {{-- [PERUBAHAN DI SINI] --}}
-                                @if ($item->product)
-                                    <a href="{{ route('marketplace.products.show', $item->product) }}"
+                                @if ($item->product && $item->product->store)
+                                    <a href="{{ route('marketplace.products.show', ['store' => $item->product->store->slug, 'product_slug' => Str::slug($item->product->name) . '-' . $item->product->id]) }}"
                                         class="font-semibold text-gray-800 hover:text-green-700 transition-colors">
                                         {{ $item->product->name }}
                                     </a>
                                 @else
-                                    <p class="font-semibold text-gray-500 italic">Produk Dihapus</p>
+                                    <p class="font-semibold text-gray-500 italic">
+                                        {{ optional($item->product)->name ?? 'Produk Dihapus' }}</p>
                                 @endif
 
-                                <p class="text-gray-500">{{ $item->quantity }} x Rp
-                                    {{ number_format($item->price, 0, ',', '.') }}</p>
+                                <p class="text-gray-500">
+                                    {{-- Cek apakah satuan adalah 'Buah' --}}
+                                    @if(optional($item->product)->selling_unit === 'Buah')
+                                        {{ (int)$item->quantity }}
+                                    @else
+                                        {{-- Jika bukan, format sebagai desimal dengan koma --}}
+                                        {{ number_format((float)$item->quantity, 1, ',', '.') }}
+                                    @endif
+                                    {{-- Tampilkan satuan --}}
+                                    {{ optional($item->product)->selling_unit }} x Rp {{ number_format($item->price, 0, ',', '.') }}
+                                </p>
                             </div>
-                            <p class="font-semibold text-gray-800 text-sm md:text-base">Rp
-                                {{ number_format($item->quantity * $item->price, 0, ',', '.') }}</p>
+                            <p class="font-semibold text-gray-800 text-sm md:text-base">
+                                @php
+                                    $product = $item->product;
+                                    $divider = ($product && ($product->selling_unit === 'Buah' || $product->weight_per_item == 0)) ? 1 : ($product->weight_per_item ?? 1);
+                                    $totalItemPrice = $item->price * ($item->quantity / $divider);
+                                @endphp
+                                Rp {{ number_format($totalItemPrice, 0, ',', '.') }}
+                            </p>
                         </div>
                     @endforeach
                 </div>
@@ -173,7 +189,7 @@
         <div class="pt-2 flex flex-wrap justify-end items-center gap-3">
 
             {{-- Tombol "Cetak" selalu ditampilkan, tapi kita beri urutan prioritas --}}
-            <a href="{{ route('marketplace.invoice.show', $order) }}"
+            <a href="{{ route('marketplace.invoice.show', ['order' => $order->order_number]) }}"
                 class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-700 text-white hover:bg-gray-600 order-last sm:order-none">
                 Cetak Bukti Pembayaran
             </a>
@@ -184,12 +200,12 @@
                 {{-- Tombol khusus untuk status 'completed' --}}
                 @if ($order->status == 'completed')
                     @if ($hasReviewed)
-                        <a href="{{ route('marketplace.rating.show', $order) }}"
+                        <a href="{{ route('marketplace.rating.show', ['order' => $order->order_number]) }}"
                             class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-yellow-500 text-white hover:bg-yellow-600">
                             Edit Ulasan
                         </a>
                     @else
-                        <a href="{{ route('marketplace.rating.show', $order) }}"
+                        <a href="{{ route('marketplace.rating.show', ['order' => $order->order_number]) }}"
                             class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-green-700 text-white hover:bg-green-600">
                             Beri Ulasan
                         </a>
@@ -219,7 +235,7 @@
                         Beri Ulasan
                     </a>
                 @endif
-                @endif
+            @endif
         </div>
     </div>
 @endsection

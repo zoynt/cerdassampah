@@ -28,7 +28,7 @@
                         class="bg-green-700 text-lg sm:text-xl md:text-2xl font-extrabold text-white px-5 py-2 highlight-animate mb-4 inline-block">
                         Ayo pilah sampah dan ubah jadi cuan!
                     </h3>
-                    <a href="#"
+                    <a href="{{ route('store-user') }}"
                         class="block mt-6 text-center lg:inline-block bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200">
                         Jelajahi Marketplace!
                     </a>

@@ -31,7 +31,7 @@ class StoreController extends Controller
             }
         }
 
-        $totalSold = \App\Models\OrderItem::whereHas('product', function ($query) use ($store) {
+        $totalSold = (int) \App\Models\OrderItem::whereHas('product', function ($query) use ($store) {
             $query->where('store_id', $store->id);
         })->whereHas('order', function ($query) {
             $query->where('status', 'completed');
@@ -55,12 +55,17 @@ class StoreController extends Controller
             return [
                 'id' => $product->id,
                 'name' => $product->name,
+                'slug' => \Illuminate\Support\Str::slug($product->name), 
+                'store_slug' => $store->slug, 
                 'category' => optional($product->category)->slug, 
                 'price' => (int)$product->price,
                 'image' => $product->images->first() ? asset('storage/' . $product->images->first()->image_path) : asset('img/placeholder.png'),
                 'rating' => $productRating, 
                 'sold' => (int)($product->sold_count ?? 0),
                 'store' => $store->name,
+                'store_lat' => optional($product->store)->latitude,
+                'store_lng' => optional($product->store)->longitude,
+            
             ];
         });
 

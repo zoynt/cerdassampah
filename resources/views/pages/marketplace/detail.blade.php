@@ -78,7 +78,7 @@
                 <div>
                     <h3 class="text-base md:text-lg font-semibold text-gray-800 mb-4">Informasi</h3>
                     <div class="space-y-5 text-sm">
-                        <a href="{{ route('marketplace.store.show', ['store' => $product->store->id]) }}"
+                        <a href="{{ route('marketplace.store.show', $product->store->slug) }}" {{-- <a href="{{ route('marketplace.store.show', ['store' => $product->store->id]) }}" --}}
                             class="flex items-start gap-4 hover:bg-gray-50 rounded-lg p-2 -m-2 transition-colors duration-200">
                             <div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full flex-shrink-0">
                                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -158,58 +158,69 @@
                 </div>
             </div>
             <div class="border-t my-4"></div>
-            {{-- Cek apakah stok tersedia DAN toko buka --}}
-            <template x-if="stock > 0 && {{ Js::from($isStoreOpen) }}">
-                <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Atur Jumlah</label>
-                        <div class="flex items-center border border-gray-300 rounded-lg w-32 flex-shrink-0">
-                            <button @click="quantity = Math.max(1, quantity - 1)"
-                                class="px-3 py-2 text-gray-600 hover:bg-gray-100 focus:outline-none rounded-l-lg">-</button>
-                            <span x-text="quantity"
-                                class="flex-1 text-center font-semibold text-gray-800 text-sm py-2 border-l border-r border-gray-300"></span>
-                            <button @click="quantity = Math.min(stock, quantity + 1)"
-                                class="px-3 py-2 text-gray-600 hover:bg-gray-100 focus:outline-none rounded-r-lg">+</button>
+
+            @if ($product->status === 'draft')
+                {{-- Tampilkan pesan JIKA PRODUK DIARSIPKAN --}}
+                <div class="text-center p-4 bg-gray-100 border border-gray-300 text-gray-600 rounded-lg">
+                    <p class="font-bold">Produk Diarsipkan</p>
+                    <p class="text-sm mt-1">Produk ini tidak lagi ditampilkan di toko dan tidak dapat dibeli.</p>
+                </div>
+            @else
+                {{-- Jika tidak diarsipkan, tampilkan logika pembelian seperti biasa --}}
+                <template x-if="stock > 0 && {{ Js::from($isStoreOpen) }}">
+                    <div class="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Atur Jumlah</label>
+                            <div class="flex items-center border border-gray-300 rounded-lg w-32 flex-shrink-0">
+                                <button @click="decrement()" type="button"
+                                    class="px-3 py-2 text-gray-600 hover:bg-gray-100 focus:outline-none rounded-l-lg">-</button>
+                                <input type="text" :value="formattedQuantity()" @change="handleQuantityInput($event)"
+                                    class="w-full text-center font-semibold text-gray-800 text-sm py-2 border-l border-r border-gray-300 focus:outline-none focus:ring-0">
+                                <button @click="increment()" type="button"
+                                    class="px-3 py-2 text-gray-600 hover:bg-gray-100 focus:outline-none rounded-r-lg">+</button>
+                            </div>
+                        </div>
+                        <div class="flex-1 md:text-right">
+                            <p class="text-sm text-gray-500">Subtotal</p>
+                            <p class="text-xl md:text-2xl font-bold text-gray-800"
+                                x-text="`Rp ${(price * (quantity / step)).toLocaleString('id-ID')}`"></p>
+                        </div>
+                        <div class="w-full md:w-auto flex flex-col sm:flex-row md:flex-col gap-2 flex-shrink-0">
+                            <form
+                                @submit.prevent="window.location.href = `{{ route('marketplace.checkout', ['store' => $product->store, 'product_slug' => Str::slug($product->name) . '-' . $product->id]) }}?quantity=${quantity}&image_name=${mainImage ? mainImage.url.split('/').pop() : ''}`"
+                                method="GET" class="w-full">
+                                <button type="submit"
+                                    class="w-full md:w-48 text-center px-4 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-600">Beli
+                                    Langsung</button>
+                            </form>
+                            <a href="https://wa.me/{{ $product->store->formatted_phone_number ?? preg_replace('/^0/', '62', $product->store->phone_number) }}"
+                                target="_blank"
+                                class="w-full md:w-48 text-center px-4 py-3 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-100 inline-flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5 text-green-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+                                    fill="currentColor" viewBox="0 0 448 512">
+                                    <path
+                                        d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 221.9-99.6 221.9-222 .1-59.3-23.1-115-65.7-157.5zm-157 341.6c-33.8 0-67.3-9.5-97.2-27.9l-6.8-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.4 130.4 54.1 34.8 34.7 56.2 81.1 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.8-16.2-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z" />
+                                </svg>
+                                <span>Chat Penjual</span>
+                            </a>
                         </div>
                     </div>
-                    <div class="flex-1 md:text-right">
-                        <p class="text-sm text-gray-500">Subtotal</p>
-                        <p class="text-xl md:text-2xl font-bold text-gray-800"
-                            x-text="`Rp ${(quantity * price).toLocaleString('id-ID')}`"></p>
-                    </div>
-                    <div class="w-full md:w-auto flex flex-col sm:flex-row md:flex-col gap-2 flex-shrink-0">
-                        <form
-                            @submit.prevent="window.location.href = `{{ route('marketplace.checkout') }}?product={{ $product->id }}&quantity=${quantity}&image_id=${mainImage ? mainImage.id : ''}`"
-                            method="GET" class="w-full">
-                            <button type="submit"
-                                class="w-full md:w-48 text-center px-4 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-600">Beli
-                                Langsung</button>
-                        </form>
-                        <a href="https://wa.me/{{ $product->store->formatted_phone_number ?? preg_replace('/^0/', '62', $product->store->phone_number) }}"
-                            target="_blank"
-                            class="w-full md:w-48 text-center px-4 py-3 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-100 inline-flex items-center justify-center gap-2">
-                            <svg class="w-5 h-5 text-green-500" ...></svg>
-                            <span>Chat Penjual</span>
-                        </a>
-                    </div>
-                </div>
-            </template>
+                </template>
 
-            {{-- Tampilkan pesan JIKA STOK HABIS --}}
-            <template x-if="stock <= 0">
-                <div class="text-center p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
-                    <p class="font-bold">Stok Produk Telah Habis</p>
-                    <p class="text-sm mt-1">Produk ini tidak dapat dibeli untuk saat ini.</p>
-                </div>
-            </template>
+                <template x-if="stock <= 0">
+                    <div class="text-center p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                        <p class="font-bold">Stok Produk Telah Habis</p>
+                        <p class="text-sm mt-1">Produk ini tidak dapat dibeli untuk saat ini.</p>
+                    </div>
+                </template>
 
-            {{-- Tampilkan pesan JIKA TOKO TUTUP (dan stok masih ada) --}}
-            <template x-if="stock > 0 && !{{ Js::from($isStoreOpen) }}">
-                <div class="text-center p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg">
-                    <p class="font-bold">Toko Sedang Tutup Hari Ini</p>
-                    <p class="text-sm mt-1">Produk ini tidak dapat dibeli karena toko tidak beroperasi.</p>
-                </div>
-            </template>
+                <template x-if="stock > 0 && !{{ Js::from($isStoreOpen) }}">
+                    <div class="text-center p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg">
+                        <p class="font-bold">Toko Sedang Tutup Hari Ini</p>
+                        <p class="text-sm mt-1">Produk ini tidak dapat dibeli karena toko tidak beroperasi.</p>
+                    </div>
+                </template>
+            @endif
         </div>
         <div x-data="reviewsSection()" class="bg-white p-6 rounded-xl shadow-md">
             <h2 class="text-xl md:text-2xl font-bold text-gray-800">Ulasan Pembeli</h2>
@@ -324,9 +335,61 @@
                 isModalOpen: false,
                 isDescriptionModalOpen: false,
                 isDescriptionOverflowing: false,
-                quantity: 1,
+
+                isDecimalUnit: '{{ $product->selling_unit }}' !== 'Buah',
+
+                // [PERUBAHAN] step dan quantity sekarang dinamis berdasarkan bobot produk
+                step: {{ $product->selling_unit === 'Buah' ? 1 : (float) $product->weight_per_item }},
+                quantity: {{ $product->selling_unit === 'Buah' ? 1 : (float) $product->weight_per_item }},
+
                 price: {{ $product->price }},
                 stock: {{ $product->stock }},
+
+                increment() {
+                    // Gunakan this.step yang dinamis
+                    let newQuantity = parseFloat(this.quantity) + this.step;
+                    this.quantity = Math.min(this.stock, newQuantity);
+                },
+
+                decrement() {
+                    // Gunakan this.step yang dinamis
+                    let min = this.step;
+                    let newQuantity = parseFloat(this.quantity) - this.step;
+                    this.quantity = Math.max(min, newQuantity);
+                },
+
+                handleQuantityInput(event) {
+                    let value = event.target.value.replace(',', '.');
+                    let numValue = parseFloat(value);
+
+                    if (isNaN(numValue)) {
+                        numValue = this.step;
+                    }
+
+                    // Pembulatan ke kelipatan step terdekat jika unitnya desimal
+                    if (this.isDecimalUnit && numValue > 0) {
+                        numValue = Math.round(numValue / this.step) * this.step;
+                    }
+
+                    numValue = Math.min(this.stock, numValue);
+                    let min = this.step;
+                    numValue = Math.max(min, numValue);
+
+                    this.quantity = numValue;
+                },
+
+                formattedQuantity() {
+                    // Menentukan jumlah angka di belakang koma berdasarkan step
+                    const decimalPlaces = this.isDecimalUnit && this.step % 1 !== 0 ?
+                        (this.step.toString().split('.')[1] || '').length :
+                        0;
+
+                    return parseFloat(this.quantity).toLocaleString('id-ID', {
+                        minimumFractionDigits: decimalPlaces,
+                        maximumFractionDigits: decimalPlaces
+                    });
+                },
+
                 init() {
                     this.mainImage = this.images.length > 0 ? this.images[0] : null;
                     this.$nextTick(() => {
@@ -338,6 +401,7 @@
                 }
             }
         }
+
 
         function reviewsSection() {
             return {

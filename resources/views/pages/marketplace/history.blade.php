@@ -7,200 +7,106 @@
 @endpush
 
 @section('content')
-    <div x-data="transactionHistory()">
-        <div class="space-y-6">
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Riwayat Transaksi</h1>
+    <div class="space-y-6">
+        <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Riwayat Transaksi</h1>
 
-            <div class="bg-white p-6 rounded-xl shadow-md">
-                {{-- Search Bar --}}
-                <div class="mb-4">
-                    <label for="search" class="block text-sm font-medium text-gray-700">Cari Transaksi</label>
-                    <div class="relative mt-1">
-                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                            </svg>
-                        </div>
-                        <input type="text" id="search" name="search" x-model.debounce.300ms="searchQuery"
-                            placeholder="Cari berdasarkan produk, penjual, atau toko..."
-                            class="block w-full pl-10 pr-4 py-2 text-sm md:text-base border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-                    </div>
-                </div>
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-600">
+                    <thead class="text-xs text-white uppercase bg-green-600">
+                        <tr>
+                            <th scope="col" class="px-6 py-4">No. Pesanan</th>
+                            <th scope="col" class="px-6 py-4">Tanggal</th>
+                            <th scope="col" class="px-6 py-4">Produk</th>
+                            <th scope="col" class="px-6 py-4">Total Pembayaran</th>
+                            <th scope="col" class="px-6 py-4 text-center">Status</th>
+                            <th scope="col" class="px-6 py-4 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse ($orders as $order)
+                            <tr class="border-b border-gray-200 hover:bg-gray-50">
+                                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                                    #{{ $order->order_number }}
+                                </th>
+                                <td class="px-6 py-4">
+                                    {{ $order->created_at->locale('id')->translatedFormat('d F Y') }}
+                                </td>
+                                <td class="px-6 py-4">
+                                    @php
+                                        $firstItem = $order->orderItems->first();
+                                    @endphp
+                                    <span class="font-semibold text-gray-800">{{ optional(optional($firstItem)->product)->name ?? 'Produk Dihapus' }}</span>
+                                    @if($order->orderItems->count() > 1)
+                                        <span class="text-xs text-gray-500 block">+{{ $order->orderItems->count() - 1 }} produk lainnya</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 font-bold text-gray-900">
+                                    Rp {{ number_format($order->total_amount, 0, ',', '.') }}
+                                </td>
+                                
+                                <td class="px-6 py-4 text-center">
+                                    <div x-data="{ tooltip: false }" class="relative flex justify-center">
+                                        <div @mouseenter="tooltip = true" @mouseleave="tooltip = false"
+                                            @class([
+                                                'flex items-center justify-center w-8 h-8 rounded-full',
+                                                'bg-yellow-100 text-yellow-800' => $order->status == 'pending',
+                                                'bg-blue-100 text-blue-800' => $order->status == 'processing',
+                                                'bg-green-100 text-green-800' => $order->status == 'completed',
+                                                'bg-red-100 text-red-800' => $order->status == 'canceled',
+                                            ])>
+                                            @switch($order->status)
+                                                @case('pending')
+                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                                                    @break
+                                                @case('processing')
+                                                    {{-- [PERUBAHAN] Ikon Roda Gigi diganti Ikon Kotak/Paket --}}
+                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg>
+                                                    @break
+                                                @case('completed')
+                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg>
+                                                    @break
+                                                @case('canceled')
+                                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+                                                    @break
+                                            @endswitch
+                                        </div>
+                                        <div x-show="tooltip" x-transition class="absolute -top-8 z-10 w-auto px-2 py-1 bg-gray-800 text-white text-xs rounded-md whitespace-nowrap capitalize">
+                                            {{ str_replace('processing', 'diproses', $order->status) }}
+                                        </div>
+                                    </div>
+                                </td>
 
-                {{-- Tampilan Desktop (Tabel) --}}
-                <div class="hidden md:block overflow-x-auto border border-gray-200 rounded-lg">
-                    <table class="w-full text-sm text-left text-gray-600">
-                        <thead class="text-xs text-white uppercase bg-green-700">
-                            <tr>
-                                <th scope="col" class="px-6 py-4">No</th>
-                                <th scope="col" class="px-6 py-4">Produk</th>
-                                <th scope="col" class="px-6 py-4">Penjual</th>
-                                <th scope="col" class="px-6 py-4">Toko</th>
-                                <th scope="col" class="px-6 py-4">Harga Satuan</th>
-                                <th scope="col" class="px-6 py-4">Jumlah</th>
-                                <th scope="col" class="px-6 py-4">Total</th>
-                                <th scope="col" class="px-6 py-4">Status</th>
+                                <td class="px-6 py-4">
+                                    <div x-data="{ tooltip: false }" class="relative flex justify-center">
+                                        <a href="{{ route('marketplace.purchase.detail', ['order' => $order->order_number]) }}" @mouseenter="tooltip = true" @mouseleave="tooltip = false" class="p-2 text-gray-500 rounded-full hover:bg-gray-200 hover:text-green-700 transition-colors">
+                                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 010-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                                        </a>
+                                        <div x-show="tooltip" x-transition class="absolute -top-8 z-10 w-auto px-2 py-1 bg-gray-800 text-white text-xs rounded-md whitespace-nowrap">
+                                            Lihat Detail
+                                        </div>
+                                    </div>
+                                </td>
                             </tr>
-                        </thead>
-                        <tbody>
-                            <template x-for="(transaction, index) in paginatedTransactions" :key="transaction.id">
-                                <tr @click="window.location.href = transaction.detailUrl"
-                                    class="bg-white border-b hover:bg-gray-50 cursor-pointer transition-colors duration-200">
-                                    <td class="px-6 py-4" x-text="(currentPage - 1) * itemsPerPage + index + 1"></td>
-                                    <td class="px-6 py-4 font-medium text-gray-900" x-text="transaction.produk"></td>
-                                    <td class="px-6 py-4" x-text="transaction.penjual"></td>
-                                    <td class="px-6 py-4" x-text="transaction.toko"></td>
-                                    <td class="px-6 py-4" x-text="`Rp ${transaction.hargaSatuan.toLocaleString('id-ID')}`">
-                                    </td>
-                                    <td class="px-6 py-4" x-text="transaction.jumlah"></td>
-                                    <td class="px-6 py-4" x-text="`Rp ${transaction.total.toLocaleString('id-ID')}`"></td>
-                                    <td class="px-6 py-4">
-                                        <span class="px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
-                                            :class="{
-                                                'bg-green-100 text-green-800': transaction.status === 'Selesai',
-                                                'bg-blue-100 text-blue-800': transaction.status === 'Diproses',
-                                                'bg-yellow-100 text-yellow-800': transaction.status === 'Pending',
-                                                'bg-red-100 text-red-800': transaction.status === 'Dibatalkan'
-                                            }"
-                                            x-text="transaction.status">
-                                        </span>
-                                    </td>
-                                </tr>
-                            </template>
-                            <template x-if="paginatedTransactions.length === 0">
-                                <tr>
-                                    <td colspan="8" class="text-center py-6 text-gray-500">Data tidak ditemukan.</td>
-                                </tr>
-                            </template>
-                        </tbody>
-                    </table>
-                </div>
-
-                {{-- Tampilan Mobile (Card) --}}
-                <div class="md:hidden space-y-4">
-                    <template x-for="transaction in paginatedTransactions" :key="transaction.id">
-                        <div @click="window.location.href = transaction.detailUrl"
-                            class="bg-white border border-gray-200 rounded-lg p-4 shadow-sm active:bg-gray-50">
-                            <div class="flex justify-between items-start mb-2">
-                                <div>
-                                    <p class="font-bold text-gray-800" x-text="transaction.produk"></p>
-                                    <p class="text-xs text-gray-500">Oleh: <span x-text="transaction.penjual"></span></p>
-                                    {{-- [PENAMBAHAN] Info Toko --}}
-                                    <p class="text-xs text-gray-500 mt-1">Toko: <span x-text="transaction.toko"></span></p>
-                                </div>
-                                <span class="px-3 py-1 text-xs font-semibold rounded-full whitespace-nowrap"
-                                    :class="{
-                                        'bg-green-100 text-green-800': transaction.status === 'Selesai',
-                                        'bg-yellow-100 text-yellow-800': transaction.status === 'Pending'
-                                    }"
-                                    x-text="transaction.status">
-                                </span>
-                            </div>
-                            <hr class="my-3 border-dashed">
-                            <div class="text-sm space-y-2">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500">Harga Satuan</span>
-                                    <span class="text-gray-700"
-                                        x-text="`Rp ${transaction.hargaSatuan.toLocaleString('id-ID')}`"></span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500">Jumlah</span>
-                                    <span class="text-gray-700" x-text="transaction.jumlah"></span>
-                                </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500 font-semibold">Total</span>
-                                    <span class="text-gray-800 font-bold"
-                                        x-text="`Rp ${transaction.total.toLocaleString('id-ID')}`"></span>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-                    <template x-if="paginatedTransactions.length === 0">
-                        <div class="text-center py-6 text-gray-500 bg-gray-50 rounded-lg">
-                            Data tidak ditemukan.
-                        </div>
-                    </template>
-                </div>
-
-                {{-- Paginasi --}}
-                <template x-if="totalPages > 1">
-                    <div class="mt-4 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-gray-600">
-                        {{-- Bagian "Baris per halaman" --}}
-                        <div class="flex items-center gap-2">
-                            <span>Baris per halaman:</span>
-                            <select x-model.number="itemsPerPage"
-                                class="border border-gray-300 rounded-md p-1 focus:ring-green-500 focus:border-green-500">
-                                <template x-for="option in perPageOptions">
-                                    <option :value="option" x-text="option"></option>
-                                </template>
-                            </select>
-                        </div>
-
-                        {{-- Bagian tombol halaman --}}
-                        <div class="flex items-center gap-2">
-                            <button @click="prevPage" :disabled="currentPage === 1"
-                                class="px-2 py-1 disabled:opacity-50">Sebelumnya</button>
-                            <template x-for="page in totalPages" :key="page">
-                                <button @click="goToPage(page)"
-                                    :class="{ 'bg-green-600 text-white': currentPage === page, 'bg-gray-200': currentPage !==
-                                            page }"
-                                    class="w-8 h-8 rounded-md" x-text="page"></button>
-                            </template>
-                            <button @click="nextPage" :disabled="currentPage === totalPages"
-                                class="px-2 py-1 disabled:opacity-50">Selanjutnya</button>
-                        </div>
-                    </div>
-                </template>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-10">
+                                    <p class="text-gray-500">Anda belum memiliki riwayat transaksi apa pun.</p>
+                                    <a href="{{ route('marketplace.products.all') }}" class="mt-4 inline-block bg-green-700 text-white font-bold py-2 px-5 rounded-lg hover:bg-green-800">
+                                        Mulai Belanja
+                                    </a>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
+            @if ($orders->hasPages())
+                <div class="p-4 border-t border-gray-200">
+                    {{ $orders->links() }}
+                </div>
+            @endif
+            
         </div>
     </div>
 @endsection
-
-@push('scripts')
-    <script>
-        function transactionHistory() {
-            return {
-                searchQuery: '',
-                perPageOptions: [5, 10, 15, 20],
-                itemsPerPage: 5,
-                currentPage: 1,
-                transactions: @json($transactions),
-
-                get filteredTransactions() {
-                    if (this.searchQuery === '') return this.transactions;
-                    return this.transactions.filter(t =>
-                        t.penjual.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                        t.produk.toLowerCase().includes(this.searchQuery.toLowerCase()) ||
-                        t.toko.toLowerCase().includes(this.searchQuery.toLowerCase())
-                    );
-                },
-                get totalPages() {
-                    return Math.ceil(this.filteredTransactions.length / this.itemsPerPage);
-                },
-                get paginatedTransactions() {
-                    const start = (this.currentPage - 1) * this.itemsPerPage;
-                    const end = start + this.itemsPerPage;
-                    return this.filteredTransactions.slice(start, end);
-                },
-                nextPage() {
-                    if (this.currentPage < this.totalPages) this.currentPage++;
-                },
-                prevPage() {
-                    if (this.currentPage > 1) this.currentPage--;
-                },
-                goToPage(page) {
-                    this.currentPage = page;
-                },
-                init() {
-                    this.$watch('searchQuery', () => {
-                        this.currentPage = 1;
-                    });
-                    this.$watch('itemsPerPage', () => {
-                        this.currentPage = 1;
-                    });
-                }
-            }
-        }
-    </script>
-@endpush
