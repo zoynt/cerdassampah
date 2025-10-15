@@ -12,7 +12,7 @@
                 <div class="bg-green-500 text-white p-6 rounded-2xl shadow-md flex items-center gap-6">
                     <div class="bg-white/20 p-4 rounded-xl"><svg class="w-8 h-8 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m21 7.5-9-5.25L3 7.5m18 0-9 5.25m9-5.25v9l-9 5.25M3 7.5l9 5.25M3 7.5v9l9 5.25m0-9v9" /></svg></div>
                     <div>
-                        <p class="text-sm font-medium text-green-100">Total Produk Terjual</p>
+                        <p class="text-sm font-medium text-green-100">Total Produk Terjual (Selesai)</p>
                         <p class="text-2xl md:text-4xl font-bold">{{ $totalProduk }}</p>
                     </div>
                 </div>
@@ -99,7 +99,7 @@
                                                 <template x-if="item.status === 'completed'"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" /></svg></template>
                                                 <template x-if="item.status === 'canceled'"><svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" /></svg></template>
                                             </div>
-                                            <div x-show="tooltip" x-transition class="absolute -top-8 z-10 w-auto px-2 py-1 bg-gray-800 text-white text-xs rounded-md whitespace-nowrap capitalize" x-text="item.status.replace('processing', 'diproses')"></div>
+                                            <div x-show="tooltip" x-transition class="absolute -top-8 z-10 w-auto px-2 py-1 bg-gray-800 text-white text-xs rounded-md whitespace-nowrap capitalize" x-text="item.translated_status"></div>
                                         </div>
                                     </td>
                                     

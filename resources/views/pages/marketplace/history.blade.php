@@ -72,7 +72,7 @@
                                             @endswitch
                                         </div>
                                         <div x-show="tooltip" x-transition class="absolute -top-8 z-10 w-auto px-2 py-1 bg-gray-800 text-white text-xs rounded-md whitespace-nowrap capitalize">
-                                            {{ str_replace('processing', 'diproses', $order->status) }}
+                                            {{ $order->translated_status }}
                                         </div>
                                     </div>
                                 </td>

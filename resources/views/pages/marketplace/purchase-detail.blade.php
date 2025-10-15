@@ -39,7 +39,7 @@
                         @if ($order->status == 'processing') bg-blue-100 text-blue-800 @endif
                         @if ($order->status == 'pending') bg-yellow-100 text-yellow-800 @endif
                         @if ($order->status == 'canceled') bg-red-100 text-red-800 @endif">
-                        {{ $order->status }}
+                        {{ $order->translated_status }}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
@@ -56,7 +56,7 @@
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Metode Pembayaran</span>
                         <span class="font-semibold text-gray-800 text-sm md:text-base capitalize">
-                            {{ str_replace('_', ' ', $order->payment_method) }}
+                            {{ $order->payment_method_name }}
                         </span>
                     </div>
                 @endif

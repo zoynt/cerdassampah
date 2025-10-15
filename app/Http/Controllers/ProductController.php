@@ -348,6 +348,7 @@ class ProductController extends Controller
             'selling_unit' => optional($firstItem->product)->selling_unit,
             'total' => (int)$order->total_amount,
             'status' => $order->status,
+            'translated_status' => $order->translated_status,
             'detailUrl' => route('marketplace.purchase.detail', ['order' => $order->order_number])
         ];
     });
