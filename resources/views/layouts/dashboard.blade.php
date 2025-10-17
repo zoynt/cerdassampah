@@ -49,7 +49,7 @@
                     'educationOpen' => request()->routeIs(['game-pilah-sampah', 'scan-user']),
                     'ruteOpen' => request()->routeIs(['tps.index', 'surung-sintak.index']),
                     'digitalOpen' => request()->routeIs(['digital.informasi', 'banksampah-user', 'digital.harga', 'digital.riwayat', 'digital.banksampah.show', 'digital.tarik-saldo.form']),
-                    'marketOpen' => request()->routeIs(['marketplace.profile.show', 'marketplace.profile.edit', 'marketplace.penjualan', 'marketplace.history', 'marketplace.product','marketplace.product.detail', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice','marketplace.store', 'marketplace.products.all']),
+                    'marketOpen' => request()->routeIs(['marketplace.profile.show', 'marketplace.profile.edit', 'marketplace.penjualan', 'marketplace.history', 'marketplace.product','marketplace.product.detail', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice','marketplace.store', 'marketplace.products.all','marketplace.store.show','store.profile.show', 'store.profile.edit','marketplace.checkout','marketplace.purchase.detail','marketplace.invoice.show','marketplace.products.show','marketplace.rating.show','marketplace.products.list','marketplace.products.create','marketplace.products.edit','marketplace.riwayat']),
                 ];
             @endphp
 
@@ -262,14 +262,16 @@
                                     'marketplace.checkout',
                                     'marketplace.purchase.detail',
                                     'marketplace.invoice.show',
-                                    'marketplace.products.show'),
+                                    'marketplace.products.show',
+                                    'marketplace.rating.show'),
                                 'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
                                     'marketplace.products.all',
                                     'marketplace.checkout',
                                     'marketplace.purchase.detail',
                                     'marketplace.invoice.show',
                                     'marketplace.store.show',
-                                    'marketplace.products.show'),
+                                    'marketplace.products.show',
+                                    'marketplace.rating.show'),
                             ])>
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="32"
                                 height="32" fill="currentColor" viewBox="0 0 256 256">
