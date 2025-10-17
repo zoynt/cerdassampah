@@ -19,7 +19,7 @@ class StoreProfileController extends Controller
                 ->with('info', 'Anda harus membuat profil toko terlebih dahulu.');
         }
         
-        return redirect()->route('marketplace.store.show', $store);
+        return redirect()->route('marketplace.store.show', $store->slug);
     }
 
     public function show(Store $store)
@@ -58,11 +58,14 @@ class StoreProfileController extends Controller
             $path = $request->file('image_path')->store('stores', 'public');
             $validatedData['image_path'] = $path;
         }
-
-        // [PERBAIKAN 1] Simpan hasil create ke variabel $newStore
         $newStore = Store::create($validatedData);
+        /** @var \App\Models\User|\Spatie\Permission\Traits\HasRoles $user */
+        $user = Auth::user();
 
-        // [PERBAIKAN 2] Berikan variabel $newStore ke dalam route()
+        if (!$user->hasRole('seller')) {
+            $user->assignRole('seller');
+        }
+
         return redirect()->route('store.profile.show', $newStore)->with('success', 'Profil Toko berhasil dibuat!');
     }
 

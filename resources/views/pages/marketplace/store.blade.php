@@ -8,7 +8,7 @@
 
     @section('content')
         <div x-data="marketplace()" x-init="$watch('searchQuery', () => { visibleItemsCount = itemsPerLoad });
-        $watch('selectedCategory', () => { visibleItemsCount = itemsPerLoad });">
+        $watch('selectedCategory', () => { visibleItemsCount = itemsPerLoad });" x-cloak>
             <div class="space-y-6">
                 <div class="relative h-64 rounded-xl overflow-hidden shadow-lg">
                     <img src="{{ $store->image_path ? asset('storage/' . $store->image_path) : asset('img/placeholder.png') }}"

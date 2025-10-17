@@ -20,7 +20,7 @@
             @endif
         </div>
 
-        <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div class="bg-white rounded-2xl shadow-lg overflow-hidden" x-cloak>
             <div class="h-48 bg-gray-200">
                 @if ($store->image_path)
                     <img src="{{ asset('storage/' . $store->image_path) }}" alt="Foto {{ $store->name }}"

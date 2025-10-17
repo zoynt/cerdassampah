@@ -19,6 +19,7 @@
         body {
             font-family: 'Poppins', sans-serif;
         }
+        [x-cloak] { display: none !important; }
     </style>
 
     @stack('head')
@@ -34,7 +35,7 @@
                 'translate-x-0': sidebarOpen,
                 '-translate-x-full': !sidebarOpen,
                 'lg:relative lg:translate-x-0': sidebarOpen
-            }">
+            }" >
 
             <a href="{{ route('dashboard') }}" class="flex items-center px-4 mb-8">
                 <img src="{{ asset('img/logo.png') }}" alt="Logo CerdasSampah" class="w-10 h-10 mr-3" />
@@ -106,7 +107,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div x-show="reportOpen" x-transition class="mt-2 ml-4 space-y-2">
+                    <div x-show="reportOpen" x-transition class="mt-2 ml-4 space-y-2" x-cloak>
                         <a href="{{ route('lapor.index') }}" @class([
                             'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
                             'bg-green-100 text-green-800' => request()->routeIs('lapor.index'),
@@ -181,7 +182,7 @@
                                 d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div x-show="ruteOpen" x-transition class="mt-2 ml-4 space-y-2">
+                    <div x-show="ruteOpen" x-transition class="mt-2 ml-4 space-y-2" x-cloak>
                         <a href="{{ route('tps.index') }}" @class([
                             'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
                             'bg-green-100 text-green-800' => request()->routeIs('tps.index'),
@@ -232,7 +233,7 @@
                                 d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div x-show="digitalOpen" x-transition class="mt-2 ml-4 space-y-2">
+                    <div x-show="digitalOpen" x-transition class="mt-2 ml-4 space-y-2" x-cloak>
                         <a href="{{ route('banksampah-user') }}" @class([
                             'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
                             'bg-green-100 text-green-800' => request()->routeIs('banksampah-user'),
@@ -335,11 +336,8 @@
                             </svg>
                             Riwayat Transaksi
                         </a>
-
-
-
-                        @if (Auth::user() && Auth::user()->store)
-                            {{-- JIKA USER SUDAH PUNYA TOKO, link langsung ke halaman profil --}}
+                        
+                        @role('seller')
                             <a href="{{ route('marketplace.store.show', Auth::user()->store) }}"
                                 @class([
                                     'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
@@ -363,27 +361,27 @@
                                 Kelola Toko
                             </a>
                             <a href="{{ route('marketplace.products.list', 'marketplace.products.create') }}"
-                            @class([
-                                'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
-                                'bg-green-100 text-green-800' => request()->routeIs(
-                                    'marketplace.products.list',
-                                    'marketplace.products.create',
-                                    'marketplace.products.edit'),
-                                'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
-                                    'marketplace.products.list',
-                                    'marketplace.products.create',
-                                    'marketplace.products.edit'),
-                            ])>
-                            <!-- <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M236,96a12,12,0,0,0-.44-3.3L221.2,42.51A20.08,20.08,0,0,0,202,28H54A20.08,20.08,0,0,0,34.8,42.51L20.46,92.7A12,12,0,0,0,20,96h0v16a43.94,43.94,0,0,0,16,33.92V216a12,12,0,0,0,12,12H208a12,12,0,0,0,12-12V145.92A43.94,43.94,0,0,0,236,112V96ZM57.05,52H199l9.14,32H47.91Zm91,56v4a20,20,0,0,1-40,0v-4ZM53,128.71A20,20,0,0,1,44,112v-4H84v4a20,20,0,0,1-20,20,19.76,19.76,0,0,1-9.07-2.2A11.54,11.54,0,0,0,53,128.71ZM196,204H60V155.81c1.32.12,2.65.19,4,.19a43.86,43.86,0,0,0,32-13.85,43.89,43.89,0,0,0,64,0A43.86,43.86,0,0,0,192,156c1.35,0,2.68-.07,4-.19Zm16-92a20,20,0,0,1-9,16.71,11.66,11.66,0,0,0-1.88,1.09A20,20,0,0,1,172,112v-4h40Z"></path></svg> -->
-                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="32"
-                                height="32" fill="currentColor" viewBox="0 0 256 256">
-                                <path
-                                    d="M28,64A12,12,0,0,1,40,52H216a12,12,0,0,1,0,24H40A12,12,0,0,1,28,64Zm12,76h64a12,12,0,0,0,0-24H40a12,12,0,0,0,0,24Zm80,40H40a12,12,0,0,0,0,24h80a12,12,0,0,0,0-24Zm120.49,20.49a12,12,0,0,1-17,0l-18.08-18.08a44,44,0,1,1,17-17l18.08,18.07A12,12,0,0,1,240.49,200.49ZM184,164a20,20,0,1,0-20-20A20,20,0,0,0,184,164Z">
-                                </path>
-                            </svg>
-                            Daftar Produk
-                        </a>
-                        <a href="{{ route('marketplace.riwayat', ['store' => Auth::user()->store]) }}"
+                                @class([
+                                    'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
+                                    'bg-green-100 text-green-800' => request()->routeIs(
+                                        'marketplace.products.list',
+                                        'marketplace.products.create',
+                                        'marketplace.products.edit'),
+                                    'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
+                                        'marketplace.products.list',
+                                        'marketplace.products.create',
+                                        'marketplace.products.edit'),
+                                ])>
+                                <!-- <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M236,96a12,12,0,0,0-.44-3.3L221.2,42.51A20.08,20.08,0,0,0,202,28H54A20.08,20.08,0,0,0,34.8,42.51L20.46,92.7A12,12,0,0,0,20,96h0v16a43.94,43.94,0,0,0,16,33.92V216a12,12,0,0,0,12,12H208a12,12,0,0,0,12-12V145.92A43.94,43.94,0,0,0,236,112V96ZM57.05,52H199l9.14,32H47.91Zm91,56v4a20,20,0,0,1-40,0v-4ZM53,128.71A20,20,0,0,1,44,112v-4H84v4a20,20,0,0,1-20,20,19.76,19.76,0,0,1-9.07-2.2A11.54,11.54,0,0,0,53,128.71ZM196,204H60V155.81c1.32.12,2.65.19,4,.19a43.86,43.86,0,0,0,32-13.85,43.89,43.89,0,0,0,64,0A43.86,43.86,0,0,0,192,156c1.35,0,2.68-.07,4-.19Zm16-92a20,20,0,0,1-9,16.71,11.66,11.66,0,0,0-1.88,1.09A20,20,0,0,1,172,112v-4h40Z"></path></svg> -->
+                                <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="32"
+                                    height="32" fill="currentColor" viewBox="0 0 256 256">
+                                    <path
+                                        d="M28,64A12,12,0,0,1,40,52H216a12,12,0,0,1,0,24H40A12,12,0,0,1,28,64Zm12,76h64a12,12,0,0,0,0-24H40a12,12,0,0,0,0,24Zm80,40H40a12,12,0,0,0,0,24h80a12,12,0,0,0,0-24Zm120.49,20.49a12,12,0,0,1-17,0l-18.08-18.08a44,44,0,1,1,17-17l18.08,18.07A12,12,0,0,1,240.49,200.49ZM184,164a20,20,0,1,0-20-20A20,20,0,0,0,184,164Z">
+                                    </path>
+                                </svg>
+                                Daftar Produk
+                            </a>
+                            <a href="{{ route('marketplace.riwayat', ['store' => Auth::user()->store]) }}"
                                 @class([
                                     'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
                                     'bg-green-100 text-green-800' => request()->routeIs('marketplace.riwayat'),
@@ -398,8 +396,7 @@
                                 </svg>
                                 Data Penjualan
                             </a>
-                            
-                        @endif
+                        @endrole
                     </div>
                 </div>
 
