@@ -6,17 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use App\Models\BankWasteCategory;
 use App\Models\BankWasteProduct;
-use App\Models\BankTransaction; // <--- TAMBAHKAN INI
-use App\Models\BankTransactionDetail; // <--- TAMBAHKAN INI JUGA
+use App\Models\BankTransaction;
+use App\Models\BankTransactionDetail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str; // Pastikan ini ada untuk membuat slug
+use Illuminate\Support\Str;
 
 class WastePriceController extends Controller
 {
-// app/Http/Controllers/Pengelola/WastePriceController.php
-
     public function index(Request $request)
     {
         // [MODE DEVELOPMENT] Mengambil bank sampah pertama yang ada di database.
