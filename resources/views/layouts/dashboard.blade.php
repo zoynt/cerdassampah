@@ -43,34 +43,13 @@
             </a>
 
             @php
+                // Memisahkan logika PHP dari HTML untuk menghindari parse error
                 $alpineData = [
                     'reportOpen' => request()->routeIs(['lapor.index', 'laporan.history']),
+                    'educationOpen' => request()->routeIs(['game-pilah-sampah', 'scan-user']),
                     'ruteOpen' => request()->routeIs(['tps.index', 'surung-sintak.index']),
-                    'digitalOpen' => request()->routeIs([
-                        'digital.informasi',
-                        'banksampah-user',
-                        'digital.harga',
-                        'digital.riwayat',
-                        'digital.banksampah.show',
-                        'digital.tarik-saldo.form',
-                    ]),
-                    'marketOpen' => request()->routeIs([
-                        'store.profile.show',
-                        'store.profile.edit',
-                        'marketplace.history',
-                        'marketplace.products.all',
-                        'marketplace.products.show',
-                        'marketplace.checkout',
-                        'marketplace.purchase.detail',
-                        'marketplace.invoice.show',
-                        'marketplace.products.list',
-                        'marketplace.riwayat',
-                        'store.profile.create',
-                        'marketplace.products.create',
-                        'marketplace.products.edit',
-                        'marketplace.store.show',
-                        'mystore.dashboard',
-                    ]),
+                    'digitalOpen' => request()->routeIs(['digital.informasi', 'banksampah-user', 'digital.harga', 'digital.riwayat', 'digital.banksampah.show', 'digital.tarik-saldo.form']),
+                    'marketOpen' => request()->routeIs(['marketplace.profile.show', 'marketplace.profile.edit', 'marketplace.penjualan', 'marketplace.history', 'marketplace.product','marketplace.product.detail', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice','marketplace.store', 'marketplace.products.all']),
                 ];
             @endphp
 
@@ -135,35 +114,31 @@
                     </div>
                 </div>
 
-                <a href="{{ route('game-pilah-sampah') }}" @class([
-                    'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
-                    'bg-green-700 text-white shadow-sm' => request()->routeIs(
-                        'game-pilah-sampah'),
-                    'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
-                        'game-pilah-sampah'),
-                ])>
-                    <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Game Pilah Sampah
-                </a>
-
-                <a href="{{ route('scan-user') }}" @class([
-                    'flex items-center px-4 py-2.5 mt-2 text-sm font-medium rounded-lg transition-colors duration-200',
-                    'bg-green-700 text-white shadow-sm' => request()->routeIs('scan-user'),
-                    'text-gray-500 hover:bg-gray-200' => !request()->routeIs('scan-user'),
-                ])>
-                    <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
-                        stroke-width="2" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    Scan Sampah
-                </a>
+                <div class="mt-2">
+                    <button @click="educationOpen = !educationOpen" @class(['flex items-center justify-between w-full px-4 py-2.5 text-sm font-medium text-left rounded-lg transition-colors duration-200', 'bg-green-700 text-white shadow-sm' => $alpineData['educationOpen'], 'text-gray-500 hover:bg-gray-200' => !$alpineData['educationOpen']])>
+                        <span class="flex items-center">
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            fill="currentColor" viewBox="0 0 24 24" >
+                            <path d="m20,3H4c-1.1,0-2,.9-2,2v10c0,1.1.9,2,2,2h7v3h-3v2h8v-2h-3v-3h7c1.1,0,2-.9,2-2V5c0-1.1-.9-2-2-2ZM4,15V5h16v10s-16,0-16,0Z"></path><path d="M10 13 15 10 10 7 10 13z"></path>
+                            </svg>
+                            Edukasi & Scan
+                        </span>
+                        <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': educationOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+                    <div x-show="educationOpen" x-transition class="mt-2 ml-4 space-y-2">
+                        <a href="{{ route('game-pilah-sampah') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('game-pilah-sampah'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('game-pilah-sampah')])>
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            fill="currentColor" viewBox="0 0 24 24" >
+                            <path d="M16 11a1 1 0 1 0 0 2 1 1 0 1 0 0-2M18 9a1 1 0 1 0 0 2 1 1 0 1 0 0-2M16 7a1 1 0 1 0 0 2 1 1 0 1 0 0-2M14 9a1 1 0 1 0 0 2 1 1 0 1 0 0-2M8 8a2 2 0 1 0 0 4 2 2 0 1 0 0-4"></path><path d="M17 4H7C4.24 4 2 6.24 2 9v7.88a3.124 3.124 0 0 0 5.33 2.21l1.96-1.96c1.45-1.45 3.97-1.45 5.41 0l1.96 1.96c.59.59 1.37.91 2.21.91 1.72 0 3.12-1.4 3.12-3.12V9c0-2.76-2.24-5-5-5Zm3 12.88a1.118 1.118 0 0 1-1.91.79l-1.96-1.96c-1.1-1.1-2.56-1.71-4.12-1.71s-3.02.61-4.12 1.71l-1.96 1.96a1.118 1.118 0 0 1-1.91-.79V9c0-1.65 1.35-3 3-3h10c1.65 0 3 1.35 3 3v7.88Z"></path>
+                            </svg>
+                            Game Pilah Sampah
+                        </a>
+                        <a href="{{ route('scan-user') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('scan-user'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('scan-user')])>
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" /><path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" /></svg>
+                            Scan Sampah
+                        </a>
+                    </div>
+                </div>
 
                 <div class="mt-2">
                     <button @click="ruteOpen = !ruteOpen" @class([
@@ -233,30 +208,13 @@
                                 d="M19 9l-7 7-7-7" />
                         </svg>
                     </button>
-                    <div x-show="digitalOpen" x-transition class="mt-2 ml-4 space-y-2" x-cloak>
-                        <a href="{{ route('banksampah-user') }}" @class([
-                            'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
-                            'bg-green-100 text-green-800' => request()->routeIs('banksampah-user'),
-                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs('banksampah-user'),
-                        ])>
-                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                            </svg>
+                    <div x-show="digitalOpen" x-transition class="mt-2 ml-4 space-y-2">
+                        <a href="{{ route('banksampah-user') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('banksampah-user', 'digital.banksampah.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('banksampah-user', 'digital.banksampah.show')])>
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                             Bank Sampah
                         </a>
-                        <a href="{{ route('digital.informasi') }}" @class([
-                            'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
-                            'bg-green-100 text-green-800' => request()->routeIs('digital.informasi'),
-                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs(
-                                'digital.informasi'),
-                        ])>
-                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
+                        <a href="{{ route('digital.informasi') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('digital.informasi', 'digital.harga', 'digital.tarik-saldo.form'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('digital.informasi', 'digital.harga', 'digital.tarik-saldo.form')])>
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
                             Informasi Akun
                         </a>
                         <a href="{{ route('digital.riwayat') }}" @class([
@@ -399,6 +357,7 @@
                         @endrole
                     </div>
                 </div>
+                
 
             </nav>
         </aside>

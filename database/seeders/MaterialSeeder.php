@@ -13,68 +13,54 @@ class MaterialSeeder extends Seeder
      */
     public function run(): void
     {
-         $materials = [
+          $materials = [
+            // === ORGANIK (ID: 1) ===
             [
-                'waste_types_id' => 1, // Battery
-                'description_mat' => 'Baterai bekas mengandung logam berat seperti merkuri, timbal, dan kadmium yang sangat beracun bagi manusia dan lingkungan. Jika dibuang sembarangan, bahan kimianya dapat mencemari tanah dan air.',
-                'suggest' => 'Baterai bekas harus dibuang di tempat daur ulang khusus baterai.',
-                'recycle_info' => 'Komponen logam bisa digunakan kembali untuk baterai baru.'
+                'waste_types_id' => 1,
+                'description_mat' => 'Sisa makanan seperti nasi, sayuran, dan buah-buahan termasuk sampah organik yang mudah membusuk dan menghasilkan gas metana jika dibuang ke TPA.',
+                'suggest' => 'Olah sampah organik menjadi kompos di rumah menggunakan komposter atau lubang biopori.',
+                'recycle_info' => 'Kompos yang dihasilkan adalah pupuk alami yang sangat baik untuk menyuburkan tanaman tanpa bahan kimia.'
             ],
             [
-                'waste_types_id' => 2, // Organic
-                'description_mat' => 'Sisa makanan seperti nasi, lauk, dan makanan olahan lainnya termasuk sampah organik yang mudah membusuk.',
-                'suggest' => 'Sampah organik sebaiknya diolah menjadi kompos.',
-                'recycle_info' => 'Kompos sebagai pupuk alami.'
-            ],
-            [
-                'waste_types_id' => 3, // Glass
-                'description_mat' => 'Mendaur ulang satu ton kaca bisa menghemat lebih dari setengah ton pasir yang digunakan dalam pembuatan kaca baru',
-                'suggest' => 'Kaca bekas sebaiknya dibawa ke tempat daur ulang kaca.',
-                'recycle_info' => 'Potongan botol kaca bekas yang dipotong dan dihaluskan bisa digunakan sebagai gelas minum unik atau tempat lilin artistik yang estetik.'
-            ],
-            [
-                'waste_types_id' => 3, // Glass
-                'description_mat' => 'Satu botol kaca yang didaur ulang bisa menghemat energi untuk menyalakan lampu bohlam selama 4 jam',
-                'suggest' => 'Botol kaca bekas sebaiknya dibawa ke tempat daur ulang kaca.',
-                'recycle_info' => 'Botol kaca bekas dapat dimanfaatkan sebagai vas bunga dengan menambahkan lukisan tangan atau pita hias di bagian luar untuk mempercantiknya.'
-            ],
-            [
-                'waste_types_id' => 4, // Metal
-                'description_mat' => 'Sebuah kaleng aluminium bekas dapat kembali ke rak toko dalam bentuk kaleng baru hanya dalam waktu 60 hari setelah didaur ulang.',
-                'suggest' => 'Kaleng bekas sebaiknya dibawa ke tempat daur ulang logam.',
-                'recycle_info' => 'Kaleng minuman bekas dapat dicuci bersih dan dimodifikasi menjadi tempat pensil unik dengan tambahan cat atau stiker dekoratif.'
-            ],
-            [
-                'waste_types_id' => 4, // Metal
-                'description_mat' => 'Tahukah kamu? besi yang berkarat dapat didaur ulang menjadi produk baru jika diproses dengan benar',
-                'suggest' => 'Besi berkarat sebaiknya dibawa ke tempat daur ulang logam.',
-                'recycle_info' => 'Tutup botol logam yang sering diabaikan bisa dirangkai menggunakan kawat menjadi hiasan dinding berbentuk bunga atau simbol tertentu yang artistik.'
-            ],
-            [
-                'waste_types_id' => 5, // Paper
-                'description_mat' => 'Limbah kertas yang didaur ulang dapat menghemat hingga 60% energi dibandingkan dengan membuat kertas baru dari bahan mentah.',
-                'suggest' => 'Kertas bekas sebaiknya dibawa ke tempat daur ulang kertas.',
-                'recycle_info' => 'Kertas koran bekas yang biasanya hanya berakhir di tempat sampah dapat dilipat menjadi kotak penyimpanan kecil untuk barang-barang seperti perhiasan atau kunci.'
-            ],
-            [
-                'waste_types_id' => 5, // Paper
-                'description_mat' => 'Tahukah kamu? Limbah kertas yang didaur ulang dapat menghemat hingga 60% energi dibandingkan dengan membuat kertas baru dari bahan mentah.',
-                'suggest' => 'Kertas bekas sebaiknya dibawa ke tempat daur ulang kertas.',
-                'recycle_info' => 'Buku bekas yang sudah tidak terpakai bisa diubah menjadi karya seni pop-up atau diukir untuk membuat bentuk 3D seperti siluet hewan atau tanaman.'
-            ],
-            [
-                'waste_types_id' => 6, // Plastic
-                'description_mat' => 'Plastik membutuhkan waktu hingga 1000 tahun untuk terurai sepenuhnya. Oleh karena itu, yuk kurangi penggunaan plastik sekali pakai!',
-                'suggest' => 'Plastik bekas sebaiknya dibawa ke tempat daur ulang plastik.',
-                'recycle_info' => 'Botol plastik bekas yang tidak terpakai dapat dipotong dan dihias menjadi pot bunga gantung yang cantik untuk menghiasi halaman rumah atau balkon.'
-            ],
-            [
-                'waste_types_id' => 6, // Plastic
-                'description_mat' => 'Hey Quessers! Sampah plastik yang dibuang ke lautan dapat membahayakan penyu karena ia akan mengira sampah itu adalah makanannya!',
-                'suggest' => 'Plastik bekas sebaiknya dibawa ke tempat daur ulang plastik.',
-                'recycle_info' => 'Plastik kresek bekas yang biasanya hanya dibuang begitu saja bisa dianyam dengan teknik sederhana menjadi tas belanja ramah lingkungan yang tahan lama.'
+                'waste_types_id' => 1,
+                'description_mat' => 'Sampah kebun seperti daun kering, ranting, dan sisa potongan rumput adalah bahan utama untuk membuat kompos berkualitas tinggi.',
+                'suggest' => 'Jangan membakar sampah kebun, karena asapnya menimbulkan polusi. Manfaatkan sebagai bahan kompos.',
+                'recycle_info' => 'Dengan mengompos, Anda mengurangi volume sampah yang dikirim ke TPA sekaligus mendapatkan pupuk gratis.'
             ],
 
+            // === ANORGANIK (ID: 2) ===
+            [
+                'waste_types_id' => 2,
+                'description_mat' => 'Tahukah kamu? Sebuah kaleng aluminium bisa didaur ulang dan kembali ke rak toko sebagai kaleng baru hanya dalam 60 hari!',
+                'suggest' => 'Pastikan untuk membersihkan kemasan plastik, kaleng, atau botol kaca sebelum memberikannya ke bank sampah.',
+                'recycle_info' => 'Daur ulang sampah anorganik menghemat sumber daya alam, energi, dan mengurangi polusi secara signifikan.'
+            ],
+            [
+                'waste_types_id' => 2,
+                'description_mat' => 'Dibutuhkan waktu hingga 1.000 tahun agar satu botol plastik dapat terurai di alam. Sampah plastik di lautan sering dikira makanan oleh hewan laut.',
+                'suggest' => 'Pisahkan sampah anorganik (plastik, kertas, logam, kaca) dari sampah lainnya untuk memudahkan proses daur ulang.',
+                'recycle_info' => 'Botol plastik bekas dapat diolah menjadi serat kain (polyester) untuk membuat pakaian, tas, atau sepatu.'
+            ],
+             [
+                'waste_types_id' => 2,
+                'description_mat' => 'Mendaur ulang satu ton kertas dapat menyelamatkan sekitar 17 pohon besar dan menghemat ribuan liter air.',
+                'suggest' => 'Gunakan kedua sisi kertas dan kumpulkan kertas bekas untuk didaur ulang. Hindari kertas yang terkontaminasi minyak.',
+                'recycle_info' => 'Kertas yang didaur ulang dapat diubah menjadi produk baru seperti kardus, koran, atau kertas tisu.'
+            ],
+
+            // === RESIDU (ID: 3) ===
+            [
+                'waste_types_id' => 3,
+                'description_mat' => 'Residu adalah sampah sisa yang sulit didaur ulang, contohnya styrofoam, popok sekali pakai, pembalut, dan puntung rokok.',
+                'suggest' => 'Cara terbaik mengelola residu adalah dengan mengurangi penggunaannya. Pilih produk dengan kemasan minimal atau yang dapat digunakan kembali.',
+                'recycle_info' => 'Di beberapa negara maju, sampah residu diolah menjadi sumber energi listrik melalui teknologi waste-to-energy.'
+            ],
+            [
+                'waste_types_id' => 3,
+                'description_mat' => 'Baterai bekas, lampu neon, dan sampah elektronik mengandung logam berat berbahaya (seperti merkuri dan timbal) yang dapat meracuni tanah dan air.',
+                'suggest' => 'Jangan buang sampah B3 (Bahan Berbahaya dan Beracun) ke tempat sampah biasa. Kumpulkan dan serahkan ke titik pengumpulan limbah B3.',
+                'recycle_info' => 'Komponen berharga dari limbah elektronik dapat diekstraksi secara aman untuk digunakan kembali, mencegah kerusakan lingkungan.'
+            ],
         ];
         DB::table('materials')->insert($materials);
     }
