@@ -31,7 +31,7 @@
                         berubah jadi tabungan. Semakin rajin menabung sampah, semakin banyak saldo dan manfaat yang bisa
                         kamu nikmati.</p>
                     <a href="#"
-                        class="block mt-6 text-center lg:inline-block bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200">
+                        class="block mt-6 text-center lg:inline-block bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-xl hover:bg-gray-100 transition-colors duration-200">
                         Ayo Setorkan!
                     </a>
                 </div>

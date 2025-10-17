@@ -36,7 +36,7 @@
                         Ayo pilah sampah dan ubah jadi cuan!
                     </h3>
                     <a href="#"
-                        class="block mt-6 text-center lg:inline-block bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md hover:bg-gray-100 transition-colors duration-200">
+                        class="block mt-6 text-center lg:inline-block bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-xl hover:bg-gray-100 transition-colors duration-200">
                         Jelajahi Marketplace!
                     </a>
                 </div>

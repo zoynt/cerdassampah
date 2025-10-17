@@ -21,13 +21,14 @@
 
     @stack('head')
     @stack('styles')
+    @stack('styles')
 </head>
 
 <body class="text-gray-800">
     <div x-data="{ sidebarOpen: window.innerWidth >= 768 }" class="flex h-screen bg-slate-50">
 
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-64 px-4 py-7 overflow-y-auto text-gray-700 bg-white border-r border-gray-200 transition-transform duration-300 transform"
+            class="fixed inset-y-0 left-0 z-40 w-64 px-4 py-7 overflow-y-auto text-gray-700 bg-white border-r border-gray-200 duration-300 transform"
             :class="{
                 'translate-x-0': sidebarOpen,
                 '-translate-x-full': !sidebarOpen,
@@ -45,7 +46,7 @@
                     'reportOpen' => request()->routeIs(['lapor.index', 'laporan.history']),
                     'educationOpen' => request()->routeIs(['game-pilah-sampah', 'scan-user']),
                     'ruteOpen' => request()->routeIs(['tps.index', 'surung-sintak.index']),
-                    'digitalOpen' => request()->routeIs(['digital.informasi', 'banksampah-user', 'digital.harga', 'digital.riwayat', 'digital.banksampah.show', 'digital.tarik-saldo.form']),
+                    'digitalOpen' => request()->routeIs(['digital.informasi', 'banksampah-user', 'digital.harga', 'digital.riwayat', 'digital.banksampah.show', 'digital.tarik-saldo.form', 'pengelola.nasabah.index', 'pengelola.nasabah.show', 'pengelola.setoran.create', 'pengelola.harga.index', 'pengelola.riwayat.index', 'pengelola.pembayaran.index', 'pengelola.riwayat.show', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show']),
                     'marketOpen' => request()->routeIs(['store.profile.show', 'store.profile.edit', 'marketplace.history', 'marketplace.products.all','marketplace.products.show', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice.show','marketplace.products.list','marketplace.riwayat', 'store.profile.create','marketplace.products.create', 'marketplace.products.edit','marketplace.store.show','mystore.dashboard']),                ];
             @endphp
 
@@ -141,6 +142,25 @@
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                             Riwayat Transaksi
                         </a>
+                        <a href="{{ route('pengelola.nasabah.index') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs(['pengelola.nasabah.index', 'pengelola.nasabah.show']), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs(['pengelola.nasabah.index', 'pengelola.nasabah.show'])])>
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"><path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" /></svg>
+                            Data Nasabah
+                        </a>
+                        <a href="{{ route('pengelola.harga.index') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('pengelola.harga.index'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('pengelola.harga.index')])>
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
+                            fill="currentColor" viewBox="0 0 24 24" >
+                            <path d="M21 8H7c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1m-1 8c-1.1 0-2 .9-2 2h-8c0-1.1-.9-2-2-2v-4c1.1 0 2-.9 2-2h8c0 1.1.9 2 2 2z"></path><path d="M18 4H3c-.55 0-1 .45-1 1v11h2V6h14zM14 12a2 2 0 1 0 0 4 2 2 0 1 0 0-4"></path>
+                            </svg>
+                            Harga Sampah
+                        </a>
+                        <a href="{{ route('pengelola.riwayat.index', 'pengelola.setoran.create', 'pengelola.riwayat.show') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('pengelola.riwayat.index', 'pengelola.setoran.create', 'pengelola.riwayat.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('pengelola.riwayat.index', 'pengelola.setoran.create', 'pengelola.riwayat.show')])>
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            Riwayat Setoran
+                        </a>
+                        <a href="{{ route('pengelola.pembayaran.index', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('pengelola.pembayaran.index', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('pengelola.pembayaran.index', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show')])>
+                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                            Riwayat Pembayaran
+                        </a>
                     </div>
                 </div>
 
@@ -188,7 +208,7 @@
 
         <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden" x-cloak></div>
 
-        <div class="flex flex-col flex-1 w-full transition-transform duration-300">
+        <div class="flex flex-col flex-1 w-full duration-300">
             <header @class([
                 'sticky top-0 z-20 flex items-center justify-between px-6 py-4 text-white bg-green-700 transition-shadow duration-300',
                 'shadow-md' => !request()->routeIs(
@@ -276,15 +296,16 @@
         </div>
     </div>
 
-    @stack('scripts')
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @if (session('success'))
         <script>
             Swal.fire({
                 title: 'Berhasil!',
-                text: "{{ session('success') }}",
+                text: @json(session('success')),
                 icon: 'success',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Oke'
@@ -349,5 +370,6 @@
             </div>
         </div>
     @endif
+    @stack('scripts')
 </body>
 </html>

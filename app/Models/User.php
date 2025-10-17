@@ -6,6 +6,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\RekeningBankSampahUser; 
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class User extends Authenticatable implements MustVerifyEmail
@@ -83,6 +84,10 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     public function rekening()
+    {
+        return $this->hasMany(RekeningBankSampahUser::class, 'user_id');
+    }
+    public function rekeningBankSampah()
     {
         return $this->hasMany(RekeningBankSampahUser::class, 'user_id');
     }
