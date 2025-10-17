@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\RekeningBankSampahUser;
+use App\Models\BankTransaction;
+use App\Models\BankTransactionDetail; // Tambahkan ini
+use App\Models\User; // Tambahkan ini
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB; // Tambahkan ini
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
@@ -56,14 +60,61 @@ class RekeningBankSampahUserController extends Controller
         ]);
     }
 
-    public function index()
-    {
-        // Debug: Tampilkan semua rekening milik user yang sedang login
-        $rekenings = RekeningBankSampahUser::where('user_id', Auth::id())->get();
-        dd($rekenings);
+    // public function index()
+    // {
+    //     // Debug: Tampilkan semua rekening milik user yang sedang login
+    //     $rekenings = RekeningBankSampahUser::where('user_id', Auth::id())->get();
+    //     dd($rekenings);
 
-        // Kode untuk production nanti:
-        // return view('pages.rekening.index', compact('rekenings'));
+    //     // Kode untuk production nanti:
+    //     // return view('pages.rekening.index', compact('rekenings'));
+    // }
+
+    public function index(Request $request)
+    {
+        // --- [PERBAIKAN] Mengambil data statistik yang relevan dengan nasabah ---
+
+        // Menghitung total semua nasabah
+        $totalNasabah = RekeningBankSampahUser::count();
+
+        // Menghitung jumlah nasabah yang statusnya "Aktif"
+        $nasabahAktif = RekeningBankSampahUser::where('status', 'Aktif')->count();
+        
+        // Menjumlahkan total saldo dari semua rekening nasabah
+        $totalSaldo = RekeningBankSampahUser::sum('saldo');
+
+
+        // --- Query Utama untuk tabel nasabah (tidak berubah) ---
+        
+        $query = RekeningBankSampahUser::query()
+            ->with('user') 
+            ->withCount('transactions');
+
+        // Filter berdasarkan pencarian (nama atau nomor profil/rekening)
+        $query->when($request->input('search'), function ($q, $search) {
+            $q->where('rekening_number', 'like', "%{$search}%")
+              ->orWhereHas('user', function ($userQuery) use ($search) {
+                  $userQuery->where('name', 'like', "%{$search}%");
+              });
+        });
+
+        // Filter berdasarkan status
+        $query->when($request->input('status'), function ($q, $status) {
+            if ($status !== 'Semua Status') {
+                return $q->where('status', $status);
+            }
+        });
+
+        // Pagination
+        $nasabahs = $query->latest()->paginate(5);
+
+        // [PERBAIKAN] Mengirim variabel baru ke view
+        return view('pages.banksampah.pengelola.data-nasabah', [
+            'totalNasabah' => $totalNasabah,
+            'nasabahAktif' => $nasabahAktif,
+            'totalSaldo'   => $totalSaldo,
+            'nasabahs'     => $nasabahs,
+        ]);
     }
 
     /**
@@ -106,13 +157,31 @@ class RekeningBankSampahUserController extends Controller
     /**
      * Menampilkan detail satu rekening spesifik.
      */
-    public function show(RekeningBankSampahUser $rekeningBankSampahUser)
-    {
-        // Debug: Tampilkan detail rekening yang dipilih
-        dd($rekeningBankSampahUser);
+    // public function show(RekeningBankSampahUser $rekeningBankSampahUser)
+    // {
+    //     // Debug: Tampilkan detail rekening yang dipilih
+    //     dd($rekeningBankSampahUser);
 
-        // Kode untuk production nanti:
-        // return view('pages.rekening.show', compact('rekeningBankSampahUser'));
+    //     // Kode untuk production nanti:
+    //     // return view('pages.rekening.show', compact('rekeningBankSampahUser'));
+    // }
+
+    public function show(User $user)
+    {
+        $user->load('rekeningBankSampah');
+        
+        $rekening = $user->rekeningBankSampah->first();
+        $totalTransaksi = 0;
+        $transaksiTerakhir = collect(); // Default collection kosong
+
+        if ($rekening) {
+            $totalTransaksi = $rekening->transactions()->count();
+            // [TAMBAH] Ambil 3 transaksi terakhir
+            $transaksiTerakhir = $rekening->transactions()->latest()->take(3)->get();
+        }
+        
+        // [UBAH] Kirim variabel baru $transaksiTerakhir ke view
+        return view('pages.banksampah.pengelola.nasabah.show', compact('user', 'rekening', 'totalTransaksi', 'transaksiTerakhir'));
     }
 
     /**
@@ -148,6 +217,22 @@ class RekeningBankSampahUserController extends Controller
         $rekeningBankSampahUser->update($validator->validated());
 
         return redirect()->route('nama.route.anda')->with('success', 'Rekening berhasil diperbarui!');
+    }
+
+    public function updateStatus(Request $request, User $user)
+    {
+        $request->validate([
+            'status' => 'required|in:Aktif,Tidak Aktif',
+        ]);
+        
+        $rekening = $user->rekeningBankSampah->first();
+        if ($rekening) {
+            $rekening->status = $request->status;
+            $rekening->save();
+        }
+        
+        // [UBAH] Arahkan kembali ke halaman daftar nasabah (index)
+        return redirect()->route('pengelola.nasabah.index')->with('success', 'Status nasabah berhasil diperbarui!');
     }
 
     /**

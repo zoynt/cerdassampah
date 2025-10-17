@@ -25,6 +25,10 @@ use App\Http\Controllers\BankSampahUserController;
 use App\Http\Controllers\BankTransactionController;
 use App\Http\Controllers\BankWasteProductController;
 use App\Http\Controllers\CompanyTransactionController;
+use App\Http\Controllers\RekeningBankSampahUserController;
+use App\Http\Controllers\Pengelola\WastePriceController;
+use App\Http\Controllers\Pengelola\TransactionHistoryController;
+
 
 
 // Landing Page
@@ -77,6 +81,42 @@ Route::middleware(['auth', 'role:admin|warga|seller'])->group(function () {
     // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // Route::get('/bank-sampah/{bankSampah}', [BankController::class, 'show'])->name('digital.banksampah.show');
     // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+
+    //Pengelola Bank Sampah
+    Route::get('/pengelola/data-nasabah', [RekeningBankSampahUserController::class, 'index'])->name('pengelola.nasabah.index');
+    Route::get('/pengelola/setoran/create', [BankTransactionController::class, 'create'])->name('pengelola.setoran.create');
+    Route::post('/pengelola/setoran', [BankTransactionController::class, 'store'])->name('pengelola.setoran.store');
+    Route::get('/pengelola/nasabah/{user}', [RekeningBankSampahUserController::class, 'show'])->name('pengelola.nasabah.show');
+    Route::put('/pengelola/nasabah/{user}', [RekeningBankSampahUserController::class, 'updateStatus'])->name('pengelola.nasabah.updateStatus');
+    Route::get('/pengelola/harga-sampah', [WastePriceController::class, 'index'])->name('pengelola.harga.index');
+    Route::post('/pengelola/harga-sampah', [WastePriceController::class, 'store'])->name('pengelola.harga.store');
+    Route::put('/pengelola/harga-sampah/{product}', [WastePriceController::class, 'update'])->name('pengelola.harga.update');
+    Route::delete('/pengelola/harga-sampah/{product}', [WastePriceController::class, 'destroy'])->name('pengelola.harga.destroy');
+    Route::get('/pengelola/riwayat-setoran', [TransactionHistoryController::class, 'index'])->name('pengelola.riwayat.index');
+    // Route::get('/pengelola/riwayat-setoran/{setoran}', [TransactionHistoryController::class, 'show'])->name('pengelola.riwayat.show');
+    // Ganti {setoran} menjadi {transaction:uuid}
+    Route::get('/pengelola/riwayat-setoran/{transaction:uuid}', [TransactionHistoryController::class, 'show'])
+        ->name('pengelola.riwayat.show');
+    Route::delete('/pengelola/riwayat-setoran/{transaction:uuid}', [TransactionHistoryController::class, 'destroy'])
+    ->name('pengelola.riwayat.destroy');
+    // Tambahkan rute untuk cetak struk
+    Route::get('/pengelola/riwayat-setoran/{transaction:uuid}/cetak', [TransactionHistoryController::class, 'cetakStruk'])
+        ->name('pengelola.riwayat.cetak');
+    Route::get('/pengelola/riwayat-pembayaran', [BankTransactionController::class, 'riwayatPembayaran'])
+    ->name('pengelola.pembayaran.index');
+    // Rute untuk menampilkan form pembayaran baru
+    Route::get('/pengelola/pembayaran/create', [BankTransactionController::class, 'createPembayaran'])->name('pengelola.pembayaran.create');
+    // Rute untuk memproses dan menyimpan data pembayaran baru
+    Route::post('/pengelola/pembayaran', [BankTransactionController::class, 'storePembayaran'])->name('pengelola.pembayaran.store');
+    Route::get('/pengelola/riwayat-pembayaran/{payment:uuid}', [BankTransactionController::class, 'showPembayaran'])
+    ->name('pengelola.pembayaran.show');
+    Route::patch('/pengelola/riwayat-pembayaran/{payment}', [BankTransactionController::class, 'updatePembayaran'])
+    ->name('pengelola.pembayaran.update');
+    Route::post('/pengelola/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+    ->name('pengelola.pembayaran.bulkUpdate');
+    Route::post('/pengelola/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+    ->name('pengelola.pembayaran.bulkUpdate');
+
     // --- AKHIR PENAMBAHAN ROUTE ---
 
      // Marketplace

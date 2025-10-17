@@ -15,6 +15,12 @@ class RekeningBankSampahUser extends Model
         'saldo',
     ];
 
+    public function setSaldoAttribute($value)
+    {
+        // Gunakan fungsi max() untuk memastikan nilai yang disimpan minimal 0
+        $this->attributes['saldo'] = max(0, $value);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');

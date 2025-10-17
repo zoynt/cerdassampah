@@ -1,6 +1,11 @@
 <?php
 
 namespace App\Models;
+use App\Models\BankWasteCategory;
+use App\Models\BankWasteProduct;
+use App\Models\CompanyWallet;
+use App\Models\RekeningBankSampahUser;
+use App\Models\User;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,6 +41,13 @@ class Bank extends Model
     {
         // Sesuaikan 'App\Models\BankWasteProduct' jika nama model Anda berbeda
         return $this->hasMany(BankWasteProduct::class, 'bank_id');
+    }
+
+    public function wasteCategories()
+    {
+        // Asumsi nama modelnya adalah 'BankWasteCategory'
+        // dan foreign key di tabel 'bank_waste_categories' adalah 'bank_id'
+        return $this->hasMany(BankWasteCategory::class, 'bank_id');
     }
 
     public function companyWallet()

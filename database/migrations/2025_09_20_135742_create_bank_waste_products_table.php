@@ -17,6 +17,8 @@ return new class extends Migration
             $table->foreignId('waste_category_id')->constrained('bank_waste_categories')->onDelete('cascade');
             $table->string('item_name');
             $table->decimal('price_per_kg', 10, 2)->default(0.00);
+            $table->string('description')->nullable();
+            $table->string('status')->default('Aktif');
             // $table->unique(['bank_id', 'waste_category_id']);
             $table->timestamps();
         });

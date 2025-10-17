@@ -24,13 +24,14 @@
 
     @stack('head')
     @stack('styles')
+    @stack('styles')
 </head>
 
 <body class="text-gray-800">
     <div x-data="{ sidebarOpen: window.innerWidth >= 768 }" class="flex h-screen bg-slate-50">
 
         <aside
-            class="fixed inset-y-0 left-0 z-40 w-64 px-4 py-7 overflow-y-auto text-gray-700 bg-white border-r border-gray-200 transition-transform duration-300 transform"
+            class="fixed inset-y-0 left-0 z-40 w-64 px-4 py-7 overflow-y-auto text-gray-700 bg-white border-r border-gray-200 duration-300 transform"
             :class="{
                 'translate-x-0': sidebarOpen,
                 '-translate-x-full': !sidebarOpen,
@@ -367,7 +368,7 @@
         <div x-show="sidebarOpen" @click="sidebarOpen = false" class="fixed inset-0 z-30 bg-black/50 lg:hidden"
             x-cloak></div>
 
-        <div class="flex flex-col flex-1 w-full transition-transform duration-300">
+        <div class="flex flex-col flex-1 w-full duration-300">
             <header @class([
                 'sticky top-0 z-20 flex items-center justify-between px-6 py-4 text-white bg-green-700 transition-shadow duration-300',
                 'shadow-md' => !request()->routeIs(
@@ -459,15 +460,16 @@
         </div>
     </div>
 
-    @stack('scripts')
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     @if (session('success'))
         <script>
             Swal.fire({
                 title: 'Berhasil!',
-                text: "{{ session('success') }}",
+                text: @json(session('success')),
                 icon: 'success',
                 confirmButtonColor: '#3085d6',
                 confirmButtonText: 'Oke'
@@ -534,6 +536,7 @@
             </div>
         </div>
     @endif
+    @stack('scripts')
 </body>
 
 </html>
