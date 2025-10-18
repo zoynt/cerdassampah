@@ -14,8 +14,8 @@ class RolePermissionSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-public function run(): void
-{
+    public function run(): void
+    {
 
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
@@ -44,7 +44,12 @@ public function run(): void
         'edit products',
         'delete products',
         'view products',
-        'view sales'
+        'view sales',
+
+        // Pengelola Bank Sampah
+        'manage_bank_sampah',
+        'manage_transactions',
+        'view_bank_sampah_reports',
     ];
 
     // Buat permission kalau belum ada
@@ -66,14 +71,6 @@ public function run(): void
         'view_dashboard',
     ]);
 
-    $wargaRole->syncPermissions([
-        'scan_waste',
-        'report_illegal_tps',
-        'view_tps_map',
-        'play_games',
-        'view_own_reports',
-    ]);
-    
     $wargaRole->syncPermissions([
         'scan_waste',
         'report_illegal_tps',
@@ -132,5 +129,25 @@ public function run(): void
         ]
     );
     $seller->assignRole($sellerRole);
-}
+
+    $bankRole = Role::firstOrCreate(['name' => 'banker']);
+    $bankRole->syncPermissions([
+        'manage_bank_sampah',
+        'manage_transactions',
+        'view_bank_sampah_reports',
+    ]);
+
+    $banker = User::firstOrCreate(
+        ['email' => 'banker@mail.test'],
+        [
+            'name' => 'Bank Sampah User',
+            'username' => 'banker',
+            'password' => bcrypt('password123'),
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
+        ]
+    );
+    $banker->assignRole($bankRole);
+
+    }
 }
