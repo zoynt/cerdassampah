@@ -6,7 +6,6 @@
             imagesToDelete: [], // Array untuk menyimpan path gambar yang akan dihapus
 
             handleFileSelect(event) {
-                // Alur kerja "Ganti": Saat memilih file baru, preview akan menampilkan HANYA file-file baru tersebut.
                 this.newImagePreviews = []; 
                 for (let i = 0; i < event.target.files.length; i++) {
                     this.newImagePreviews.push({ url: URL.createObjectURL(event.target.files[i]), path: null });
@@ -14,21 +13,15 @@
             },
             
             removeImage(index) {
-                // Tentukan array mana yang sedang aktif ditampilkan
                 let activeArray = this.newImagePreviews.length > 0 ? this.newImagePreviews : this.existingImages;
                 const removedImage = activeArray[index];
-
-                // Jika gambar yang dihapus adalah gambar lama (punya 'path'), catat path-nya untuk dihapus di server.
                 if (removedImage && removedImage.path) {
                     this.imagesToDelete.push(removedImage.path);
                 }
-
-                // Hapus gambar dari array aktif yang sedang ditampilkan
                 activeArray.splice(index, 1);
             },
 
             get allImages() {
-                // Menentukan gambar mana yang akan ditampilkan di preview
                 return this.newImagePreviews.length > 0 ? this.newImagePreviews : this.existingImages;
             }
         }
@@ -36,13 +29,13 @@
 </script>
 
 @php
-    // Menyiapkan semua data awal yang dibutuhkan oleh Alpine.js
+    // Variabel diubah menjadi $product
     $alpineData = [
-        'categoryName' => old('kategori', optional($produk->category)->name ?? ''),
+        'categoryName' => old('kategori', optional($product->category)->name ?? ''),
         'categoryList' => $kategoriList,
-        'existingImages' => $produk->images->map(fn($img) => [
+        'existingImages' => $product->images->map(fn($img) => [
             'url' => asset('storage/' . $img->image_path),
-            'path' => $img->image_path // Path ini penting untuk proses hapus
+            'path' => $img->image_path
         ])
     ];
 @endphp
@@ -53,7 +46,7 @@
         {{-- Nama Produk --}}
         <div>
             <label for="nama" class="block mb-2 text-sm font-medium text-gray-700">Nama Produk</label>
-            <input type="text" name="nama" id="nama" value="{{ old('nama', $produk->name ?? '') }}"
+            <input type="text" name="nama" id="nama" value="{{ old('nama', $product->name ?? '') }}"
                 placeholder="Masukkan nama produk"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required>
@@ -61,8 +54,8 @@
 
         <div x-data="{
                 open: false,
-                search: '{{ old('kategori', optional($produk->category)->name ?? '') }}',
-                kategori: '{{ old('kategori', optional($produk->category)->name ?? '') }}',
+                search: '{{ old('kategori', optional($product->category)->name ?? '') }}',
+                kategori: '{{ old('kategori', optional($product->category)->name ?? '') }}',
                 kategoriList: {{ Js::from($kategoriList) }},
                 get filteredKategori() {
                     if (!this.search) return this.kategoriList;
@@ -87,12 +80,11 @@
         </div>
     </div>
 
-    {{-- ... sisa input harga, stok, dll ... --}}
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
             <label for="harga" class="block mb-2 text-sm font-medium text-gray-700">Harga</label>
             <input type="number" name="harga" id="harga"
-                value="{{ old('harga', $produk->exists ? (float) $produk->price : '') }}" placeholder="Contoh : 1000"
+                value="{{ old('harga', $product->exists ? (float) $product->price : '') }}" placeholder="Contoh : 1000"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required>
         </div>
@@ -100,7 +92,7 @@
         <div>
             <label for="stok" class="block mb-2 text-sm font-medium text-gray-700">Stok Barang</label>
             <input type="number" name="stok" id="stok"
-                value="{{ old('stok', $produk->exists ? (float) $produk->stock : '') }}"
+                value="{{ old('stok', $product->exists ? (float) $product->stock : '') }}"
                 placeholder="Jumlah stok saat ini"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required>
@@ -109,22 +101,20 @@
 
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div>
-            <label for="bobot" class="block mb-2 text-sm font-medium text-gray-700">Bobot/Berat per
-                Produk</label>
+            <label for="bobot" class="block mb-2 text-sm font-medium text-gray-700">Bobot/Berat per Produk</label>
             <input type="text" name="bobot" id="bobot"
-                value="{{ old('bobot', $produk->exists ? (float) $produk->weight_per_item : '') }}"
-                placeholder="Contoh: 10"
+                value="{{ old('bobot', $product->exists ? (float) $product->weight_per_item : '') }}"
+                placeholder="Contoh: 0,5 (kilogram) atau 1 (buah)"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required>
         </div>
 
         <div>
-            <label for="satuan_berat" class="block mb-2 text-sm font-medium text-gray-700">Satuan
-                Berat</label>
+            <label for="satuan_berat" class="block mb-2 text-sm font-medium text-gray-700">Satuan Berat</label>
             <select name="satuan_berat" id="satuan_berat"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500">
                 @foreach (['Kilogram', 'Gram', 'Buah', 'Liter'] as $satuan)
-                    <option value="{{ $satuan }}" @selected(old('satuan_berat', $produk->selling_unit ?? 'Kilogram') == $satuan)>{{ $satuan }}</option>
+                    <option value="{{ $satuan }}" @selected(old('satuan_berat', $product->selling_unit ?? 'Kilogram') == $satuan)>{{ $satuan }}</option>
                 @endforeach
             </select>
         </div>
@@ -134,7 +124,11 @@
             <select name="status" id="status"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500">
                 @foreach ($statusList as $status)
-                    <option value="{{ $status }}" @selected(old('status', $produk->exists ? ($produk->status == 'available' ? 'Tersedia' : 'Habis') : 'Tersedia') == $status)>
+                    <option value="{{ $status }}" @selected(old('status', $product->exists ? match($product->status) {
+                        'sold' => 'Habis',
+                        'draft' => 'Diarsipkan',
+                        default => 'Tersedia',
+                    } : 'Tersedia') == $status)>
                         {{ $status }}
                     </option>
                 @endforeach
@@ -144,15 +138,13 @@
 
     <div>
         <label for="deskripsi" class="block mb-2 text-sm font-medium text-gray-700">Deskripsi</label>
-        <textarea name="deskripsi" id="deskripsi" rows="4" class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">{{ old('deskripsi', $produk->description ?? '') }}</textarea>
+        <textarea name="deskripsi" id="deskripsi" rows="4" class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">{{ old('deskripsi', $product->description ?? '') }}</textarea>
     </div>
     
-    {{-- Gambar Produk dengan x-data terisolasi --}}
-    <div x-data="imageUploaderData({{ Js::from($produk->images->map(fn($img) => ['url' => asset('storage/' . $img->image_path), 'path' => $img->image_path])) }})">
+    <div x-data="imageUploaderData({{ Js::from($product->images->map(fn($img) => ['url' => asset('storage/' . $img->image_path), 'path' => $img->image_path])) }})">
         <h3 class="block mb-2 text-sm font-medium text-gray-700">Gambar Produk</h3>
         <input type="file" name="gambar[]" multiple class="hidden" x-ref="imageInput" @change="handleFileSelect">
 
-        {{-- [PENTING] Hidden input untuk melacak gambar yang dihapus --}}
         <template x-for="path in imagesToDelete" :key="path">
             <input type="hidden" name="images_to_delete[]" :value="path">
         </template>
@@ -181,7 +173,7 @@
     <div class="flex justify-end">
         <button type="submit"
             class="w-full sm:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors">
-            {{ $produk->exists ? 'Update Produk' : 'Simpan Produk' }}
+            {{ $product->exists ? 'Update Produk' : 'Simpan Produk' }}
         </button>
     </div>
 </div>

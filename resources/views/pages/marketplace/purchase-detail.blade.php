@@ -39,7 +39,7 @@
                         @if ($order->status == 'processing') bg-blue-100 text-blue-800 @endif
                         @if ($order->status == 'pending') bg-yellow-100 text-yellow-800 @endif
                         @if ($order->status == 'canceled') bg-red-100 text-red-800 @endif">
-                        {{ $order->status }}
+                        {{ $order->translated_status }}
                     </span>
                 </div>
                 <div class="flex justify-between items-center">
@@ -56,7 +56,7 @@
                     <div class="flex justify-between items-center">
                         <span class="text-gray-600">Metode Pembayaran</span>
                         <span class="font-semibold text-gray-800 text-sm md:text-base capitalize">
-                            {{ str_replace('_', ' ', $order->payment_method) }}
+                            {{ $order->payment_method_name }}
                         </span>
                     </div>
                 @endif
@@ -112,20 +112,36 @@
                         <div class="flex justify-between items-center">
                             <div>
                                 {{-- [PERUBAHAN DI SINI] --}}
-                                @if ($item->product)
-                                    <a href="{{ route('marketplace.products.show', $item->product) }}"
+                                @if ($item->product && $item->product->store)
+                                    <a href="{{ route('marketplace.products.show', ['store' => $item->product->store->slug, 'product_slug' => Str::slug($item->product->name) . '-' . $item->product->id]) }}"
                                         class="font-semibold text-gray-800 hover:text-green-700 transition-colors">
                                         {{ $item->product->name }}
                                     </a>
                                 @else
-                                    <p class="font-semibold text-gray-500 italic">Produk Dihapus</p>
+                                    <p class="font-semibold text-gray-500 italic">
+                                        {{ optional($item->product)->name ?? 'Produk Dihapus' }}</p>
                                 @endif
 
-                                <p class="text-gray-500">{{ $item->quantity }} x Rp
-                                    {{ number_format($item->price, 0, ',', '.') }}</p>
+                                <p class="text-gray-500">
+                                    {{-- Cek apakah satuan adalah 'Buah' --}}
+                                    @if(optional($item->product)->selling_unit === 'Buah')
+                                        {{ (int)$item->quantity }}
+                                    @else
+                                        {{-- Jika bukan, format sebagai desimal dengan koma --}}
+                                        {{ number_format((float)$item->quantity, 1, ',', '.') }}
+                                    @endif
+                                    {{-- Tampilkan satuan --}}
+                                    {{ optional($item->product)->selling_unit }} x Rp {{ number_format($item->price, 0, ',', '.') }}
+                                </p>
                             </div>
-                            <p class="font-semibold text-gray-800 text-sm md:text-base">Rp
-                                {{ number_format($item->quantity * $item->price, 0, ',', '.') }}</p>
+                            <p class="font-semibold text-gray-800 text-sm md:text-base">
+                                @php
+                                    $product = $item->product;
+                                    $divider = ($product && ($product->selling_unit === 'Buah' || $product->weight_per_item == 0)) ? 1 : ($product->weight_per_item ?? 1);
+                                    $totalItemPrice = $item->price * ($item->quantity / $divider);
+                                @endphp
+                                Rp {{ number_format($totalItemPrice, 0, ',', '.') }}
+                            </p>
                         </div>
                     @endforeach
                 </div>
@@ -173,49 +189,53 @@
         <div class="pt-2 flex flex-wrap justify-end items-center gap-3">
 
             {{-- Tombol "Cetak" selalu ditampilkan, tapi kita beri urutan prioritas --}}
-            <a href="{{ route('marketplace.invoice.show', $order) }}"
+            <a href="{{ route('marketplace.invoice.show', ['order' => $order->order_number]) }}"
                 class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-700 text-white hover:bg-gray-600 order-last sm:order-none">
                 Cetak Bukti Pembayaran
             </a>
 
             {{-- Tombol khusus untuk status 'completed' --}}
-            @if ($order->status == 'completed')
-                @if ($hasReviewed)
-                    <a href="{{ route('marketplace.rating.show', $order) }}"
-                        class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-yellow-500 text-white hover:bg-yellow-600">
-                        Edit Ulasan
-                    </a>
-                @else
-                    <a href="{{ route('marketplace.rating.show', $order) }}"
+            @if (Auth::id() === $order->buyer_id)
+
+                {{-- Tombol khusus untuk status 'completed' --}}
+                @if ($order->status == 'completed')
+                    @if ($hasReviewed)
+                        <a href="{{ route('marketplace.rating.show', ['order' => $order->order_number]) }}"
+                            class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-yellow-500 text-white hover:bg-yellow-600">
+                            Edit Ulasan
+                        </a>
+                    @else
+                        <a href="{{ route('marketplace.rating.show', ['order' => $order->order_number]) }}"
+                            class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-green-700 text-white hover:bg-green-600">
+                            Beri Ulasan
+                        </a>
+                    @endif
+
+                    {{-- Tombol khusus untuk status 'pending' --}}
+                @elseif ($order->status == 'pending')
+                    {{-- Tombol "Bayar Sekarang" dan "Batalkan" tetap di sini karena hanya relevan untuk pembeli --}}
+                    <form action="{{ route('marketplace.order.cancel', $order) }}" method="POST" class="w-full sm:w-auto"
+                        onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
+                        @csrf
+                        <button type="submit"
+                            class="w-full text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-red-600 text-white hover:bg-red-700">
+                            Batalkan
+                        </button>
+                    </form>
+
+                    <button id="pay-now-button"
                         class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-green-700 text-white hover:bg-green-600">
+                        Bayar Sekarang
+                    </button>
+
+                    {{-- Tombol disabled untuk status lainnya (processing/canceled) --}}
+                @else
+                    <a
+                        class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-200 text-gray-500 cursor-not-allowed">
                         Beri Ulasan
                     </a>
                 @endif
-
-                {{-- Tombol khusus untuk status 'pending' --}}
-            @elseif ($order->status == 'pending')
-                <form action="{{ route('marketplace.order.cancel', $order) }}" method="POST" class="w-full sm:w-auto"
-                    onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
-                    @csrf
-                    <button type="submit"
-                        class="w-full text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-red-600 text-white hover:bg-red-700">
-                        Batalkan
-                    </button>
-                </form>
-
-                <button id="pay-now-button"
-                    class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-green-700 text-white hover:bg-green-600">
-                    Bayar Sekarang
-                </button>
-
-                {{-- Tombol disabled untuk status lainnya (processing/canceled) --}}
-            @else
-                <a
-                    class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-200 text-gray-500 cursor-not-allowed">
-                    Beri Ulasan
-                </a>
             @endif
-
         </div>
     </div>
 @endsection

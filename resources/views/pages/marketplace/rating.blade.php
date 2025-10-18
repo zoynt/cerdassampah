@@ -13,8 +13,8 @@
             <span class="tracking-wider">{{ $order->order_number }}</span>
         </div>
 
-        <form action="{{ route('marketplace.rating.store', $order) }}" method="POST">
-            <form action="{{ route('marketplace.rating.store', $order) }}" method="POST">
+        <form action="{{ route('marketplace.rating.store', ['order' => $order->order_number]) }}" method="POST">
+            {{-- <form action="{{ route('marketplace.rating.store', $order) }}" method="POST"> --}}
                 @csrf
                 {{-- [UBAH x-data] Inisialisasi rating dengan data yang sudah ada --}}
                 <div x-data="{ rating: {{ $review->rating ?? 0 }}, hoverRating: 0 }" class="bg-white p-6 rounded-xl shadow-md">
@@ -52,8 +52,7 @@
             </form>
 
             <div class="pt-2 flex flex-col md:flex-row justify-end items-center gap-4">
-                {{-- Kembali ke halaman detail pembelian sebelumnya --}}
-                <a href="{{ route('marketplace.purchase.detail', $order) }}"
+                <a href="{{ route('marketplace.purchase.detail', ['order' => $order->order_number]) }}"
                     class="w-full text-center px-6 py-2.5 bg-gray-200 text-gray-800 font-semibold rounded-lg hover:bg-gray-300">
                     Kembali
                 </a>

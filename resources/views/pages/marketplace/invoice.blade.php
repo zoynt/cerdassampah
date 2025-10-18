@@ -36,7 +36,7 @@
                 </p>
             </div>
 
-            {{-- [UBAH] Status dinamis --}}
+            {{-- Status dinamis --}}
             <div
                 class="p-3 text-center text-sm font-bold capitalize
                 @if ($order->status == 'completed') bg-green-100 text-green-800 @endif
@@ -49,12 +49,12 @@
             <div class="p-6 md:p-8 space-y-8">
                 <div class="flex justify-between items-center pb-4 border-b border-dashed text-sm">
                     <span class="text-gray-500">ID Pesanan</span>
-                    {{-- [UBAH] ID Pesanan dinamis --}}
+                    {{-- ID Pesanan dinamis --}}
                     <span class="font-semibold text-gray-800 tracking-wider">{{ $order->order_number }}</span>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-sm">
-                    {{-- [UBAH] Info Penjual dinamis --}}
+                    {{-- Info Penjual dinamis --}}
                     <div class="space-y-2">
                         <p class="font-semibold text-gray-500">DITERBITKAN ATAS NAMA:</p>
                         <p class="font-bold text-base text-gray-800">{{ $order->seller?->store?->name ?? 'Toko Dihapus' }}
@@ -62,7 +62,7 @@
                         <p class="text-gray-600">{{ $order->seller?->name ?? 'Penjual Dihapus' }}</p>
                         <p class="text-gray-600">{{ $order->seller?->store?->address ?? 'Alamat toko tidak tersedia' }}</p>
                     </div>
-                    {{-- [UBAH] Info Pembeli dinamis --}}
+                    {{--Info Pembeli dinamis --}}
                     <div class="space-y-2 md:text-right">
                         <p class="font-semibold text-gray-500">UNTUK:</p>
                         <p class="font-bold text-base text-gray-800">{{ $order->buyer?->name ?? 'Pembeli Dihapus' }}</p>
@@ -73,59 +73,79 @@
                     </div>
                 </div>
 
-                {{-- [UBAH] Tabel Item dinamis (Desktop) --}}
+                {{--  Tabel Item dinamis (Desktop) --}}
                 <div class="hidden md:block">
                     <table class="w-full text-left">
                         <thead>
                             <tr class="border-b-2 border-gray-200">
-                                <th class="p-2 pb-2 font-semibold text-gray-500 uppercase tracking-wider text-xs">Info
-                                    Produk</th>
-                                <th
-                                    class="p-2 pb-2 font-semibold text-gray-500 uppercase tracking-wider text-xs text-center">
-                                    Jumlah</th>
-                                <th
-                                    class="p-2 pb-2 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">
-                                    Harga Satuan</th>
-                                <th
-                                    class="p-2 pb-2 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">
-                                    Total Harga</th>
+                                <th class="p-2 pb-2 font-semibold text-gray-500 uppercase tracking-wider text-xs">Info Produk</th>
+                                <th class="p-2 pb-2 font-semibold text-gray-500 uppercase tracking-wider text-xs text-center">Jumlah</th>
+                                <th class="p-2 pb-2 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">Harga Satuan</th>
+                                <th class="p-2 pb-2 font-semibold text-gray-500 uppercase tracking-wider text-xs text-right">Total Harga</th>
                             </tr>
                         </thead>
                         <tbody class="text-sm">
                             @foreach ($order->orderItems as $item)
                                 <tr>
                                     <td class="p-2 pt-4">
-                                        <p class="font-semibold text-gray-800">
-                                            {{ $item->product?->name ?? 'Produk Dihapus' }}</p>
+                                        <p class="font-semibold text-gray-800">{{ $item->product?->name ?? 'Produk Dihapus' }}</p>
                                         @if ($item->product?->weight_per_item)
-                                            <p class="text-gray-500 text-xs">Berat:
-                                                {{ (int) $item->product->weight_per_item }}
-                                                {{ $item->product->selling_unit }}</p>
+                                            <p class="text-gray-500 text-xs">Harga per:
+                                                @if (optional($item->product)->selling_unit === 'Buah')
+                                                    {{ (int) $item->product->weight_per_item }}
+                                                @else
+                                                    {{ number_format((float) $item->product->weight_per_item, 1, ',', '.') }}
+                                                @endif
+                                                {{ $item->product->selling_unit }}
+                                            </p>
                                         @endif
                                     </td>
-                                    <td class="p-2 pt-4 text-center text-gray-600">{{ $item->quantity }}</td>
-                                    <td class="p-2 pt-4 text-right text-gray-600">Rp
-                                        {{ number_format($item->price, 0, ',', '.') }}</td>
-                                    <td class="p-2 pt-4 text-right font-bold text-gray-800">Rp
-                                        {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</td>
+                                    <td class="p-2 pt-4 text-center text-gray-600">
+                                        @if(optional($item->product)->selling_unit === 'Buah')
+                                            {{ (int)$item->quantity }}
+                                        @else
+                                            {{ number_format((float)$item->quantity, 1, ',', '.') }}
+                                        @endif
+                                    </td>
+                                    <td class="p-2 pt-4 text-right text-gray-600">Rp {{ number_format($item->price, 0, ',', '.') }}</td>
+                                    <td class="p-2 pt-4 text-right font-bold text-gray-800">
+                                        @php
+                                            $product = $item->product;
+                                            $divider = ($product && ($product->selling_unit === 'Buah' || $product->weight_per_item == 0)) ? 1 : ($product->weight_per_item ?? 1);
+                                            $totalItemPrice = $item->price * ($item->quantity / $divider);
+                                        @endphp
+                                        Rp {{ number_format($totalItemPrice, 0, ',', '.') }}
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
 
-                {{-- [UBAH] Tampilan Item dinamis (Mobile) --}}
+                {{-- Tampilan Item dinamis (Mobile) --}}
                 <div class="md:hidden space-y-4">
                     <h3 class="font-semibold text-gray-500 uppercase tracking-wider text-xs border-b pb-2">DETAIL ITEM</h3>
                     @foreach ($order->orderItems as $item)
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="font-semibold text-gray-800">{{ $item->product?->name ?? 'Produk Dihapus' }}</p>
-                                <p class="text-gray-500 text-xs">{{ $item->quantity }} x Rp
-                                    {{ number_format($item->price, 0, ',', '.') }}</p>
+                                <p class="text-gray-500 text-xs">
+                                    @if(optional($item->product)->selling_unit === 'Buah')
+                                        {{ (int)$item->quantity }}
+                                    @else
+                                        {{ number_format((float)$item->quantity, 1, ',', '.') }}
+                                    @endif
+                                    {{ optional($item->product)->selling_unit }} x Rp {{ number_format($item->price, 0, ',', '.') }}
+                                </p>
                             </div>
-                            <p class="font-bold text-gray-800">Rp
-                                {{ number_format($item->price * $item->quantity, 0, ',', '.') }}</p>
+                            <p class="font-bold text-gray-800">
+                                @php
+                                    $product = $item->product;
+                                    $divider = ($product && ($product->selling_unit === 'Buah' || $product->weight_per_item == 0)) ? 1 : ($product->weight_per_item ?? 1);
+                                    $totalItemPrice = $item->price * ($item->quantity / $divider);
+                                @endphp
+                                Rp {{ number_format($totalItemPrice, 0, ',', '.') }}
+                            </p>
                         </div>
                     @endforeach
                 </div>

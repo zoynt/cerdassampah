@@ -13,6 +13,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log; 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
+use App\Models\Store;
+use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
@@ -65,49 +67,20 @@ class OrderController extends Controller
     }
     public function purchaseHistory()
     {
-        // 1. Dapatkan ID pengguna yang sedang login.
-        $userId = Auth::id();
+        // 1. Dapatkan semua Order yang dimiliki oleh pengguna yang sedang login.
+        //    Gunakan paginate() untuk membuat paginasi secara otomatis.
+        $orders = Order::where('buyer_id', Auth::id())
+                        ->with([
+                            // 2. Ambil relasi yang dibutuhkan oleh view
+                            'orderItems.product.store', 
+                            'orderItems.product.images' // Tambahkan ini jika produk punya banyak gambar
+                        ])
+                        ->latest() // Urutkan dari yang terbaru
+                        ->paginate(10); // Ambil 10 order per halaman
 
-        // 2. Ambil semua order_items di mana order-nya dimiliki oleh pengguna ini.
-        $purchaseItems = OrderItem::whereHas('order', function ($query) use ($userId) {
-            $query->where('buyer_id', $userId);
-        })
-        ->with([
-            // 3. Ambil relasi yang dibutuhkan untuk menampilkan data
-            'order', // Untuk status
-            'product.store.user' // Untuk nama produk, nama toko, dan nama penjual
-        ])
-        ->latest() // Urutkan dari yang terbaru
-        ->get();
-
-        // 4. Format data agar sesuai dengan yang diharapkan oleh AlpineJS di frontend.
-        $transactions = $purchaseItems->map(function ($item) {
-            $statusText = 'Pending';
-            if ($item->order->status == 'completed') {
-                $statusText = 'Selesai';
-            } elseif ($item->order->status == 'processing') { 
-                $statusText = 'Diproses';
-            } elseif ($item->order->status == 'canceled') {
-                $statusText = 'Dibatalkan';
-            } // Tambahkan kondisi lain jika ada
-
-            return [
-                'id' => $item->id,
-                'produk' => optional($item->product)->name ?? 'Produk Dihapus',
-                'penjual' => optional($item->product->store->user)->name ?? 'Penjual Dihapus',
-                'toko' => optional($item->product->store)->name ?? 'Toko Dihapus',
-                'hargaSatuan' => (int)$item->price,
-                'jumlah' => (int)$item->quantity,
-                'total' => (int)($item->price * $item->quantity),
-                'status' => $statusText,
-                'status_raw' => $item->order->status,
-                'detailUrl' => route('marketplace.purchase.detail', ['order' => $item->order_id])
-            ];
-        });
-
-        // 5. Kirim data yang sudah diformat ke view.
+        // 3. Kirim data paginator ke view dengan nama variabel yang benar ('orders').
         return view('pages.marketplace.history', [
-            'transactions' => $transactions
+            'orders' => $orders
         ]);
     }
     public function showPurchaseDetail(Order $order)
@@ -135,11 +108,21 @@ class OrderController extends Controller
         'hasReviewed' => $hasReviewed 
         ]);
     }
-    public function placeOrder(Request $request, Product $product)
+
+
+    public function placeOrder(Request $request, Store $store, $product_slug)
     {
-        // Validasi request
+        // 1. Ambil ID dari slug dan cari produk
+        $id = \Illuminate\Support\Str::of($product_slug)->afterLast('-');
+        $product = $store->products()->find($id);
+
+        if (!$product) {
+            return response()->json(['error' => 'Produk tidak ditemukan.'], 404);
+        }
+
+        // 2. Validasi input
         $request->validate([
-            'quantity' => 'required|integer|min:1',
+            'quantity' => 'required|numeric|min:0.5',
             'delivery_address' => 'required|string',
             'delivery_latitude' => 'required|numeric',
             'delivery_longitude' => 'required|numeric',
@@ -147,32 +130,32 @@ class OrderController extends Controller
 
         $buyer = Auth::user();
         $seller = $product->store->user;
-        $quantity = (int) $request->input('quantity', 1);
+        $quantity = (float) $request->input('quantity', 1);
 
+        // 3. Cek stok
         if ($quantity > $product->stock) {
-            // Jika request datang dari AJAX, kembalikan response JSON
-            if ($request->expectsJson()) {
-                return response()->json(['error' => 'Jumlah pembelian melebihi stok yang tersedia.'], 422);
-            }
-            return back()->with('error', 'Jumlah pembelian melebihi stok yang tersedia.');
+            return response()->json(['error' => 'Jumlah pembelian melebihi stok yang tersedia.'], 422);
         }
 
-        $totalAmount = $product->price * $quantity;
+        // 4. [PERBAIKAN UTAMA] Logika Perhitungan Harga yang Benar
+        $divider = ($product->selling_unit === 'Buah' || $product->weight_per_item == 0) ? 1 : $product->weight_per_item;
+        $numberOfUnits = $quantity / $divider;
+        $totalAmount = $product->price * $numberOfUnits;
 
-        // 1. Buat Order di database dengan status 'pending'
+        // 5. Buat Order Baru dengan total yang benar
         $order = Order::create([
             'buyer_id' => $buyer->id,
             'seller_id' => $seller->id,
             'order_number' => 'ORD-' . strtoupper(uniqid()),
-            'total_amount' => $totalAmount,
-            'status' => 'pending', // Status internal aplikasi
-            'payment_status' => 'pending', // Status dari Midtrans
+            'total_amount' => $totalAmount, // <-- Menggunakan total yang sudah benar
+            'status' => 'pending',
+            'payment_status' => 'pending',
             'delivery_address' => $request->delivery_address,
             'delivery_latitude' => $request->delivery_latitude,
             'delivery_longitude' => $request->delivery_longitude,
         ]);
 
-        // 2. Buat Order Item
+        // 6. Buat Order Item
         OrderItem::create([
             'order_id' => $order->id,
             'product_id' => $product->id,
@@ -180,43 +163,39 @@ class OrderController extends Controller
             'price' => $product->price,
         ]);
 
-        // 3. Konfigurasi Midtrans
+        // 7. Konfigurasi Midtrans
         Config::$serverKey = config('midtrans.server_key');
         Config::$isProduction = config('midtrans.is_production');
         Config::$isSanitized = config('midtrans.is_sanitized');
         Config::$is3ds = config('midtrans.is_3ds');
 
-        // 4. Buat Parameter untuk Midtrans
+        // 8. Buat Parameter untuk Midtrans dengan data yang benar
         $params = [
             'transaction_details' => [
-                'order_id' => $order->order_number, // Gunakan order_number yang unik
-                'gross_amount' => $order->total_amount,
+                'order_id' => $order->order_number,
+                'gross_amount' => $totalAmount, // <-- Mengirim total yang benar
             ],
             'customer_details' => [
                 'first_name' => $buyer->name,
                 'email' => $buyer->email,
-                // 'phone' => $buyer->phone, // Jika ada nomor telepon
             ],
             'item_details' => [[
                 'id' => $product->id,
-                'price' => $product->price,
-                'quantity' => $quantity,
+                'price' => $product->price,       // Harga per unit dasar (misal: per 0.5 kg)
+                'quantity' => $numberOfUnits,    // Jumlah unit yang dibeli (misal: 7 unit, bukan 3.5 kg)
                 'name' => $product->name,
             ]],
         ];
 
         try {
-            // 5. Dapatkan Snap Token dari Midtrans
+            // 9. Dapatkan Snap Token
             $snapToken = Snap::getSnapToken($params);
-
-            // 6. Simpan Snap Token ke database
             $order->snap_token = $snapToken;
             $order->save();
 
-            // 7. Kembalikan token ke frontend
             return response()->json([
                 'snap_token' => $snapToken,
-                'redirect_url' => route('marketplace.purchase.detail', $order)
+                'redirect_url' => route('marketplace.purchase.detail', ['order' => $order->order_number])
             ]);
 
         } catch (\Exception $e) {
@@ -252,6 +231,7 @@ class OrderController extends Controller
         // Buat instance Guzzle Client
         $client = new Client([
             'base_uri' => $baseUrl,
+            'timeout'  => 5.0, // Tambahkan timeout agar tidak terlalu lama menunggu
         ]);
 
         try {
@@ -266,13 +246,36 @@ class OrderController extends Controller
 
             $body = json_decode($response->getBody()->getContents());
 
-            // Periksa status transaksi dari respons API
+            // 1. [Pemeriksaan Keamanan] Cek dulu apakah properti transaction_status ada
+            if (!isset($body->transaction_status)) {
+                Log::warning('Order ' . $order->order_number . ' tidak ditemukan di Midtrans. Pesan: ' . ($body->status_message ?? 'Unknown error'));
+                return; // Hentikan eksekusi
+            }
+
+            // Jika properti ada, baru lanjutkan
             $newStatus = $body->transaction_status;
 
             // Logika update status (sama seperti di callback)
             if ($newStatus == 'capture' || $newStatus == 'settlement') {
-                $order->payment_status = 'success';
-                $order->status = 'processing';
+                
+                // Hanya jalankan update jika status pembayaran belum 'success'
+                // untuk mencegah pengurangan stok ganda
+                if ($order->payment_status !== 'success') {
+                    $order->payment_status = 'success';
+                    $order->status = 'processing';
+                    
+                    // 2. [Logika Pengurangan Stok]
+                    foreach ($order->orderItems as $item) {
+                        if ($item->product) {
+                            $product = $item->product; 
+                            $product->stock -= (float) $item->quantity; 
+                            if ($product->stock <= 0) {
+                                $product->status = 'sold';
+                            }
+                            $product->save(); 
+                        }
+                    }
+                }
             } elseif ($newStatus == 'pending') {
                 $order->payment_status = 'pending';
             } elseif ($newStatus == 'deny' || $newStatus == 'cancel') {
@@ -288,15 +291,21 @@ class OrderController extends Controller
                 $order->payment_method = $body->payment_type;
             }
 
-            // Simpan perubahan ke database
+            // Simpan semua perubahan pada order
             $order->save();
 
         } catch (RequestException $e) {
-            // Tangani jika order tidak ditemukan di Midtrans atau terjadi error lain
-            Log::error('Gagal mengecek status Midtrans: ' . $e->getMessage());
+            // Tangani jika terjadi error koneksi atau status 404 dari Midtrans
+            if ($e->hasResponse()) {
+                $responseBody = $e->getResponse()->getBody()->getContents();
+                Log::error('Gagal mengecek status Midtrans untuk order ' . $order->order_number . '. Respons: ' . $responseBody);
+            } else {
+                Log::error('Gagal koneksi ke Midtrans saat mengecek order ' . $order->order_number . '. Error: ' . $e->getMessage());
+            }
         }
     }
     
+
     public function markAsCompleted(Order $order)
     {
         // Otorisasi: Pastikan user yang login adalah PENJUAL dari order ini
