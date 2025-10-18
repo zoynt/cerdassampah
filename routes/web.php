@@ -126,6 +126,9 @@ Route::middleware(['auth', 'role:admin|warga|seller'])->group(function () {
     });
 
     // Marketplace
+    Route::get('marketplace/store/{store:slug}', [StoreController::class, 'show'])
+    ->name('marketplace.store.show');
+    Route::get('/my-store/dashboard', [StoreProfileController::class, 'redirectToMyStore'])->name('mystore.dashboard');
 
     // Route Marketplace Umum (Pembelian)
     Route::get('/marketplace/product', [ProductController::class, 'index'])->name('marketplace.products.all'); 
@@ -141,6 +144,7 @@ Route::middleware(['auth', 'role:admin|warga|seller'])->group(function () {
 
 
     // Route Marketplace Penjual (Seller/Toko)
+    
 
     // Daftar Produk Toko Saya (List/Read)
     Route::get('/marketplace/products/list', [ProductController::class, 'storeProducts'])->name('marketplace.products.list');
