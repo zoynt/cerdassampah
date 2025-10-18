@@ -11,7 +11,6 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurungController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ProfileController;
-// use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\ReverseGeocodeController;
@@ -28,6 +27,7 @@ use App\Http\Controllers\CompanyTransactionController;
 use App\Http\Controllers\RekeningBankSampahUserController;
 use App\Http\Controllers\Pengelola\WastePriceController;
 use App\Http\Controllers\Pengelola\TransactionHistoryController;
+use App\Http\Controllers\Pengelola\BankProfileController;
 
 
 
@@ -114,9 +114,15 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::post('/pengelola/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
     ->name('pengelola.pembayaran.bulkUpdate');
 
-    // --- AKHIR PENAMBAHAN ROUTE ---
+    //
+    Route::get('/bank-sampah/profil/{bank:slug}', [BankProfileController::class, 'show'])->name('bank-sampah.profil.show');
+    Route::get('/bank-sampah/item/{bank:slug}', [BankProfileController::class, 'indexItems'])->name('bank-sampah.item.index');
+    Route::middleware(['auth', 'role:pengelola'])->prefix('pengelola')->name('pengelola.')->group(function () {
+        Route::get('/bank-profil', [BankProfileController::class, 'edit'])->name('bank-profil.edit');
+        Route::put('/bank-profil', [BankProfileController::class, 'update'])->name('bank-profil.update');
+    });
 
-     // Marketplace
+    // Marketplace
 
     // Route Marketplace Umum (Pembelian)
     Route::get('/marketplace/product', [ProductController::class, 'index'])->name('marketplace.products.all'); 

@@ -3,46 +3,49 @@
 namespace App\Http\Controllers;
 
 use App\Models\Bank;
-use App\Models\Kecamatan;
-use App\Models\Transaksi;
-use App\Models\BankWasteProduct;
+use App\Models\User; // Ditambahkan
 use App\Models\RekeningBankSampahUser;
 use App\Models\BankTransaction;
+use App\Models\BankTransactionDetail; // Ditambahkan
+use App\Models\BankWasteProduct; // Ditambahkan
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Collection;
 use Illuminate\Pagination\Paginator;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class BankController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Menampilkan daftar bank sampah (peta dan tabel).
      */
     public function index(Request $request)
     {
         $query = Bank::query();
 
+        // [PERBAIKAN] Menggunakan nama kolom 'district'
         if ($request->filled('kecamatan')) {
-            $query->where('kecamatan', $request->kecamatan);
+            $query->where('district', $request->kecamatan);
         }
+        
+        // [PERBAIKAN] Menggunakan nama kolom 'operational_days'
         if ($request->filled('hari')) {
-            $query->where('day', 'like', '%' . $request->hari . '%');
+            $query->whereJsonContains('operational_days', $request->hari);
         }
 
         $bankLocations = (clone $query)->orderBy('id', 'asc')->get()->map(function ($bank) {
+            // [PERBAIKAN] Menyesuaikan semua nama kolom
             return [
                 'id' => $bank->id,
                 'nama' => $bank->bank_name,
                 'slug' => $bank->slug,
-                'alamat' => $bank->bank_address,
-                'kecamatan' => $bank->kecamatan,
-                'deskripsi' => $bank->bank_description,
-                'lat' => (float) $bank->bank_latitude,
-                'lng' => (float) $bank->bank_longitude,
-                'image_url' => $bank->image ? asset('' . $bank->image) : asset('img/tps-placeholder.jpg'),
+                'alamat' => $bank->address,
+                'kecamatan' => $bank->district,
+                'deskripsi' => $bank->description,
+                'lat' => (float) $bank->latitude,
+                'lng' => (float) $bank->longitude,
+                'image_url' => $bank->image_path ? asset('storage/' . $bank->image_path) : asset('img/tps-placeholder.jpg'),
             ];
         });
 
@@ -56,7 +59,8 @@ class BankController extends Controller
             ]);
         }
 
-        $kecamatans = Bank::select('kecamatan')->whereNotNull('kecamatan')->distinct()->orderBy('kecamatan')->get();
+        // [PERBAIKAN] Mengambil data dari kolom 'district'
+        $kecamatans = Bank::select('district')->whereNotNull('district')->distinct()->orderBy('district')->get();
 
         return view('pages.banksampah.banksampah', [
             'schedules' => $schedules,
@@ -65,50 +69,57 @@ class BankController extends Controller
         ]);
     }
 
+    /**
+     * Menampilkan halaman detail publik bank sampah (info & harga).
+     */
     public function show(Bank $bank)
     {
-        // 1. Ambil semua bank sampah untuk dropdown filter di halaman detail
-        $daftarBank = Bank::orderBy('bank_name')->get(); // <--- PERBAIKAN
+        $daftarBank = Bank::orderBy('bank_name')->get();
+        
+        // Mengambil harga sampah yang AKTIF dari bank ini
+        $hargaSampah = $bank->wasteProducts()
+                            ->where('status', 'Aktif')
+                            ->with('category') // Menggunakan 'category' (sesuai model BankWasteProduct)
+                            ->get()
+                            ->groupBy('category.name'); // Group by nama kategori
 
-        // 2. Ambil data harga sampah yang terkait HANYA dengan bank sampah ini.
-        $hargaSampah = $bank->wasteProducts()->with('wasteCategory')->get()->groupBy('wasteCategory.name');
-
-        // 3. Kirim data yang sudah diambil dari database ke view
         return view('pages.banksampah.detail-banksampah', [
-            'bankSampah' => $bank, // Data bank sampah yang dipilih sudah otomatis diambil oleh Laravel
+            'bankSampah' => $bank,
             'hargaSampah' => $hargaSampah,
             'daftarBank' => $daftarBank,
         ]);
     }
 
+    /**
+     * Menampilkan halaman informasi saldo & rekening nasabah.
+     */
     public function informasi(Request $request)
     {
         $user = Auth::user();
-        $daftarBank = Bank::all(); // Ambil semua bank untuk dropdown
+        $daftarBank = Bank::orderBy('bank_name')->get();
 
-        // Tentukan bank sampah yang dipilih
         $selectedBankId = $request->input('bank_id');
         $bankSampahTerpilih = $selectedBankId ? Bank::find($selectedBankId) : $daftarBank->first();
 
-        // Cari atau buat rekening user untuk bank yang terpilih
+        // Jika tidak ada bank sampah sama sekali di database
+        if (!$bankSampahTerpilih) {
+            // Anda bisa redirect ke halaman lain atau menampilkan pesan error
+            return redirect()->route('dashboard')->with('error', 'Belum ada bank sampah terdaftar.');
+        }
+
         $rekening = RekeningBankSampahUser::firstOrCreate(
             ['user_id' => $user->id, 'bank_id' => $bankSampahTerpilih->id],
-            ['rekening_number' => 'REK' . $user->id . $bankSampahTerpilih->id . time(), 'saldo' => 0] // Buat no. rekening unik
+            ['rekening_number' => 'REK' . $user->id . $bankSampahTerpilih->id . time(), 'saldo' => 0]
         );
 
-        // Ambil transaksi terkait rekening ini
         $queryTransaksi = BankTransaction::where('rekening_id', $rekening->id);
 
         $transaksiTerbaru = (clone $queryTransaksi)->latest()->take(5)->get();
-        $totalMasuk = (clone $queryTransaksi)->where('transaction_amount', '>', 0)->sum('transaction_amount');
-        $totalKeluar = (clone $queryTransaksi)->where('transaction_amount', '<', 0)->sum('transaction_amount') * -1; // Jadikan positif
+        $totalMasuk = (clone $queryTransaksi)->where('transaction_type', 'pemasukan')->sum('transaction_amount');
+        $totalKeluar = (clone $queryTransaksi)->where('transaction_type', 'penarikan')->sum('transaction_amount'); // Masih negatif
 
-        // Dapatkan waktu transaksi terakhir
-        $pemasukanTerakhir = (clone $queryTransaksi)->where('transaction_amount', '>', 0)->latest()->first();
-        $penarikanTerakhir = (clone $queryTransaksi)->where('transaction_amount', '<', 0)->latest()->first();
-
-        $waktuMasukTerakhir = $pemasukanTerakhir ? $pemasukanTerakhir->created_at->diffForHumans() : 'N/A';
-        $waktuKeluarTerakhir = $penarikanTerakhir ? $penarikanTerakhir->created_at->diffForHumans() : 'N/A';
+        $pemasukanTerakhir = (clone $queryTransaksi)->where('transaction_type', 'pemasukan')->latest()->first();
+        $penarikanTerakhir = (clone $queryTransaksi)->where('transaction_type', 'penarikan')->latest()->first();
 
         return view('pages.banksampah.informasi', [
             'user' => $user,
@@ -118,70 +129,53 @@ class BankController extends Controller
             'nomorRekening' => $rekening->rekening_number,
             'transaksiTerbaru' => $transaksiTerbaru,
             'totalMasuk' => $totalMasuk,
-            'totalKeluar' => $totalKeluar,
-            'waktuMasukTerakhir' => $waktuMasukTerakhir,
-            'waktuKeluarTerakhir' => $waktuKeluarTerakhir,
+            'totalKeluar' => abs($totalKeluar), // [PERBAIKAN] Kirim sebagai angka positif
+            'waktuMasukTerakhir' => $pemasukanTerakhir ? $pemasukanTerakhir->created_at->diffForHumans() : 'N/A',
+            'waktuKeluarTerakhir' => $penarikanTerakhir ? $penarikanTerakhir->created_at->diffForHumans() : 'N/A',
         ]);
     }
 
+    /**
+     * Menampilkan riwayat transaksi NASABAH (sudah di-refactor dari kode dummy).
+     */
     public function riwayat(Request $request)
     {
         $user = auth()->user();
+        $daftarBank = Bank::orderBy('bank_name')->get();
 
-        // =======================================================
-        // PEMBUATAN DUMMY DATA UNTUK DEMO
-        // =======================================================
+        // Ambil ID semua rekening milik user
+        $rekeningIds = RekeningBankSampahUser::where('user_id', $user->id)->pluck('id');
 
-        $daftarBank = collect([
-            (object)['id' => 1, 'nama' => 'Bank Sampah KBU Banjarmasin'],
-            (object)['id' => 2, 'nama' => 'Bank Sampah Induk Banjarmasin'],
-            (object)['id' => 3, 'nama' => 'Bank Sampah Sekumpul'],
-        ]);
-
-        $allDummyTransactions = new \Illuminate\Support\Collection();
-        for ($i = 0; $i < 28; $i++) {
-            $bankId = rand(1, 3);
-            $date = Carbon::now()->subDays($i);
-            if ($i % 3 == 0) {
-                $allDummyTransactions->push((object) ['bank_id' => $bankId, 'deskripsi' => 'Penarikan Tunai', 'detail' => 'Bank ' . (['BRI', 'BNI'][array_rand(['BRI', 'BNI'])]), 'tipe' => 'penarikan', 'jumlah' => rand(5000, 20000), 'created_at' => $date]);
-            } else {
-                $jenisSampah = ['Plastik', 'Kardus', 'Botol Kaca'][array_rand(['Plastik', 'Kardus', 'Botol Kaca'])];
-                $allDummyTransactions->push((object) ['bank_id' => $bankId, 'deskripsi' => $jenisSampah, 'detail' => "2 kg x " . number_format(rand(1000, 2500)) . "/kg", 'tipe' => 'pemasukan', 'jumlah' => rand(2000, 10000), 'created_at' => $date]);
-            }
-        }
-
-        // --- LOGIKA FILTER PADA DUMMY DATA ---
-        $filteredCollection = $allDummyTransactions;
+        // Query dasar untuk transaksi dari semua rekening user
+        $query = BankTransaction::whereIn('rekening_id', $rekeningIds)
+                                ->with(['details.wasteProduct.category', 'rekening.bank']);
 
         // 1. Filter berdasarkan Bank Sampah
         $selectedBankId = $request->input('bank_id');
         if ($selectedBankId) {
-            $filteredCollection = $filteredCollection->where('bank_id', $selectedBankId);
+            $query->whereHas('rekening', function ($q) use ($selectedBankId) {
+                $q->where('bank_id', $selectedBankId);
+            });
         }
-
+        
         // 2. Filter berdasarkan Tipe Transaksi
-        if ($request->has('tipe') && in_array($request->tipe, ['pemasukan', 'penarikan'])) {
-            $filteredCollection = $filteredCollection->where('tipe', $request->tipe);
+        if ($request->filled('tipe') && in_array($request->tipe, ['pemasukan', 'penarikan'])) {
+            $query->where('transaction_type', $request->tipe);
         }
 
         // --- KALKULASI BERDASARKAN DATA YANG SUDAH DIFILTER ---
+        $filteredTransactions = (clone $query)->get();
         $bankSampahTerpilih = $selectedBankId ? $daftarBank->firstWhere('id', $selectedBankId) : null;
-        $totalTransaksiCount = $filteredCollection->count();
-        $totalMasuk = $filteredCollection->where('tipe', 'pemasukan')->sum('jumlah');
-        $totalKeluar = $filteredCollection->where('tipe', 'penarikan')->sum('jumlah');
+        $totalTransaksiCount = $filteredTransactions->count();
+        $totalMasuk = $filteredTransactions->where('transaction_type', 'pemasukan')->sum('transaction_amount');
+        $totalKeluar = $filteredTransactions->where('transaction_type', 'penarikan')->sum('transaction_amount');
 
-        // Pagination dibuat dari koleksi yang sudah difilter
-        $perPage = 10;
-        $currentPage = Paginator::resolveCurrentPage('page');
-        $currentPageItems = $filteredCollection->slice(($currentPage - 1) * $perPage, $perPage)->values();
-        $semuaTransaksi = new LengthAwarePaginator($currentPageItems, $filteredCollection->count(), $perPage, $currentPage, [
-            'path' => Paginator::resolveCurrentPath(), 'pageName' => 'page',
-        ]);
+        // Pagination
+        $semuaTransaksi = $query->latest()->paginate(10)->withQueryString();
 
-        // Data untuk badge waktu (tetap dihitung dari semua data)
-        $waktuSaldoTerakhir = $user->updated_at->diffForHumans();
-        $waktuMasukTerakhir = $allDummyTransactions->where('tipe', 'pemasukan')->first() ? $allDummyTransactions->where('tipe', 'pemasukan')->first()->created_at->diffForHumans() : 'N/A';
-        $waktuKeluarTerakhir = $allDummyTransactions->where('tipe', 'penarikan')->first() ? $allDummyTransactions->where('tipe', 'penarikan')->first()->created_at->diffForHumans() : 'N/A';
+        // Data untuk badge waktu (dihitung dari semua data user, tidak terpengaruh filter)
+        $pemasukanTerakhir = BankTransaction::whereIn('rekening_id', $rekeningIds)->where('transaction_type', 'pemasukan')->latest()->first();
+        $penarikanTerakhir = BankTransaction::whereIn('rekening_id', $rekeningIds)->where('transaction_type', 'penarikan')->latest()->first();
 
         return view('pages.banksampah.riwayat', [
             'user' => $user,
@@ -190,38 +184,50 @@ class BankController extends Controller
             'semuaTransaksi' => $semuaTransaksi,
             'totalTransaksiCount' => $totalTransaksiCount,
             'totalMasuk' => $totalMasuk,
-            'totalKeluar' => $totalKeluar,
-            'waktuSaldoTerakhir' => $waktuSaldoTerakhir,
-            'waktuMasukTerakhir' => $waktuMasukTerakhir,
-            'waktuKeluarTerakhir' => $waktuKeluarTerakhir,
+            'totalKeluar' => abs($totalKeluar), // Kirim sebagai angka positif
+            'waktuSaldoTerakhir' => $user->rekening()->sum('saldo'),
+            'waktuMasukTerakhir' => $pemasukanTerakhir ? $pemasukanTerakhir->created_at->diffForHumans() : 'N/A',
+            'waktuKeluarTerakhir' => $penarikanTerakhir ? $penarikanTerakhir->created_at->diffForHumans() : 'N/A',
         ]);
     }
 
+    /**
+     * Menampilkan daftar harga publik.
+     * (Anda bisa menghapus ini jika halaman 'show' sudah mencakupnya)
+     */
     public function harga(Request $request)
     {
         // Query dasar untuk mengambil data harga, beserta relasi ke bank dan kategori
-        $query = BankWasteProduct::with(['bank', 'wasteCategory']);
+        // [PERBAIKAN] Menggunakan relasi 'category' (sesuai model BankWasteProduct)
+        $query = BankWasteProduct::with(['bank', 'category']);
+
+        // Hanya tampilkan item yang statusnya 'Aktif'
+        $query->where('status', 'Aktif');
 
         // Filter berdasarkan Bank Sampah yang dipilih
         if ($request->filled('bank_id')) {
             $query->where('bank_id', $request->bank_id);
         }
 
-        // Filter berdasarkan pencarian nama item/produk
+        // Filter berdasarkan pencarian nama item ATAU nama kategori
         if ($request->filled('search')) {
-            $query->whereHas('wasteCategory', function ($q) use ($request) {
-                $q->where('name', 'like', '%' . $request->search . '%');
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('item_name', 'like', '%' . $searchTerm . '%')
+                ->orWhereHas('category', function ($catQuery) use ($searchTerm) {
+                    $catQuery->where('name', 'like', '%' . $searchTerm . '%');
+                });
             });
         }
 
         // Ambil semua data harga yang sudah difilter
-        $hargaList = $query->get();
+        $hargaList = $query->orderBy('item_name', 'asc')->get();
 
-        // Kelompokkan hasil berdasarkan nama kategori dari relasi
-        $hargaDikelompokkan = $hargaList->groupBy('wasteCategory.name');
+        // [PERBAIKAN] Kelompokkan hasil berdasarkan nama kategori
+        $hargaDikelompokkan = $hargaList->groupBy('category.name');
 
-        // Ambil daftar semua bank untuk ditampilkan di dropdown filter
-        $daftarBank = Bank::orderBy('name')->get();
+        // [PERBAIKAN] Ambil daftar semua bank untuk dropdown filter
+        $daftarBank = Bank::where('is_active', true)->orderBy('bank_name', 'asc')->get();
 
         return view('pages.banksampah.harga', [
             'hargaDikelompokkan' => $hargaDikelompokkan,

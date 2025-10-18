@@ -6,146 +6,148 @@ use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use App\Models\BankWasteCategory;
 use App\Models\BankWasteProduct;
-use App\Models\BankTransaction;
-use App\Models\BankTransactionDetail;
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Log; // Direkomendasikan untuk logging error
 
 class WastePriceController extends Controller
 {
+    /**
+     * Menampilkan daftar harga sampah untuk bank sampah milik pengelola yang login.
+     */
     public function index(Request $request)
     {
-        // [MODE DEVELOPMENT] Mengambil bank sampah pertama yang ada di database.
-        $bank = Bank::first(); 
-        
+        // [PERBAIKAN] Ambil bank berdasarkan pengguna yang sedang login.
+        $bank = Auth::user()->bank;
         if (!$bank) {
-            abort(500, 'Tidak ada data bank sampah di dalam database.');
+            // Jika pengelola tidak terhubung ke bank sampah, tampilkan error.
+            return redirect()->route('dashboard')->with('error', 'Anda harus melengkapi profil bank sampah Anda terlebih dahulu.');
         }
 
+        // Ambil produk HANYA dari bank sampah milik pengelola.
         $query = $bank->wasteProducts()->with('category');
 
-        // Fitur Filter (jika diperlukan di masa depan)
+        // Fitur Filter (jika diperlukan)
         if ($search = $request->input('search')) {
-            $query->whereHas('category', function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%");
-            });
+            $query->where('item_name', 'like', "%{$search}%")
+                  ->orWhereHas('category', function ($q) use ($search) {
+                      $q->where('name', 'like', "%{$search}%");
+                  });
         }
 
         $products = $query->latest()->get();
 
-        // [KODE YANG BENAR] Kalkulasi untuk summary cards halaman harga sampah
+        // Kalkulasi ini sekarang otomatis hanya menghitung data dari bank tersebut.
         $totalItem = $products->count();
         $hargaAktif = $products->where('status', 'Aktif')->count();
         $rataRataHarga = $products->avg('price_per_kg');
         
-        // Ambil master kategori untuk form "Tambah Item"
+        // Ambil master kategori untuk form "Tambah Item".
         $categories = BankWasteCategory::orderBy('name')->get();
 
-        // [KODE YANG BENAR] Panggil view yang benar dengan data yang benar
         return view('pages.banksampah.pengelola.harga.index', compact(
             'products', 
             'totalItem', 
             'hargaAktif', 
             'rataRataHarga', 
-            'categories',
-            'bank'
+            'categories'
+            // Variabel 'bank' tidak perlu dikirim lagi karena bisa diakses via Auth::user()->bank
         ));
     }
 
     /**
-     * Menampilkan halaman detail untuk satu setoran.
-     *
-     * @param  \App\Models\BankTransactionDetail  $setoran
-     * @return \Illuminate\View\View
+     * Menyimpan item sampah baru ke bank sampah milik pengelola yang login.
      */
-    public function show(BankTransactionDetail $setoran)
-    {
-        // Eager load semua relasi yang dibutuhkan untuk halaman detail.
-        // Ini akan mengambil data pengguna, produk sampah, dan transaksi induknya secara efisien.
-        $setoran->load(['transaction.rekening.user', 'wasteProduct']);
-    
-        // Kirim data setoran tunggal ke view 'show'
-        return view('pages.banksampah.pengelola.riwayat.show', compact('setoran'));
-    }
-
     public function store(Request $request)
     {
-        $request->validate([
-            'waste_category_id' => 'required', 
-            'price_per_kg' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:255',
-            'status' => 'required|in:Aktif,Tidak Aktif',
+        $validatedData = $request->validate([
+            'waste_category_id' => 'required|exists:bank_waste_categories,id',
+            'item_name'         => 'required|string|max:255',
+            'price_per_kg'      => 'required|numeric|min:0',
+            'description'       => 'nullable|string|max:255',
+            'status'            => 'required|in:Aktif,Tidak Aktif',
         ]);
         
-        // [MODE DEVELOPMENT] Ambil bank sampah pertama yang ada di database.
-        $bank = Bank::first();
+        // [PERBAIKAN] Ambil bank berdasarkan pengguna yang sedang login.
+        $bank = Auth::user()->bank;
         if (!$bank) {
-            return back()->with('error', 'Tidak ada data bank sampah di dalam database.');
+            return back()->with('error', 'Anda tidak terdaftar sebagai pengelola.');
         }
 
-        $categoryInput = $request->waste_category_id;
-        $category = null;
-
-        // Cek apakah input adalah ID numerik atau nama baru
-        if (is_numeric($categoryInput)) {
-            $category = BankWasteCategory::find($categoryInput);
-        } else {
-            // Jika string, cari atau buat kategori baru.
-            $category = BankWasteCategory::firstOrCreate(
-                ['name' => $categoryInput],
-                ['slug' => Str::slug($categoryInput)] 
-            );
-        }
-        
-        if (!$category) {
-            return back()->with('error', 'Kategori sampah yang dipilih tidak valid.');
-        }
-        
-        $exists = $bank->wasteProducts()->where('waste_category_id', $category->id)->exists();
+        // Cek duplikasi spesifik untuk bank ini.
+        $exists = $bank->wasteProducts()
+                       ->where('waste_category_id', $validatedData['waste_category_id'])
+                       ->where('item_name', $validatedData['item_name'])
+                       ->exists();
+                       
         if ($exists) {
-            return back()->with('error', 'Jenis sampah ini sudah ada di daftar harga Anda.');
+            $categoryName = BankWasteCategory::find($validatedData['waste_category_id'])->name ?? 'Kategori tidak dikenal';
+            return back()->with('error', 'Item "'.$validatedData['item_name'].'" dalam kategori "'.$categoryName.'" sudah ada.')->withInput();
         }
 
-        // Simpan data produk baru, termasuk 'item_name'
-        $bank->wasteProducts()->create([
-            'item_name'         => $category->name,
-            'waste_category_id' => $category->id,
-            'price_per_kg'      => $request->price_per_kg,
-            'description'       => $request->description,
-            'status'            => $request->status,
-        ]);
+        // Relasi $bank->wasteProducts() akan otomatis mengisi bank_id yang benar.
+        // Kita juga tambahkan 'item_name' dari validasi
+        $bank->wasteProducts()->create($validatedData);
 
-        return redirect()->route('pengelola.harga.index')->with('success', 'Item sampah berhasil ditambahkan.');
+        return redirect()->route('pengelola.harga.index')->with('success', 'Item sampah baru berhasil ditambahkan.');
     }
     
+    /**
+     * Memperbarui data item sampah yang ada.
+     */
     public function update(Request $request, BankWasteProduct $product)
     {
-        // [MODE DEVELOPMENT] Pengecekan keamanan dinonaktifkan sementara.
-        // $this->authorize('update', $product);
+        // [KEAMANAN] Pastikan produk ini milik bank sampah si pengelola.
+        if ($product->bank_id !== Auth::user()->bank_id) {
+            abort(403, 'ANDA TIDAK MEMILIKI IZIN UNTUK MENGUBAH DATA INI.');
+        }
 
-        $request->validate([
-            'price_per_kg' => 'required|numeric|min:0',
-            'description' => 'nullable|string|max:255',
-            'status' => 'required|in:Aktif,Tidak Aktif',
+        $validatedData = $request->validate([
+            'waste_category_id' => 'required|exists:bank_waste_categories,id',
+            'item_name'         => 'required|string|max:255',
+            'price_per_kg'      => 'required|numeric|min:0',
+            'description'       => 'nullable|string|max:255',
+            'status'            => 'required|in:Aktif,Tidak Aktif',
         ]);
 
-        $product->update($request->all());
+        // Cek duplikasi jika nama item atau kategori diubah.
+        $exists = Auth::user()->bank->wasteProducts()
+                   ->where('waste_category_id', $validatedData['waste_category_id'])
+                   ->where('item_name', $validatedData['item_name'])
+                   ->where('id', '!=', $product->id) // Abaikan item yang sedang diedit
+                   ->exists();
+
+        if ($exists) {
+            return back()->with('error', 'Kombinasi kategori dan nama item tersebut sudah ada.');
+        }
+
+        // Update data produk.
+        $product->update($validatedData);
         
-        return redirect()->route('pengelola.harga.index')->with('success', 'Harga berhasil diperbarui.');
+        return redirect()->route('pengelola.harga.index')->with('success', 'Harga item sampah berhasil diperbarui.');
     }
 
+    /**
+     * Menghapus item sampah dari daftar harga.
+     */
     public function destroy(BankWasteProduct $product)
     {
-        // [MODE DEVELOPMENT] Pengecekan keamanan dinonaktifkan sementara.
-        // $this->authorize('delete', $product);
+        // [KEAMANAN] Pastikan produk ini milik bank sampah si pengelola.
+        if ($product->bank_id !== Auth::user()->bank_id) {
+            abort(403, 'ANDA TIDAK MEMILIKI IZIN UNTUK MENGHAPUS DATA INI.');
+        }
 
         try {
+            // Cek apakah produk ini pernah dipakai di transaksi (opsional tapi disarankan)
+            if ($product->transactionDetails()->exists()) {
+                 return back()->with('error', 'Gagal menghapus. Item ini sudah pernah digunakan dalam transaksi.');
+            }
+            
             $product->delete();
             return redirect()->route('pengelola.harga.index')->with('success', 'Item sampah berhasil dihapus.');
         } catch (\Exception $e) {
-            return back()->with('error', 'Gagal menghapus item.');
+            Log::error('Gagal hapus item harga: ' . $e->getMessage());
+            return back()->with('error', 'Gagal menghapus item. Mungkin item ini terkait dengan data lain.');
         }
     }
 }
