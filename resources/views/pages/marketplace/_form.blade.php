@@ -104,7 +104,7 @@
             <label for="bobot" class="block mb-2 text-sm font-medium text-gray-700">Bobot/Berat per Produk</label>
             <input type="text" name="bobot" id="bobot"
                 value="{{ old('bobot', $product->exists ? (float) $product->weight_per_item : '') }}"
-                placeholder="Contoh: 0,5 (kilogram) atau 1 (buah)"
+                placeholder="Contoh: 0.5 (kilogram) atau 1 (buah)"
                 class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
                 required>
         </div>
