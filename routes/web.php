@@ -132,7 +132,7 @@ Route::middleware(['auth', 'role:admin|warga|seller'])->group(function () {
 
     // Route Marketplace Umum (Pembelian)
     Route::get('/marketplace/product', [ProductController::class, 'index'])->name('marketplace.products.all'); 
-    Route::get('/marketplace/product/{product}', [ProductController::class, 'show'])->name('marketplace.products.show'); // Detail produk tunggal (diganti dari marketplace.product.detail)
+    //Route::get('/marketplace/product/{product}', [ProductController::class, 'show'])->name('marketplace.products.show'); // Detail produk tunggal (diganti dari marketplace.product.detail)
     Route::get('/marketplace/checkout', [ProductController::class, 'showCheckout'])->name('marketplace.checkout');
     Route::get('/marketplace/pembelian/{order}', [OrderController::class, 'showPurchaseDetail'])->name('marketplace.purchase.detail');
     Route::post('/marketplace/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('marketplace.order.cancel');
@@ -147,7 +147,7 @@ Route::middleware(['auth', 'role:admin|warga|seller'])->group(function () {
     
 
     // Daftar Produk Toko Saya (List/Read)
-    Route::get('/marketplace/products/list', [ProductController::class, 'storeProducts'])->name('marketplace.products.list');
+    //Route::get('/marketplace/products/list', [ProductController::class, 'storeProducts'])->name('marketplace.products.list');
     
     // Route Marketplace Umum (Pembelian)
     Route::get('/marketplace/history', [OrderController::class, 'purchaseHistory'])->name('marketplace.history');
