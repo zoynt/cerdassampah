@@ -50,7 +50,7 @@
                     'educationOpen' => request()->routeIs(['game-pilah-sampah', 'scan-user']),
                     'ruteOpen' => request()->routeIs(['tps.index', 'surung-sintak.index']),
                     'digitalOpen' => request()->routeIs(['digital.informasi', 'banksampah-user', 'digital.harga', 'digital.riwayat', 'digital.banksampah.show', 'digital.tarik-saldo.form', 'pengelola.nasabah.index', 'pengelola.nasabah.show', 'pengelola.setoran.create', 'pengelola.harga.index', 'pengelola.riwayat.index', 'pengelola.pembayaran.index', 'pengelola.riwayat.show', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show', 'pengelola.bank-profil.edit', 'bank-sampah.show']),
-                    'marketOpen' => request()->routeIs(['store.profile.show', 'store.profile.edit', 'marketplace.history', 'marketplace.products.all','marketplace.products.show', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice.show','marketplace.products.list','marketplace.riwayat', 'store.profile.create','marketplace.products.create', 'marketplace.products.edit','marketplace.store.show','mystore.dashboard']),                ];
+                    'marketOpen' => request()->routeIs(['store.profile.show', 'store.profile.edit', 'marketplace.history', 'marketplace.products.all','marketplace.products.show', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice.show','marketplace.products.list','marketplace.riwayat', 'store.profile.create','marketplace.products.create', 'marketplace.products.edit','marketplace.store.show','mystore.dashboard','marketplace.rating.show']),                ];
             @endphp
 
             <nav x-data='{{ json_encode($alpineData) }}'>

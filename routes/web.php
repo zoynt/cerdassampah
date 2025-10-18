@@ -131,16 +131,16 @@ Route::middleware(['auth', 'role:admin|warga|seller'])->group(function () {
     Route::get('/my-store/dashboard', [StoreProfileController::class, 'redirectToMyStore'])->name('mystore.dashboard');
 
     // Route Marketplace Umum (Pembelian)
-    Route::get('/marketplace/product', [ProductController::class, 'index'])->name('marketplace.products.all'); 
+    //Route::get('/marketplace/product', [ProductController::class, 'index'])->name('marketplace.products.all'); 
     //Route::get('/marketplace/product/{product}', [ProductController::class, 'show'])->name('marketplace.products.show'); // Detail produk tunggal (diganti dari marketplace.product.detail)
-    Route::get('/marketplace/checkout', [ProductController::class, 'showCheckout'])->name('marketplace.checkout');
-    Route::get('/marketplace/pembelian/{order}', [OrderController::class, 'showPurchaseDetail'])->name('marketplace.purchase.detail');
-    Route::post('/marketplace/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('marketplace.order.cancel');
-    Route::post('/marketplace/checkout/{product}', [OrderController::class, 'placeOrder'])->name('marketplace.order.place');
-    Route::get('/marketplace/invoice/{order}', [OrderController::class, 'showInvoice'])->name('marketplace.invoice.show');
-    Route::get('/marketplace/history', [OrderController::class, 'purchaseHistory'])->name('marketplace.history');
-    Route::get('/marketplace/rating/{order}', [ProductController::class, 'showRatingForm'])->name('marketplace.rating.show');
-    Route::post('/marketplace/rating/{order}', [ProductController::class, 'storeRating'])->name('marketplace.rating.store');
+    //Route::get('/marketplace/checkout', [ProductController::class, 'showCheckout'])->name('marketplace.checkout');
+    //Route::get('/marketplace/pembelian/{order}', [OrderController::class, 'showPurchaseDetail'])->name('marketplace.purchase.detail');
+    // Route::post('/marketplace/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('marketplace.order.cancel');
+    // Route::post('/marketplace/checkout/{product}', [OrderController::class, 'placeOrder'])->name('marketplace.order.place');
+    // Route::get('/marketplace/invoice/{order}', [OrderController::class, 'showInvoice'])->name('marketplace.invoice.show');
+    // Route::get('/marketplace/history', [OrderController::class, 'purchaseHistory'])->name('marketplace.history');
+    // Route::get('/marketplace/rating/{order}', [ProductController::class, 'showRatingForm'])->name('marketplace.rating.show');
+    // Route::post('/marketplace/rating/{order}', [ProductController::class, 'storeRating'])->name('marketplace.rating.store');
 
 
     // Route Marketplace Penjual (Seller/Toko)
@@ -210,8 +210,9 @@ Route::middleware(['auth', 'role:seller'])->group(function () {
     Route::put('/marketplace/products/{product_slug}', [ProductController::class, 'update'])->name('marketplace.products.update');
 
     // Riwayat Penjualan
-    Route::get('/marketplace/riwayat/{store:slug}', [ProductController::class, 'riwayatPenjualan'])->name('marketplace.riwayat');
     Route::get('/marketplace/riwayat/export', [ProductController::class, 'exportSalesHistory'])->name('marketplace.riwayat.export');
+    Route::get('/marketplace/riwayat/{store:slug}', [ProductController::class, 'riwayatPenjualan'])->name('marketplace.riwayat');
+    
 });
 
 
