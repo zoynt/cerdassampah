@@ -239,7 +239,7 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-
+        $request->merge(['nama' => Str::title($request->nama)]);
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
             'kategori' => 'required|string|exists:product_categories,name',
@@ -352,16 +352,21 @@ class ProductController extends Controller
             'detailUrl' => route('marketplace.purchase.detail', ['order' => $order->order_number])
         ];
     });
-        $completedQuery = \App\Models\OrderItem::whereHas('product', function ($q) use ($store) {
-            $q->where('store_id', $store->id);
-        })->whereHas('order', function ($q) {
-            $q->where('status', 'completed');
-        });
-        $totalProduk = (int) (clone $completedQuery)->sum('quantity');
-        $totalPenjualan = (clone $completedQuery)->sum(DB::raw('price * quantity'));
+        $completedQuery = \App\Models\OrderItem::query()
+            ->join('products', 'order_items.product_id', '=', 'products.id') 
+            ->where('products.store_id', $store->id) 
+            ->whereHas('order', function ($q) {
+                $q->where('status', 'completed');
+            });
+
+        $totalProduk = (int) (clone $completedQuery)->sum('order_items.quantity');
+        $totalPenjualan = (clone $completedQuery)->sum(DB::raw('(order_items.price / products.weight_per_item) * order_items.quantity'));
         $salesLast7Days = (clone $completedQuery)
-            ->where('created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
-            ->select(DB::raw('DATE(created_at) as date'), DB::raw('SUM(price * quantity) as total_sales'))
+            ->where('order_items.created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
+            ->select(
+                DB::raw('DATE(order_items.created_at) as date'),
+                DB::raw('SUM((order_items.price / products.weight_per_item) * order_items.quantity) as total_sales')
+            )
             ->groupBy('date')->orderBy('date', 'ASC')->get()->keyBy('date');
 
         $chartLabels = [];
@@ -417,7 +422,7 @@ class ProductController extends Controller
         $request->merge([
             'bobot' => str_replace(',', '.', $request->input('bobot'))
         ]);
-
+        $request->merge(['nama' => Str::title($request->nama)]);
         $validatedData = $request->validate([
             'nama' => 'required|string|max:255',
             'kategori' => 'required|string|exists:product_categories,name',

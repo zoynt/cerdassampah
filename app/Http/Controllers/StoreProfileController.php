@@ -35,6 +35,7 @@ class StoreProfileController extends Controller
 
     public function store(Request $request)
     {
+        $request->merge(['name' => Str::title($request->name)]);
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:stores,name',
             'operational_days' => 'required|array|min:1',
@@ -81,7 +82,7 @@ class StoreProfileController extends Controller
     public function update(Request $request)
     {
         $store = Store::where('user_id', Auth::id())->firstOrFail();
-
+        $request->merge(['name' => Str::title($request->name)]);
         $validatedData = $request->validate([
             'name' => 'required|string|max:255|unique:stores,name,' . $store->id,
             'operational_days' => 'required|array|min:1',

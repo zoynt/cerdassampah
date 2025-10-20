@@ -183,7 +183,8 @@
                         <div class="flex-1 md:text-right">
                             <p class="text-sm text-gray-500">Subtotal</p>
                             <p class="text-xl md:text-2xl font-bold text-gray-800"
-                                x-text="`Rp ${(price * (quantity / step)).toLocaleString('id-ID')}`"></p>
+                                x-text="`Rp ${((price / step) * quantity).toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`">
+                            </p>
                         </div>
                         <div class="w-full md:w-auto flex flex-col sm:flex-row md:flex-col gap-2 flex-shrink-0">
                             <form
@@ -337,8 +338,6 @@
                 isDescriptionOverflowing: false,
 
                 isDecimalUnit: '{{ $product->selling_unit }}' !== 'Buah',
-
-                // [PERUBAHAN] step dan quantity sekarang dinamis berdasarkan bobot produk
                 step: {{ $product->selling_unit === 'Buah' ? 1 : (float) $product->weight_per_item }},
                 quantity: {{ $product->selling_unit === 'Buah' ? 1 : (float) $product->weight_per_item }},
 
@@ -346,9 +345,13 @@
                 stock: {{ $product->stock }},
 
                 increment() {
-                    // Gunakan this.step yang dinamis
                     let newQuantity = parseFloat(this.quantity) + this.step;
-                    this.quantity = Math.min(this.stock, newQuantity);
+
+                    // Hanya perbarui kuantitas jika nilai baru TIDAK MELEBIHI stok.
+                    if (newQuantity <= this.stock) {
+                        // Menggunakan toFixed untuk mengatasi masalah presisi angka desimal di JavaScript
+                        this.quantity = parseFloat(newQuantity.toFixed(10));
+                    }
                 },
 
                 decrement() {
@@ -362,20 +365,26 @@
                     let value = event.target.value.replace(',', '.');
                     let numValue = parseFloat(value);
 
-                    if (isNaN(numValue)) {
-                        numValue = this.step;
+                    // Jika input tidak valid atau nol, kembalikan ke nilai minimum
+                    if (isNaN(numValue) || numValue <= 0) {
+                        this.quantity = this.step;
+                        return;
                     }
 
-                    // Pembulatan ke kelipatan step terdekat jika unitnya desimal
-                    if (this.isDecimalUnit && numValue > 0) {
-                        numValue = Math.round(numValue / this.step) * this.step;
+                    // Hitung kelipatan 'step' terdekat dari input
+                    let roundedValue = Math.round(numValue / this.step) * this.step;
+
+                    // Cek apakah hasil pembulatan melebihi stok
+                    if (roundedValue > this.stock) {
+                        // Jika ya, atur ke nilai kelipatan MAKSIMUM yang diizinkan
+                        this.quantity = Math.floor(this.stock / this.step) * this.step;
+                    } else {
+                        // Jika tidak, pastikan nilainya tidak kurang dari step minimum
+                        this.quantity = Math.max(this.step, roundedValue);
                     }
-
-                    numValue = Math.min(this.stock, numValue);
-                    let min = this.step;
-                    numValue = Math.max(min, numValue);
-
-                    this.quantity = numValue;
+                    
+                    // Atasi masalah presisi angka desimal
+                    this.quantity = parseFloat(this.quantity.toFixed(10));
                 },
 
                 formattedQuantity() {
