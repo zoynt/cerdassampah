@@ -53,9 +53,8 @@ Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 Route::get('/produk/{store:slug}/{product_slug}', [ProductController::class, 'showguest'])->name('guest.product.show');
 // Rute untuk halaman semua produk non-login (sudah ada)
 Route::get('/store', [ProductController::class, 'guest'])->name('store-user'); 
-// ====== Auth ======
-// Area login (role admin|warga)
-Route::middleware(['auth', 'role:admin|warga|seller'])->group(function () {
+
+Route::middleware(['auth'])->group(function () {
     // Dashboard & menu
     Route::get('/dashboard', fn () => view('pages.dashboard.dashboard'))->name('dashboard');
     Route::get('/scan-user', fn () => view('pages.dashboard.scan-sampah'))->name('scan-user');

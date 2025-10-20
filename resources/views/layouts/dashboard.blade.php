@@ -150,7 +150,7 @@
                                 fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-                            </svg>Rute & Jadwal</span>
+                            </svg>Pemetaan</span>
                         <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': ruteOpen }" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -229,6 +229,7 @@
                             </svg>
                             Riwayat Transaksi
                         </a>
+                        @role('banker')
                         <a href="{{ optional(Auth::user()->bank)->slug ? route('bank-sampah.show', Auth::user()->bank->slug) : route('pengelola.bank-profil.edit') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('pengelola.bank-profil.edit', 'bank-sampah.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('pengelola.bank-profil.edit', 'bank-sampah.show')])>
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M236,96a12,12,0,0,0-.44-3.3L221.2,42.51A20.08,20.08,0,0,0,202,28H54A20.08,20.08,0,0,0,34.8,42.51L20.46,92.7A12,12,0,0,0,20,96h0v16a43.94,43.94,0,0,0,16,33.92V216a12,12,0,0,0,12,12H208a12,12,0,0,0,12-12V145.92A43.94,43.94,0,0,0,236,112V96ZM57.05,52H199l9.14,32H47.91Zm91,56v4a20,20,0,0,1-40,0v-4ZM53,128.71A20,20,0,0,1,44,112v-4H84v4a20,20,0,0,1-20,20,19.76,19.76,0,0,1-9.07-2.2A11.54,11.54,0,0,0,53,128.71ZM196,204H60V155.81c1.32.12,2.65.19,4,.19a43.86,43.86,0,0,0,32-13.85,43.89,43.89,0,0,0,64,0A43.86,43.86,0,0,0,192,156c1.35,0,2.68-.07,4-.19Zm16-92a20,20,0,0,1-9,16.71,11.66,11.66,0,0,0-1.88,1.09A20,20,0,0,1,172,112v-4h40Z"></path></svg>
                             Kelola Bank Sampah
@@ -252,6 +253,7 @@
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
                             Riwayat Pembayaran
                         </a>
+                        @endrole
                     </div>
                 </div>
 
@@ -424,7 +426,7 @@
                         </div>
                         <div class="hidden ml-3 text-left md:block">
                             <p class="font-semibold leading-tight">{{ Auth::user()->name }}</p>
-                            <p class="text-xs text-white/80">Warga</p>
+                            <p class="text-xs text-white/80">{{ ucfirst(Auth::user()->getRoleNames()->first()) }}</p>
                         </div>
                         <svg class="w-5 h-5 ml-2 hidden md:block" :class="{ 'rotate-180': dropdownOpen }"
                             fill="none" stroke="currentColor" viewBox="0 0 24 24">
