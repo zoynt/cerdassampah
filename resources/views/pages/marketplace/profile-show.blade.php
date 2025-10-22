@@ -2,10 +2,11 @@
 
 {{-- Menggunakan variabel $store --}}
 @section('title', 'Profil Toko')
+<link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
 
 @section('content')
     <div class="space-y-6">
-        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
+        <div class="flex flex-col sm:flex-row justify-end sm:items-center gap-4">
             {{-- <h1 class="text-3xl font-bold text-gray-800">{{ $store->name }}</h1> --}}
 
             @if (Auth::check() && Auth::id() === $store->user_id)

@@ -5,29 +5,28 @@ namespace App\Http\Controllers\Pengelola;
 use App\Http\Controllers\Controller;
 use App\Models\Bank;
 use App\Models\BankWasteCategory;
-use App\Models\BankWasteProduct;
+use App\Models\BankWasteProduct; // Model Anda sudah benar
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log; // Direkomendasikan untuk logging error
+use Illuminate\Support\Facades\Log;
 
 class WastePriceController extends Controller
 {
     /**
      * Menampilkan daftar harga sampah untuk bank sampah milik pengelola yang login.
+     * (Logika ini sudah benar)
      */
     public function index(Request $request)
     {
-        // [PERBAIKAN] Ambil bank berdasarkan pengguna yang sedang login.
-        $bank = Auth::user()->bank;
+        $bank = Auth::user()->bank; // Mengambil bank milik user
         if (!$bank) {
-            // Jika pengelola tidak terhubung ke bank sampah, tampilkan error.
-            return redirect()->route('dashboard')->with('error', 'Anda harus melengkapi profil bank sampah Anda terlebih dahulu.');
+            return redirect()->route('pengelola.bank-profil.edit')->with('warning', 'Anda harus melengkapi profil bank sampah Anda terlebih dahulu untuk mengelola harga.');
         }
 
-        // Ambil produk HANYA dari bank sampah milik pengelola.
+        // Hanya mengambil produk dari bank milik user
         $query = $bank->wasteProducts()->with('category');
 
-        // Fitur Filter (jika diperlukan)
+        // Fitur Filter
         if ($search = $request->input('search')) {
             $query->where('item_name', 'like', "%{$search}%")
                   ->orWhereHas('category', function ($q) use ($search) {
@@ -37,12 +36,11 @@ class WastePriceController extends Controller
 
         $products = $query->latest()->get();
 
-        // Kalkulasi ini sekarang otomatis hanya menghitung data dari bank tersebut.
+        // Statistik
         $totalItem = $products->count();
         $hargaAktif = $products->where('status', 'Aktif')->count();
         $rataRataHarga = $products->avg('price_per_kg');
         
-        // Ambil master kategori untuk form "Tambah Item".
         $categories = BankWasteCategory::orderBy('name')->get();
 
         return view('pages.banksampah.pengelola.harga.index', compact(
@@ -51,12 +49,12 @@ class WastePriceController extends Controller
             'hargaAktif', 
             'rataRataHarga', 
             'categories'
-            // Variabel 'bank' tidak perlu dikirim lagi karena bisa diakses via Auth::user()->bank
         ));
     }
 
     /**
      * Menyimpan item sampah baru ke bank sampah milik pengelola yang login.
+     * (Logika ini sudah benar)
      */
     public function store(Request $request)
     {
@@ -68,13 +66,12 @@ class WastePriceController extends Controller
             'status'            => 'required|in:Aktif,Tidak Aktif',
         ]);
         
-        // [PERBAIKAN] Ambil bank berdasarkan pengguna yang sedang login.
         $bank = Auth::user()->bank;
         if (!$bank) {
             return back()->with('error', 'Anda tidak terdaftar sebagai pengelola.');
         }
 
-        // Cek duplikasi spesifik untuk bank ini.
+        // Cek duplikasi spesifik untuk bank ini
         $exists = $bank->wasteProducts()
                        ->where('waste_category_id', $validatedData['waste_category_id'])
                        ->where('item_name', $validatedData['item_name'])
@@ -85,8 +82,7 @@ class WastePriceController extends Controller
             return back()->with('error', 'Item "'.$validatedData['item_name'].'" dalam kategori "'.$categoryName.'" sudah ada.')->withInput();
         }
 
-        // Relasi $bank->wasteProducts() akan otomatis mengisi bank_id yang benar.
-        // Kita juga tambahkan 'item_name' dari validasi
+        // Relasi ini akan OTOMATIS mengisi bank_id yang benar (ID 6)
         $bank->wasteProducts()->create($validatedData);
 
         return redirect()->route('pengelola.harga.index')->with('success', 'Item sampah baru berhasil ditambahkan.');
@@ -94,11 +90,13 @@ class WastePriceController extends Controller
     
     /**
      * Memperbarui data item sampah yang ada.
+     * (Logika ini sudah benar)
      */
     public function update(Request $request, BankWasteProduct $product)
     {
-        // [KEAMANAN] Pastikan produk ini milik bank sampah si pengelola.
-        if ($product->bank_id !== Auth::user()->bank_id) {
+        // [KEAMANAN YANG SUDAH BENAR]
+        // Pengecekan ini adalah penyebab 403 jika datanya tidak cocok.
+        if ($product->bank_id !== Auth::user()->bank->id) {
             abort(403, 'ANDA TIDAK MEMILIKI IZIN UNTUK MENGUBAH DATA INI.');
         }
 
@@ -110,18 +108,17 @@ class WastePriceController extends Controller
             'status'            => 'required|in:Aktif,Tidak Aktif',
         ]);
 
-        // Cek duplikasi jika nama item atau kategori diubah.
+        // Cek duplikasi jika nama item atau kategori diubah
         $exists = Auth::user()->bank->wasteProducts()
-                   ->where('waste_category_id', $validatedData['waste_category_id'])
-                   ->where('item_name', $validatedData['item_name'])
-                   ->where('id', '!=', $product->id) // Abaikan item yang sedang diedit
-                   ->exists();
+                      ->where('waste_category_id', $validatedData['waste_category_id'])
+                      ->where('item_name', $validatedData['item_name'])
+                      ->where('id', '!=', $product->id) // Abaikan item yang sedang diedit
+                      ->exists();
 
         if ($exists) {
             return back()->with('error', 'Kombinasi kategori dan nama item tersebut sudah ada.');
         }
 
-        // Update data produk.
         $product->update($validatedData);
         
         return redirect()->route('pengelola.harga.index')->with('success', 'Harga item sampah berhasil diperbarui.');
@@ -129,16 +126,17 @@ class WastePriceController extends Controller
 
     /**
      * Menghapus item sampah dari daftar harga.
+     * (Logika ini sudah benar)
      */
     public function destroy(BankWasteProduct $product)
     {
-        // [KEAMANAN] Pastikan produk ini milik bank sampah si pengelola.
-        if ($product->bank_id !== Auth::user()->bank_id) {
+        // [KEAMANAN YANG SUDAH BENAR]
+        if ($product->bank_id !== Auth::user()->bank->id) {
             abort(403, 'ANDA TIDAK MEMILIKI IZIN UNTUK MENGHAPUS DATA INI.');
         }
 
         try {
-            // Cek apakah produk ini pernah dipakai di transaksi (opsional tapi disarankan)
+            // Pengecekan ini bagus untuk integritas data
             if ($product->transactionDetails()->exists()) {
                  return back()->with('error', 'Gagal menghapus. Item ini sudah pernah digunakan dalam transaksi.');
             }

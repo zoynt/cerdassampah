@@ -7,6 +7,7 @@ use App\Models\RekeningBankSampahUser;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class RekeningBankSampahUserSeeder extends Seeder
 {
@@ -15,39 +16,43 @@ class RekeningBankSampahUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // PERBAIKAN 1: Praktik terbaik untuk membersihkan tabel sebelum seeding
-        // Nonaktifkan foreign key check untuk truncate
+        // 1. Bersihkan tabel rekening
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
         RekeningBankSampahUser::truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1;');
 
-        // PERBAIKAN 2: Ambil SEMUA user dan bank secara dinamis
-        // Kode tidak akan error meskipun ID user atau bank berubah
-        $users = User::all();
-        $banks = Bank::all();
+        // 2. Tentukan ID Bank Sampah Maju Jaya
+        $bankIdMajuJaya = 6;
 
-        // Lanjutkan hanya jika ada data user dan bank
-        if ($users->isEmpty() || $banks->isEmpty()) {
-            $this->command->info('Tidak ada data User atau Bank, seeder Rekening dilewati.');
-            return; // Hentikan seeder jika tidak ada data induk
+        // 3. Cari bank tersebut
+        $bankMajuJaya = Bank::find($bankIdMajuJaya);
+
+        // 4. Hentikan jika bank tidak ditemukan
+        if (!$bankMajuJaya) {
+            $this->command->error("Bank Sampah dengan ID {$bankIdMajuJaya} (Maju Jaya) tidak ditemukan.");
+            return;
         }
 
-        // PERBAIKAN 3: Buat rekening untuk setiap user di setiap bank secara otomatis
-        foreach ($users as $user) {
-            foreach ($banks as $bank) {
-                // Gunakan firstOrCreate untuk menghindari duplikasi jika seeder dijalankan lagi
-                RekeningBankSampahUser::firstOrCreate(
-                    [
-                        'user_id' => $user->id,
-                        'bank_id' => $bank->id,
-                    ],
-                    [
-                        // Nomor rekening dibuat unik dan lebih sulit ditebak
-                        'rekening_number' => 'REK' . $user->id . $bank->id . now()->timestamp,
-                        'saldo' => 0, // Saldo awal seharusnya selalu 0
-                    ]
-                );
-            }
-        }
+        $this->command->info("Membuat nasabah untuk Bank: {$bankMajuJaya->bank_name} (ID: {$bankIdMajuJaya})...");
+
+        // 5. Buat 15 User baru sebagai Nasabah KHUSUS untuk Bank Maju Jaya
+        User::factory(15)->create([
+            // ===== [PERBAIKAN] Hapus baris 'role' ini =====
+            // 'role' => 'user', // Ganti 'user' jika role nasabah Anda berbeda
+            // =============================================
+            'password' => Hash::make('password'), // Set password default
+        ])->each(function ($nasabah) use ($bankIdMajuJaya) {
+            // 6. Buatkan Rekening Bank Sampah untuk setiap nasabah baru ini
+            RekeningBankSampahUser::create([
+                'user_id' => $nasabah->id,
+                'bank_id' => $bankIdMajuJaya,
+                'rekening_number' => 'REK' . $nasabah->id . $bankIdMajuJaya . now()->timestamp . rand(10,99),
+                'saldo' => rand(5000, 250000),
+                'status' => 'Aktif',
+            ]);
+            $this->command->line(" > Nasabah '{$nasabah->name}' dibuat dan didaftarkan ke Bank ID {$bankIdMajuJaya}.");
+        });
+
+        $this->command->info("Seeder RekeningBankSampahUserSeeder selesai.");
     }
 }
