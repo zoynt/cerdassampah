@@ -1,7 +1,7 @@
 @extends('layouts.dashboard')
 
 {{-- Judul halaman dinamis --}}
-@section('title', 'Bank Sampah - ' . $bank->bank_name)
+@section('title', 'Item Bank Sampah - ' . $bank->bank_name)
 
 @push('head')
     <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
@@ -22,7 +22,7 @@
         // Tentukan apakah sudah terdaftar (punya rekening, status apapun)
         $sudahTerdaftar = $rekeningDiBankIni !== null;
         // Ambil status pendaftaran jika sudah terdaftar
-        $statusPendaftaran = $rekeningDiBankIni?->status; // Akan null jika belum terdaftar
+        $statusPendaftaran = $rekeningDiBankIni?->status; // Akan 'Aktif', 'Tidak Aktif', atau 'Pending'
     @endphp
     {{-- ====================================================== --}}
 
@@ -57,13 +57,13 @@
                     </div>
 
                     {{-- ====================================================== --}}
-                    {{-- Tombol Aksi di Header (Termasuk Tombol Daftar) --}}
+                    {{-- Tombol Aksi di Header (Perbaikan Logika Status) --}}
                     {{-- ====================================================== --}}
                     <div class="mt-4 flex flex-col sm:flex-row gap-3 items-center justify-center">
 
-                        {{-- Tombol "Ajukan Pendaftaran" (Hanya untuk User Login & Belum Terdaftar) --}}
-                        @auth {{-- Cek apakah user login --}}
-                            @if (!$sudahTerdaftar) {{-- Cek apakah BELUM punya rekening di bank ini --}}
+                        @auth
+                            @if (!$sudahTerdaftar)
+                                {{-- 1. Tombol Daftar (Jika sama sekali belum ada rekening) --}}
                                 <form action="{{ route('digital.nasabah.daftar', $bank->slug) }}" method="POST" class="w-full sm:w-auto">
                                     @csrf
                                     <button type="submit"
@@ -71,17 +71,24 @@
                                         Ajukan Pendaftaran Nasabah
                                     </button>
                                 </form>
-                            {{-- Tampilkan Status jika sudah mengajukan tapi belum 'Aktif' --}}
-                            @elseif ($statusPendaftaran == 'Tidak Aktif')
+
+                            @elseif ($statusPendaftaran == 'Pending')
+                                {{-- 2. Status Pending --}}
                                 <span class="w-full sm:w-auto px-5 py-2.5 bg-gray-400 text-white font-semibold text-sm rounded-lg backdrop-blur-sm shadow-md cursor-not-allowed">
                                     Menunggu Persetujuan
                                 </span>
-                            {{-- Jika sudah 'Aktif', tidak perlu tampilkan apa-apa di sini --}}
+
+                            @elseif ($statusPendaftaran == 'Tidak Aktif')
+                                {{-- 3. Status Tidak Aktif (Dinonaktifkan) --}}
+                                <span class="w-full sm:w-auto px-5 py-2.5 bg-red-600 text-white font-semibold text-sm rounded-lg backdrop-blur-sm shadow-md cursor-not-allowed">
+                                    Status nasabah Anda di nonaktifkan
+                                </span>
+
+                            {{-- 4. Jika status 'Aktif', tidak perlu tampilkan apa-apa di sini --}}
                             @endif
                         @endauth
-                        {{-- Jika tidak login (@guest), tombol tidak akan tampil --}}
 
-                        {{-- Tombol Lihat Info Bank Sampah (Tetap Ada) --}}
+                        {{-- Tombol Lihat Info Bank Sampah (Selalu Tampil) --}}
                         <a href="{{ route('bank-sampah.profil.show', $bank->slug) }}"
                            class="w-full sm:w-auto px-5 py-2.5 bg-white bg-opacity-20 text-white font-semibold text-sm rounded-lg backdrop-blur-sm hover:bg-opacity-30 transition-colors shadow-md">
                             Lihat Info Bank Sampah
@@ -97,27 +104,26 @@
             {{-- Filter --}}
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h2 class="text-lg md:text-xl font-semibold text-gray-700 mb-4">Item Sampah yang Diterima</h2>
-                {{-- Gunakan grid 2 kolom lagi --}}
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {{-- Input Pencarian Teks --}}
                     <div>
-                        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari Item</label> {{-- Tambah mb-1 --}}
+                        <label for="search" class="block text-sm font-medium text-gray-700 mb-1">Cari Item</label>
                         <div class="relative">
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"> <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path> </svg>
                             </div>
                             <input type="text" id="search" name="search" x-model.debounce.300ms="searchQuery"
                                    placeholder="Cari berdasarkan nama item..."
-                                   class="block w-full h-11 pl-10 pr-4 py-2.5 text-sm md:text-base text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"> {{-- Tambah h-11 --}}
+                                   class="block w-full h-11 pl-10 pr-4 py-2.5 text-sm md:text-base text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
                         </div>
                     </div>
 
                     {{-- Filter Kategori --}}
                     <div>
-                        <label for="category-filter" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label> {{-- Tambah mb-1 --}}
+                        <label for="category-filter" class="block text-sm font-medium text-gray-700 mb-1">Kategori</label>
                         <div class="relative">
                             <select id="category-filter" name="category-filter" x-model="selectedCategory"
-                                    class="appearance-none block w-full h-11 pl-3 pr-10 py-2.5 text-sm md:text-base bg-gray-50 border border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-lg"> {{-- Tambah h-11 --}}
+                                    class="appearance-none block w-full h-11 pl-3 pr-10 py-2.5 text-sm md:text-base bg-gray-50 border border-gray-300 focus:outline-none focus:ring-green-500 focus:border-green-500 rounded-lg">
                                 <option value="">Semua Kategori</option>
                                 <template x-for="category in categories" :key="category.id"> <option :value="category.id" x-text="category.name"></option> </template>
                             </select>
@@ -151,7 +157,7 @@
             </div>
 
             {{-- Tombol Load More --}}
-            <div x-show="visibleItemsCount < filteredProducts.length" class="mt-8 text-center">
+            <div x-show="visibleItemsCount < filteredProducts.length" class="mt-8 text-center" x-cloak>
                 <button @click="visibleItemsCount += itemsPerLoad"
                         class="px-6 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-800 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-75 transition-colors">
                     Tampilkan Lebih Banyak

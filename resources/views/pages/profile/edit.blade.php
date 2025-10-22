@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Profil')
+<link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
 
 @section('content')
 
@@ -30,7 +31,7 @@
 
     <div class="p-4 sm:p-6 lg:p-8 -mt-16 relative z-10">
         {{ Breadcrumbs::render() }}
-        <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8">
+        <div class="bg-white rounded-xl shadow-lg p-6 sm:p-8 mt-8">
             <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data">
                 @csrf
                 @method('patch')

@@ -41,6 +41,7 @@
 
 @section('content')
 <div class="space-y-6">
+    {{ Breadcrumbs::render('pengelola.bank-profil.edit') }}
     <form action="{{ route('pengelola.bank-profil.update') }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT') 

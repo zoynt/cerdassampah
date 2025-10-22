@@ -1,28 +1,45 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Profil Bank Sampah')
-<link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+
+{{-- Push Favicon ke Head --}}
+@push('head')
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+@endpush
 
 @section('content')
     <div class="space-y-6">
-        {{-- [PERBAIKAN] Mengganti 'justify-between' menjadi 'justify-end' --}}
-        <div class="flex flex-col sm:flex-row justify-end sm:items-center gap-4">
+        
+        {{-- ====================================================== --}}
+        {{-- [PERBAIKAN] Layout Header Halaman (Breadcrumb & Tombol) --}}
+        {{-- ====================================================== --}}
+        {{-- Gunakan flex justify-between untuk memisahkan breadcrumb dan tombol --}}
+        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
             
-            {{-- Judul h1 dikomentari agar sama dengan layout marketplace --}}
-            {{-- <h1 class="text-3xl font-bold text-gray-800">{{ $bank->bank_name }}</h1> --}}
-            
-            {{-- Tombol Edit (Hanya untuk pemilik) --}}
-            @if (Auth::check() && Auth::id() === $bank->user_id)
-                <a href="{{ route('pengelola.bank-profil.edit') }}"
-                   class="w-full sm:w-auto px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 text-sm flex items-center justify-center gap-2 transition-colors">
-                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path
-                            d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
-                    </svg>
-                    <span>Edit Profil</span>
-                </a>
-            @endif
+            {{-- Bagian Kiri: Breadcrumb --}}
+            <div>
+                {{-- Panggil breadcrumb di sini --}}
+                {{ Breadcrumbs::render('bank-sampah.profil.show', $bank) }}
+            </div>
+
+            {{-- Bagian Kanan: Tombol Edit --}}
+            <div>
+                @if (Auth::check() && Auth::id() === $bank->user_id)
+                    <a href="{{ route('pengelola.bank-profil.edit') }}"
+                       class="w-full sm:w-auto px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 text-sm flex items-center justify-center gap-2 transition-colors">
+                        <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                            <path
+                                d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+                        </svg>
+                        <span>Edit Profil</span>
+                    </a>
+                @endif
+            </div>
         </div>
+        {{-- ====================================================== --}}
+        {{-- Akhir Perbaikan Layout --}}
+        {{-- ====================================================== --}}
+
 
         <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
             {{-- Banner --}}
@@ -37,7 +54,7 @@
                 @endif
             </div>
             
-            {{-- Padding disamakan menjadi p-6 --}}
+            {{-- Konten Profil --}}
             <div class="p-6 space-y-6">
                 <div class="flex items-center gap-4">
                     <h2 class="text-2xl font-bold text-gray-900">{{ $bank->bank_name }}</h2>

@@ -1,6 +1,6 @@
 @unless ($breadcrumbs->isEmpty())
 
-    <nav aria-label="Breadcrumb" class="inline-block bg-white border border-gray-200 shadow-sm rounded-xl p-3 mb-6">
+    <nav aria-label="Breadcrumb" class="inline-block bg-white border border-gray-200 shadow-sm rounded-xl p-3">
         <ol class="flex items-center space-x-1.5 text-sm">
 
             @foreach ($breadcrumbs as $breadcrumb)
