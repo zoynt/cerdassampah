@@ -48,7 +48,7 @@
             transform: rotate(180deg);
         }
 
-        /* --- Animasi untuk Ikon Field Status Awal (jika menggunakan dropdown biasa) --- */
+        /* --- Animasi untuk Ikon Field Status Awal (Dropdown biasa) --- */
         .select-wrapper svg {
             transition: transform 0.2s ease-in-out;
         }
@@ -83,7 +83,7 @@
     </div>
     
     {{-- Form Accordion Tambah Item Sampah --}}
-    <div x-data="{ isOpen: false }" class="bg-white rounded-xl shadow-lg">
+    <div x-data="{ isOpen: {{ $errors->any() ? 'true' : 'false' }} }" class="bg-white rounded-xl shadow-lg">
         <div @click="isOpen = !isOpen" class="p-6 flex justify-between items-center cursor-pointer hover:bg-gray-100" :class="{ 'border-b': isOpen, 'rounded-xl': !isOpen, 'rounded-t-xl': isOpen }">
             <h2 class="text-lg font-bold text-gray-800">Tambah Item Sampah Baru</h2>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-400 transition-transform duration-300" x-bind:class="{ 'rotate-180': isOpen }" viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" /></svg>
@@ -98,7 +98,7 @@
                         <div>
                             <label for="category-select" class="block mb-2 text-sm font-medium text-gray-700">Kategori Sampah</label>
                             <select id="category-select" name="waste_category_id" required style="width: 100%;">
-                                <option></option>
+                                <option></option> {{-- Option kosong untuk placeholder Select2 --}}
                                 @foreach($categories as $category)
                                     <option value="{{ $category->id }}" {{ old('waste_category_id') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
                                 @endforeach
@@ -213,7 +213,7 @@
                                 <input type="text" id="edit-item-name-{{ $product->id }}" name="item_name" value="{{ $product->item_name }}" class="w-full h-11 px-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-green-500 focus:border-green-500" required>
                             </div>
                             <div>
-                                <label class="block mb-1 text-sm font-medium text-gray-700">Harga Baru /kg</label>
+                                <label for="price-edit-display-{{$product->id}}" class="block mb-1 text-sm font-medium text-gray-700">Harga Baru /kg</label>
                                 <div class="relative">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none"><span class="text-gray-500">Rp</span></div>
                                     <input type="text" id="price-edit-display-{{$product->id}}" data-target="price-edit-value-{{$product->id}}" value="{{ (int) $product->price_per_kg }}" class="price-input w-full h-11 pl-10 pr-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50" required>
@@ -221,13 +221,13 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block mb-1 text-sm font-medium text-gray-700">Deskripsi</label>
-                                <input type="text" name="description" value="{{ $product->description }}" class="w-full h-11 px-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50">
+                                <label for="edit-description-{{$product->id}}" class="block mb-1 text-sm font-medium text-gray-700">Deskripsi</label>
+                                <input type="text" id="edit-description-{{$product->id}}" name="description" value="{{ $product->description }}" class="w-full h-11 px-4 text-gray-900 border border-gray-300 rounded-lg bg-gray-50">
                             </div>
                             <div>
-                                <label class="block mb-1 text-sm font-medium text-gray-700">Status</label>
+                                <label for="edit-status-{{$product->id}}" class="block mb-1 text-sm font-medium text-gray-700">Status</label>
                                 <div class="relative">
-                                    <select name="status" class="w-full h-11 pl-4 pr-10 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 appearance-none" required>
+                                    <select id="edit-status-{{$product->id}}" name="status" class="w-full h-11 pl-4 pr-10 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 appearance-none" required>
                                         <option value="Aktif" @selected($product->status == 'Aktif')>Aktif</option>
                                         <option value="Tidak Aktif" @selected($product->status == 'Tidak Aktif')>Tidak Aktif</option>
                                     </select>
@@ -254,7 +254,7 @@
 {{-- Memuat jQuery & Select2 --}}
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> {{-- Pastikan SweetAlert dimuat --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> {{-- Memuat SweetAlert --}}
 
 <script>
     $(document).ready(function() {
@@ -278,10 +278,16 @@
         // --- Fungsi untuk memformat input harga ---
         function setupPriceInput(displayInput) {
             if (!displayInput) return;
-            // Dapatkan ID input tersembunyi dari atribut data-target atau ID input display
-            const valueInputId = displayInput.dataset.target || displayInput.id.replace('-display-', '-value-'); // Sesuaikan ID
+            
+            // [PERBAIKAN] Logika untuk menemukan input 'value' yang benar
+            const valueInputId = displayInput.dataset.target || displayInput.id.replace('_display', '_value').replace('-display-', '-value-');
             const valueInput = document.getElementById(valueInputId);
-            if (!valueInput) { console.error('Value input not found for:', displayInput.id); return; }
+            
+            if (!valueInput) { 
+                console.error('Value input not found for:', displayInput.id, '-> Tried:', valueInputId); 
+                return; 
+            }
+            
             displayInput.addEventListener('input', function(e) {
                 let rawValue = e.target.value.replace(/[^0-9]/g, '');
                 valueInput.value = rawValue;
@@ -302,17 +308,15 @@
             viewMode.classList.toggle('hidden');
             editMode.classList.toggle('hidden');
 
-            // Inisialisasi Select2 HANYA saat form edit ditampilkan
             if (!editMode.classList.contains('hidden')) {
                 const editSelect = $(`#edit-category-${id}`);
                 if (!editSelect.hasClass("select2-hidden-accessible")) {
                     editSelect.select2({
                         placeholder: 'Pilih Kategori...',
-                        dropdownParent: $('body') // Atasi masalah z-index
+                        dropdownParent: $('body')
                     });
                 }
             } else {
-                 // Hancurkan Select2 saat form edit disembunyikan
                  const editSelect = $(`#edit-category-${id}`);
                  if (editSelect.hasClass("select2-hidden-accessible")) {
                     editSelect.select2('destroy');

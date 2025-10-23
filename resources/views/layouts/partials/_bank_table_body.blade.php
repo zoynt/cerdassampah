@@ -13,12 +13,9 @@
         <td class="px-6 py-4">{{ $schedule->district }}</td>
         
         <td class="px-6 py-4">
-            @php
-                // Dekode string JSON secara manual
-                $days = json_decode($schedule->operational_days);
-            @endphp
-            @if(is_array($days))
-                {{ implode(', ', $days) }}
+            @if(is_array($schedule->operational_days))
+                {{-- Langsung implode, karena $schedule->operational_days SUDAH array --}}
+                {{ implode(', ', $schedule->operational_days) }}
             @endif
         </td>
         

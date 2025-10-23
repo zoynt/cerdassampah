@@ -49,7 +49,7 @@
                     'reportOpen' => request()->routeIs(['lapor.index', 'laporan.history']),
                     'educationOpen' => request()->routeIs(['game-pilah-sampah', 'scan-user']),
                     'ruteOpen' => request()->routeIs(['tps.index', 'surung-sintak.index']),
-                    'digitalOpen' => request()->routeIs(['digital.informasi', 'banksampah-user', 'digital.harga', 'digital.riwayat', 'digital.banksampah.show', 'digital.tarik-saldo.form', 'pengelola.nasabah.index', 'pengelola.nasabah.show', 'pengelola.setoran.create', 'pengelola.harga.index', 'pengelola.riwayat.index', 'pengelola.pembayaran.index', 'pengelola.riwayat.show', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show', 'pengelola.bank-profil.edit', 'bank-sampah.show']),
+                    'digitalOpen' => request()->routeIs(['digital.informasi', 'banksampah-user', 'digital.harga', 'digital.riwayat', 'digital.banksampah.show', 'digital.tarik-saldo.form', 'pengelola.nasabah.index', 'pengelola.nasabah.show', 'pengelola.setoran.create', 'pengelola.harga.index', 'pengelola.riwayat.index', 'pengelola.pembayaran.index', 'pengelola.riwayat.show', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show', 'pengelola.bank-profil.edit', 'bank-sampah.show', 'bank-sampah.item.index', 'bank-sampah.profil.show']),
                     'marketOpen' => request()->routeIs(['store.profile.show', 'store.profile.edit', 'marketplace.history', 'marketplace.products.all','marketplace.products.show', 'marketplace.checkout', 'marketplace.purchase.detail','marketplace.invoice.show','marketplace.products.list','marketplace.riwayat', 'store.profile.create','marketplace.products.create', 'marketplace.products.edit','marketplace.store.show','mystore.dashboard','marketplace.rating.show']),                ];
             @endphp
 
@@ -213,24 +213,9 @@
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
                             Bank Sampah
                         </a>
-                        <a href="{{ route('digital.informasi') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('digital.informasi', 'digital.harga', 'digital.tarik-saldo.form'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('digital.informasi', 'digital.harga', 'digital.tarik-saldo.form')])>
-                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-                            Informasi Akun
-                        </a>
-                        <a href="{{ route('digital.riwayat') }}" @class([
-                            'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
-                            'bg-green-100 text-green-800' => request()->routeIs('digital.riwayat'),
-                            'text-gray-500 hover:bg-gray-200' => !request()->routeIs('digital.riwayat'),
-                        ])>
-                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none"
-                                viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round"
-                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                            </svg>
-                            Riwayat Transaksi
-                        </a>
-                        @role('banker')
-                        <a href="{{ optional(Auth::user()->bank)->slug ? route('bank-sampah.show', Auth::user()->bank->slug) : route('pengelola.bank-profil.edit') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('pengelola.bank-profil.edit', 'bank-sampah.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('pengelola.bank-profil.edit', 'bank-sampah.show')])>
+                        @if (Auth::check() && Auth::user()->hasRole('banker'))
+                        @php $kelolaRoute = Auth::user()->bank ? route('pengelola.bank-profil.edit') : route('pengelola.bank-profil.edit'); @endphp
+                        <a href="{{ optional(Auth::user()->bank)->slug ? route('bank-sampah.item.index', Auth::user()->bank->slug) : route('pengelola.bank-profil.edit') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('bank-sampah.item.index', 'pengelola.bank-profil.edit', 'bank-sampah.show', 'bank-sampah.profil.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('bank-sampah.item.index', 'pengelola.bank-profil.edit', 'bank-sampah.show', 'bank-sampah.profil.show')])>
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M236,96a12,12,0,0,0-.44-3.3L221.2,42.51A20.08,20.08,0,0,0,202,28H54A20.08,20.08,0,0,0,34.8,42.51L20.46,92.7A12,12,0,0,0,20,96h0v16a43.94,43.94,0,0,0,16,33.92V216a12,12,0,0,0,12,12H208a12,12,0,0,0,12-12V145.92A43.94,43.94,0,0,0,236,112V96ZM57.05,52H199l9.14,32H47.91Zm91,56v4a20,20,0,0,1-40,0v-4ZM53,128.71A20,20,0,0,1,44,112v-4H84v4a20,20,0,0,1-20,20,19.76,19.76,0,0,1-9.07-2.2A11.54,11.54,0,0,0,53,128.71ZM196,204H60V155.81c1.32.12,2.65.19,4,.19a43.86,43.86,0,0,0,32-13.85,43.89,43.89,0,0,0,64,0A43.86,43.86,0,0,0,192,156c1.35,0,2.68-.07,4-.19Zm16-92a20,20,0,0,1-9,16.71,11.66,11.66,0,0,0-1.88,1.09A20,20,0,0,1,172,112v-4h40Z"></path></svg>
                             Kelola Bank Sampah
                         </a>
@@ -242,18 +227,35 @@
                             <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
                             fill="currentColor" viewBox="0 0 24 24" >
                             <path d="M21 8H7c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h14c.55 0 1-.45 1-1V9c0-.55-.45-1-1-1m-1 8c-1.1 0-2 .9-2 2h-8c0-1.1-.9-2-2-2v-4c1.1 0 2-.9 2-2h8c0 1.1.9 2 2 2z"></path><path d="M18 4H3c-.55 0-1 .45-1 1v11h2V6h14zM14 12a2 2 0 1 0 0 4 2 2 0 1 0 0-4"></path>
-                            </svg>
-                            Harga Sampah
-                        </a>
-                        <a href="{{ route('pengelola.riwayat.index', 'pengelola.setoran.create', 'pengelola.riwayat.show') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('pengelola.riwayat.index', 'pengelola.setoran.create', 'pengelola.riwayat.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('pengelola.riwayat.index', 'pengelola.setoran.create', 'pengelola.riwayat.show')])>
-                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                            Riwayat Setoran
-                        </a>
-                        <a href="{{ route('pengelola.pembayaran.index', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('pengelola.pembayaran.index', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('pengelola.pembayaran.index', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show')])>
-                            <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
-                            Riwayat Pembayaran
-                        </a>
-                        @endrole
+                        </svg>
+                        Harga Sampah
+                    </a>
+                    <a href="{{ route('pengelola.riwayat.index') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs(['pengelola.riwayat.index', 'pengelola.setoran.create', 'pengelola.riwayat.show']), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs(['pengelola.riwayat.index', 'pengelola.setoran.create', 'pengelola.riwayat.show'])])>
+                        <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        Riwayat Setoran
+                    </a>
+                    <a href="{{ route('pengelola.pembayaran.index') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs(['pengelola.pembayaran.index', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show']), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs(['pengelola.pembayaran.index', 'pengelola.pembayaran.create', 'pengelola.pembayaran.show'])])>
+                        <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>
+                        Riwayat Pembayaran
+                    </a>
+                    @else
+                    <a href="{{ route('digital.informasi') }}" @class(['flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg', 'bg-green-100 text-green-800' => request()->routeIs('digital.informasi', 'digital.harga', 'digital.tarik-saldo.form'), 'text-gray-500 hover:bg-gray-200' => !request()->routeIs('digital.informasi', 'digital.harga', 'digital.tarik-saldo.form')])>
+                        <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                        Informasi Akun
+                    </a>
+                    <a href="{{ route('digital.riwayat') }}" @class([
+                        'flex items-center w-full py-2 pl-8 pr-4 text-sm font-medium transition-colors duration-200 rounded-lg',
+                        'bg-green-100 text-green-800' => request()->routeIs('digital.riwayat'),
+                        'text-gray-500 hover:bg-gray-200' => !request()->routeIs('digital.riwayat'),
+                    ])>
+                        <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        Riwayat Transaksi
+                    </a>
+                    @endif
                     </div>
                 </div>
 

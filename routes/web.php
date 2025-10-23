@@ -115,13 +115,23 @@ Route::middleware(['auth'])->group(function () {
     ->name('pengelola.pembayaran.bulkUpdate');
     Route::post('/pengelola/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
     ->name('pengelola.pembayaran.bulkUpdate');
+    Route::post('/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+     ->name('pengelola.pembayaran.bulkUpdate');
+     Route::post('/bank-sampah/{bank:slug}/daftar', [BankSampahUserController::class, 'daftarNasabah'])
+        ->name('digital.nasabah.daftar');
 
     //
     Route::get('/bank-sampah/profil/{bank:slug}', [BankProfileController::class, 'show'])->name('bank-sampah.profil.show');
     Route::get('/bank-sampah/item/{bank:slug}', [BankProfileController::class, 'indexItems'])->name('bank-sampah.item.index');
-    Route::middleware(['auth', 'role:pengelola'])->prefix('pengelola')->name('pengelola.')->group(function () {
+    Route::middleware(['auth', 'role:banker'])->prefix('pengelola')->name('pengelola.')->group(function () {
         Route::get('/bank-profil', [BankProfileController::class, 'edit'])->name('bank-profil.edit');
         Route::put('/bank-profil', [BankProfileController::class, 'update'])->name('bank-profil.update');
+        Route::post('/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+        ->name('pengelola.pembayaran.bulkUpdate');
+        Route::post('/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+     ->name('pengelola.pembayaran.bulkUpdate');
+        Route::post('/data-nasabah/bulk-update-status', [RekeningBankSampahUserController::class, 'bulkUpdateStatusNasabah'])
+        ->name('nasabah.bulkUpdateStatus');
     });
 
     // Marketplace

@@ -70,7 +70,7 @@ class BankProfileController extends Controller
         if (!$bank) {
             $bank = new Bank(); // Siapkan untuk membuat bank baru
         }
-        return view('pages.banksampah.pengelola.profil-edit', compact('bank'));
+        return view('pages.banksampah.pengelola.profil.profil-edit', compact('bank'));
     }
 
     /**
@@ -115,6 +115,5 @@ class BankProfileController extends Controller
         $bank->save();
 
         // Redirect ke halaman profil publik yang baru saja diupdate
-        return redirect()->route('bank-sampah.show', $bank->slug)->with('success', 'Profil bank sampah berhasil diperbarui!');
-    }
+        return redirect()->route('bank-sampah.profil.show', $bank->slug)->with('success', 'Profil bank sampah berhasil diperbarui!');    }
 }

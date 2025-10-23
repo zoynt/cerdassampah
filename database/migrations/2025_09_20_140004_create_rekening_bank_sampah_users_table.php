@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): void
+    public function up(): voidbank
     {
         Schema::create('rekening_bank_sampah_users', function (Blueprint $table) {
             $table->id();
@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('bank_id')->constrained('banks')->onDelete('cascade');
             $table->string('rekening_number');
             $table->decimal('saldo', 15, 2)->default(0.00);
-            $table->string('status')->default('Aktif');
+            $table->string('status')->default('Pending');
             $table->timestamps();
         });
     }

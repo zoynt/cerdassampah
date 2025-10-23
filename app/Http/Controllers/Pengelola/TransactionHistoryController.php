@@ -6,30 +6,37 @@ use App\Http\Controllers\Controller;
 use App\Models\BankTransaction;
 use App\Models\BankTransactionDetail;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth; // Pastikan use Auth ada
 
 class TransactionHistoryController extends Controller
 {
     /**
-     * Menampilkan halaman riwayat setoran.
+     * Menampilkan halaman riwayat setoran HANYA untuk bank yang dikelola.
      */
     public function index(Request $request)
     {
+        // 1. Dapatkan bank sampah milik pengelola (banker) yang login
+        $bank = Auth::user()->bank;
+
+        if (!$bank) {
+            return redirect()->route('pengelola.bank-profil.edit')
+                ->with('warning', 'Anda harus melengkapi profil bank sampah Anda terlebih dahulu.');
+        }
+        $bankId = $bank->id;
+
         // =======================================================================
-        // Logika untuk menghitung data kartu ringkasan
+        // Logika untuk menghitung data kartu ringkasan (TETAP SAMA, SUDAH BENAR)
         // =======================================================================
+        $baseTransactionQuery = BankTransaction::where('transaction_amount', '>', 0)
+                                ->whereHas('rekening', function ($query) use ($bankId) {
+                                    $query->where('bank_id', $bankId);
+                                });
+        $totalPemasukan = $baseTransactionQuery->clone()->sum('transaction_amount');
+        $setoranHariIni = $baseTransactionQuery->clone()->whereDate('created_at', today())->count();
+        $sampahTerkumpulKg = BankTransactionDetail::whereHas('transaction.rekening', function ($query) use ($bankId) {
+            $query->where('bank_id', $bankId);
+        })->sum('weight_kg');
 
-        // 1. Hitung total nilai semua setoran (pemasukan)
-        $totalPemasukan = BankTransaction::where('transaction_amount', '>', 0)->sum('transaction_amount');
-
-        // 2. Hitung jumlah transaksi setoran yang terjadi hari ini
-        $setoranHariIni = BankTransaction::whereDate('created_at', today())
-            ->where('transaction_amount', '>', 0)
-            ->count();
-
-        // 3. Hitung total berat semua sampah yang pernah terkumpul
-        $sampahTerkumpulKg = BankTransactionDetail::sum('weight_kg');
-
-        // 4. Format angka total sampah agar mudah dibaca (menjadi Ton jika >= 1000 kg)
         if ($sampahTerkumpulKg >= 1000) {
             $formattedSampahValue = number_format($sampahTerkumpulKg / 1000, 1, ',', '.');
             $formattedSampahUnit = 'Ton';
@@ -38,17 +45,27 @@ class TransactionHistoryController extends Controller
             $formattedSampahUnit = 'Kg';
         }
 
+        // =======================================================================
+        // Query utama untuk tabel riwayat transaksi (Mengambil Detail)
+        // =======================================================================
 
-        // =======================================================================
-        // Query utama untuk tabel riwayat transaksi
-        // =======================================================================
-        
         $query = BankTransactionDetail::query()->with([
-            'transaction.rekening.user', 
+            'transaction',
+            'transaction.rekening.user',
             'wasteProduct.category'
         ]);
 
-        // Filter berdasarkan pencarian nama atau username
+        // Filter utama: HANYA detail transaksi dari bank ini
+        $query->whereHas('transaction.rekening', function ($q) use ($bankId) {
+            $q->where('bank_id', $bankId);
+        });
+
+        // Filter hanya untuk detail dari transaksi setoran (amount > 0)
+        $query->whereHas('transaction', function($transactionQuery){
+            $transactionQuery->where('transaction_amount', '>', 0);
+        });
+
+        // Filter berdasarkan pencarian nama atau username (melalui relasi)
         $query->when($request->input('search'), function ($q, $search) {
             $q->whereHas('transaction.rekening.user', function ($userQuery) use ($search) {
                 $userQuery->where('name', 'like', "%{$search}%")
@@ -56,13 +73,18 @@ class TransactionHistoryController extends Controller
             });
         });
 
-        // Hanya tampilkan transaksi setoran (amount > 0)
-        $query->whereHas('transaction', function($transactionQuery){
-            $transactionQuery->where('transaction_amount', '>', 0);
-        });
+        // ======================================================
+        // [PERBAIKAN] Mengganti nama kolom di join clause
+        // ======================================================
+        $query->select('bank_transaction_details.*')
+              // Menggunakan 'transaction_id' sebagai foreign key
+              ->join('bank_transactions', 'bank_transaction_details.transaction_id', '=', 'bank_transactions.id')
+              ->orderBy('bank_transactions.created_at', 'desc');
+        // ======================================================
+        // Akhir Perbaikan
+        // ======================================================
 
-        // Ambil data terbaru dan paginasi
-        $transactions = $query->latest()->paginate(10);
+        $transactions = $query->paginate(10);
 
         // Kirim semua data yang dibutuhkan ke view
         return view('pages.banksampah.pengelola.riwayat.index', compact(
@@ -74,30 +96,32 @@ class TransactionHistoryController extends Controller
         ));
     }
 
+    // --- Fungsi show, cetakStruk, destroy TETAP SAMA ---
+
     public function show(BankTransaction $transaction)
     {
-        // Eager load semua relasi yang dibutuhkan untuk halaman detail secara efisien.
+        if ($transaction->rekening->bank_id !== Auth::user()->bank->id) {
+            abort(403, 'Anda tidak memiliki izin untuk melihat transaksi ini.');
+        }
         $transaction->load(['details.wasteProduct', 'rekening.user']);
-
-        // Kirim objek transaksi UTAMA ke view.
         return view('pages.banksampah.pengelola.riwayat.show', compact('transaction'));
     }
 
     public function cetakStruk(BankTransaction $transaction)
     {
+        if ($transaction->rekening->bank_id !== Auth::user()->bank->id) {
+            abort(403, 'Anda tidak memiliki izin untuk mencetak struk ini.');
+        }
         $transaction->load(['details.wasteProduct', 'rekening.user']);
         return view('pages.banksampah.pengelola.riwayat.struk', compact('transaction'));
     }
 
     public function destroy(BankTransaction $transaction)
     {
-        // Anda bisa menambahkan otorisasi di sini jika perlu
-        // Contoh: $this->authorize('delete', $transaction);
-
-        // Hapus transaksi dari database
+        if ($transaction->rekening->bank_id !== Auth::user()->bank->id) {
+            abort(403, 'Anda tidak memiliki izin untuk menghapus transaksi ini.');
+        }
         $transaction->delete();
-
-        // Arahkan kembali ke halaman daftar riwayat dengan pesan sukses
         return redirect()->route('pengelola.riwayat.index')->with('success', 'Transaksi berhasil dihapus.');
     }
 }

@@ -1,6 +1,7 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Home')
+<link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
 
 @section('content')
 

@@ -45,6 +45,7 @@ class DatabaseSeeder extends Seeder
             BankTransactionSeeder::class,        // Bergantung pada RekeningBankSampahUser
 
             BankTransactionDetailSeeder::class,  // Bergantung pada BankTransaction dan BankWasteProduct
+            TransaksiBankMajuJayaSeeder::class,
         ]);
 
             // 2. Data Relasi (Bergantung pada data master di atas
