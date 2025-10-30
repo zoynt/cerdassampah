@@ -53,6 +53,16 @@ Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
 Route::get('/produk/{store:slug}/{product_slug}', [ProductController::class, 'showguest'])->name('guest.product.show');
 // Rute untuk halaman semua produk non-login (sudah ada)
 Route::get('/store', [ProductController::class, 'guest'])->name('store-user'); 
+Route::get('/smartcity', function () {
+    return view('pages.smartcity.index');
+})->name('smartcity.index'); 
+Route::get('/smartcity#smart', function () {
+    return view('pages.smartcity.index');
+})->name('smartcity.index.smart'); 
+Route::get('/smartcity-informasi', function () {
+    return view('pages.smartcity-informasi');
+})->name('smartcity.informasi');
+
 
 Route::middleware(['auth'])->group(function () {
     // Dashboard & menu

@@ -62,7 +62,7 @@
     @include('layouts.partials.footer')
     
     {{-- [TAMBAHKAN] Tombol Scroll-Up & Scriptnya dari layout landing --}}
-    <button id="scrollUpBtn" class="fixed bottom-4 right-4 bg-green-500 border-2 border-orange-500 text-white p-4 rounded-md shadow-lg hover:bg-orange-500 hover:text-white transition-opacity duration-300 opacity-0" style="z-index: 99999; opacity: 0; left: auto; bottom: 40px; right: 40px;">
+    <button id="scrollUpBtn" class="fixed bottom-4 right-4 bg-green-500 border-2 text-white p-4 rounded-md shadow-lg hover:bg-orange-500 hover:text-white transition-opacity duration-300 opacity-0" style="z-index: 99999; opacity: 0; left: auto; bottom: 40px; right: 40px;">
         <i class="fa fa-arrow-up"></i>
     </button>
 
