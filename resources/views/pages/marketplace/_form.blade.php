@@ -48,7 +48,7 @@
             <label for="nama" class="block mb-2 text-sm font-medium text-gray-700">Nama Produk</label>
             <input type="text" name="nama" id="nama" value="{{ old('nama', $product->name ?? '') }}"
                 placeholder="Masukkan nama produk"
-                class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                class="block w-full px-4 py-3 text-gray-700 bg-gray-50 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 capitalize"
                 required>
         </div>
 

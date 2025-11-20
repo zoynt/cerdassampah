@@ -1,6 +1,4 @@
 @extends('layouts.dashboard')
-
-{{-- Menggunakan variabel $store --}}
 @section('title', $store->exists ? 'Edit Profil Toko' : 'Buat Profil Toko')
 
 @push('styles')
@@ -70,76 +68,120 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
                             <label for="name" class="form-label">Nama Toko</label>
-                            <input type="text" id="name" name="name" value="{{ old('name', $store->name) }}"
-                                class="input-field" required>
+                            <input type="text" id="name" name="name" placeholder="Masukkan nama toko" value="{{ old('name', $store->name) }}"
+                                class="input-field capitalize" required>
                         </div>
                         <div x-data="{
                             open: false,
                             hari: ['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'],
-                            selectedHari: {{ json_encode(old('operational_days', $store->operational_days ?? [])) }}
-                        }">
-                        <label class="form-label">Hari Operasional</label>
-                        <template x-for="day in selectedHari">
-                            <input type="hidden" name="operational_days[]" :value="day">
-                        </template>
-                        <div class="relative">
-                            <button type="button" @click="open = !open" class="input-field text-left w-full flex justify-between items-center">
-                                <span x-show="selectedHari.length === 0" class="text-gray-500">Pilih hari...</span>
-                                <span x-show="selectedHari.length > 0" x-text="selectedHari.join(', ')" class="truncate"></span>
-                                {{-- Ikon Chevron Baru dengan Animasi --}}
-                                {{-- <svg class="w-5 h-5 text-gray-400 transform transition-transform duration-200" :class="{ 'rotate-180': open }" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg> --}}
-                            </button>
-                            {{-- Dropdown dengan z-index tinggi --}}
-                            <div x-show="open" @click.away="open = false" x-transition class="absolute z-30 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                                <template x-for="day in hari" :key="day">
-                                    <div class="flex items-center px-4 py-2 hover:bg-gray-100">
-                                        <input type="checkbox" :id="day" :value="day" x-model="selectedHari" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
-                                        <label :for="day" class="ml-3 text-sm text-gray-700" x-text="day"></label>
+                            selectedHari: {{ json_encode(old('operational_days', $store->operational_days ?? [])) }},
+                            selectAllDays: false,
+                            init() {
+                                this.selectAllDays = this.selectedHari.length === this.hari.length;
+                                this.$watch('selectAllDays', value => {
+                                    this.selectedHari = value ? [...this.hari] : [];
+                                });
+                                this.$watch('selectedHari', value => {
+                                    if (value.length < this.hari.length) {
+                                        this.selectAllDays = false;
+                                    } else {
+                                        this.selectAllDays = true;
+                                    }
+                                });
+                            }
+                        }" x-init="init()">
+                            <label class="form-label">Hari Operasional</label>
+
+                            <template x-for="day in selectedHari">
+                                <input type="hidden" name="operational_days[]" :value="day">
+                            </template>
+
+                            <div class="relative">
+                                <button type="button" @click="open = !open"
+                                    class="input-field text-left w-full flex justify-between items-center">
+                                    <span x-show="selectedHari.length === 0" class="text-gray-500">Pilih hari...</span>
+                                    <span x-show="selectedHari.length > 0" x-text="selectedHari.join(', ')"
+                                        class="truncate"></span>
+                                </button>
+
+                                <div x-show="open" @click.away="open = false" x-transition
+                                    class="absolute z-30 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-60 overflow-y-auto">
+
+                                    <div class="px-4 py-2 border-b hover:bg-gray-100">
+                                        <div class="flex items-center">
+                                            <input type="checkbox" id="selectAll" x-model="selectAllDays"
+                                                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                                            <label for="selectAll" class="ml-3 text-sm text-gray-700 font-semibold">Buka
+                                                Setiap Hari</label>
+                                        </div>
                                     </div>
-                                </template>
+
+                                    <template x-for="day in hari" :key="day">
+                                        <div class="flex items-center px-4 py-2 hover:bg-gray-100">
+                                            <input type="checkbox" :id="day" :value="day"
+                                                x-model="selectedHari"
+                                                class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                                            <label :for="day" class="ml-3 text-sm text-gray-700"
+                                                x-text="day"></label>
+                                        </div>
+                                    </template>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                    {{-- Kode Baru dengan Kotak Pencarian --}}
+                    {{-- Kotak Pencarian --}}
                     <div x-data="mapSearch()">
-                    <div>
-                        <label for="map-search" class="form-label">Cari Alamat Toko di Peta</label>
-                        <div class="relative">
-                            {{-- Kotak Pencarian menjadi input utama untuk alamat --}}
-                            <input type="text" id="map-search" name="address" x-model.debounce.500ms="searchQuery" 
-                                   placeholder="Ketik nama jalan, tempat, atau komplek..." class="input-field">
-                            
-                            {{-- Daftar Hasil Pencarian --}}
-                            <div x-show="results.length > 0" x-transition class="absolute z-20 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
-                                <template x-for="result in results" :key="result.place_id">
-                                    <div @click="selectLocation(result)" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer" x-text="result.display_name"></div>
-                                </template>
-                            </div>
-                            <div x-show="loading" class="absolute inset-y-0 right-0 pr-3 flex items-center">
-                                <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-                            </div>
-                        </div>
-                    </div>
+                        <div>
+                            <label for="map-search" class="form-label">Cari Alamat Toko di Peta</label>
+                            <div class="relative">
+                                {{-- Kotak Pencarian menjadi input utama untuk alamat --}}
+                                <input type="text" id="map-search" name="address" x-model.debounce.500ms="searchQuery"
+                                    placeholder="Ketik nama jalan, tempat, atau komplek..." class="input-field">
 
-                    <div class="mt-4">
-                        <input type="hidden" name="latitude" id="latitude" value="{{ old('latitude', $store->latitude) }}">
-                        <input type="hidden" name="longitude" id="longitude" value="{{ old('longitude', $store->longitude) }}">
-                        <div id="map" class="w-full rounded-lg"></div>
-                    </div>
-                    
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
-                        <div>
-                            <label for="district" class="form-label">Kecamatan</label>
-                            <input type="text" id="district" name="district" value="{{ old('district', $store->district) }}" class="input-field">
+                                {{-- Daftar Hasil Pencarian --}}
+                                <div x-show="results.length > 0" x-transition
+                                    class="absolute z-20 w-full mt-1 bg-white border rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                    <template x-for="result in results" :key="result.place_id">
+                                        <div @click="selectLocation(result)"
+                                            class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                                            x-text="result.display_name"></div>
+                                    </template>
+                                </div>
+                                <div x-show="loading" class="absolute inset-y-0 right-0 pr-3 flex items-center">
+                                    <svg class="animate-spin h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                                        fill="none" viewBox="0 0 24 24">
+                                        <circle class="opacity-25" cx="12" cy="12" r="10"
+                                            stroke="currentColor" stroke-width="4"></circle>
+                                        <path class="opacity-75" fill="currentColor"
+                                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                        </path>
+                                    </svg>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label for="sub_district" class="form-label">Kelurahan</label>
-                            <input type="text" id="sub_district" name="sub_district" value="{{ old('sub_district', $store->sub_district) }}" class="input-field">
+
+                        <div class="mt-4">
+                            <input type="hidden" name="latitude" id="latitude"
+                                value="{{ old('latitude', $store->latitude) }}">
+                            <input type="hidden" name="longitude" id="longitude"
+                                value="{{ old('longitude', $store->longitude) }}">
+                            <div id="map" class="w-full rounded-lg"></div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                            <div>
+                                <label for="district" class="form-label">Kecamatan</label>
+                                <input type="text" id="district" name="district"
+                                    value="{{ old('district', $store->district) }}" class="input-field">
+                            </div>
+                            <div>
+                                <label for="sub_district" class="form-label">Kelurahan</label>
+                                <input type="text" id="sub_district" name="sub_district"
+                                    value="{{ old('sub_district', $store->sub_district) }}" class="input-field">
+                            </div>
                         </div>
                     </div>
-                </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div>
@@ -216,6 +258,7 @@
 
 @push('scripts')
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <script>
         function mapSearch() {
             return {
@@ -228,7 +271,7 @@
                 init() {
                     const latInput = document.getElementById('latitude');
                     const lngInput = document.getElementById('longitude');
-                    
+
                     let defaultLat = latInput.value || -3.316694;
                     let defaultLng = lngInput.value || 114.590111;
                     let defaultZoom = latInput.value ? 17 : 13;
@@ -257,8 +300,9 @@
                 searchLocation(query) {
                     this.loading = true;
                     // [PERUBAHAN] Tambahkan accept-language=id
-                    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&limit=5&accept-language=id`;
-                    
+                    const url =
+                        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&countrycodes=id&limit=5&accept-language=id`;
+
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {
@@ -293,8 +337,9 @@
                     this.map.setView([lat, lng], 17);
 
                     this.searchQuery = 'Mencari alamat...';
-                    const url = `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=id`;
-                    
+                    const url =
+                        `https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&accept-language=id`;
+
                     fetch(url)
                         .then(response => response.json())
                         .then(data => {

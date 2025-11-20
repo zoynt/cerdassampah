@@ -20,7 +20,7 @@ class OrderSeeder extends Seeder
 
         $this->command->info('Membuat data pesanan dan item pesanan...');
 
-        $myUserId = 12;
+        $myUserId = 1;
         $myUser = User::find($myUserId);
         $sellers = User::whereHas('store')->where('id', '!=', $myUserId)->get();
         $otherBuyers = User::where('id', '!=', $myUserId)->limit(5)->get();

@@ -9,7 +9,7 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function up(): voidbank
+    public function up(): void
     {
         Schema::create('rekening_bank_sampah_users', function (Blueprint $table) {
             $table->id();

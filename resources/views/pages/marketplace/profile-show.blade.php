@@ -34,8 +34,7 @@
             </div>
             <div class="p-6 space-y-6">
                 <div class="flex items-center gap-4">
-                    {{-- Variabel diubah ke Bahasa Inggris --}}
-                    <h2 class="text-2xl font-bold text-gray-900">{{ $store->name }}</h2>
+                    <h2 class="text-2xl font-bold text-gray-900 capitalize">{{ $store->name }}</h2>
                     <span @class([
                         'px-3 py-1 text-xs font-medium rounded-full',
                         'bg-green-100 text-green-800' => $store->is_active,
