@@ -86,7 +86,7 @@ class OrderController extends Controller
     public function showPurchaseDetail(Order $order)
     {
         // Otorisasi: Pastikan user yang login adalah pembeli dari order ini
-        if ($order->buyer_id !== Auth::id() && $order->seller_id !== Auth::id()) {
+        if ($order->buyer_id != Auth::id() && $order->seller_id != Auth::id()) {
             abort(403, 'AKSES DITOLAK');
         }
         if ($order->status === 'pending') {
@@ -205,7 +205,7 @@ class OrderController extends Controller
     public function cancelOrder(Order $order)
     {
         // 1. Otorisasi: Pastikan hanya pembeli yang bisa membatalkan pesanannya sendiri.
-        if (Auth::id() !== $order->buyer_id) {
+        if (Auth::id() != $order->buyer_id) {
             abort(403, 'AKSES DITOLAK.');
         }
 
@@ -309,7 +309,7 @@ class OrderController extends Controller
     public function markAsCompleted(Order $order)
     {
         // Otorisasi: Pastikan user yang login adalah PENJUAL dari order ini
-        if ($order->seller_id !== Auth::id()) {
+        if ($order->seller_id != Auth::id()) {
             abort(403, 'AKSES DITOLAK: Anda bukan penjual dari pesanan ini.');
         }
 
@@ -323,7 +323,7 @@ class OrderController extends Controller
     public function showInvoice(Order $order)
     {
         // Otorisasi: Pastikan user yang login adalah pembeli atau penjual dari order ini
-        if ($order->buyer_id !== Auth::id() && $order->seller_id !== Auth::id()) {
+        if ($order->buyer_id != Auth::id() && $order->seller_id != Auth::id()) {
             abort(403, 'AKSES DITOLAK');
         }
         

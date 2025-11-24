@@ -395,7 +395,7 @@ class ProductController extends Controller
     {
         $id = \Illuminate\Support\Str::of($product_slug)->afterLast('-');
         $product = \App\Models\Product::findOrFail($id);
-        if ($product->store_id !== Auth::user()->store->id) {
+        if ($product->store_id != Auth::user()->store->id) {
             abort(403, 'AKSES DITOLAK');
         }
 
@@ -416,7 +416,7 @@ class ProductController extends Controller
         $id = \Illuminate\Support\Str::of($product_slug)->afterLast('-');
         $product = \App\Models\Product::findOrFail($id);
 
-        if ($product->store_id !== Auth::user()->store->id) {
+        if ($product->store_id != Auth::user()->store->id) {
             abort(403);
         }
         $request->merge([
@@ -494,7 +494,7 @@ class ProductController extends Controller
     }
     public function showRatingForm(Order $order)
     {
-        if (Auth::id() !== $order->buyer_id) {
+        if (Auth::id() != $order->buyer_id) {
             abort(403, 'Akses Ditolak');
         }
         $review = StoreReview::where('order_id', $order->id)
@@ -515,7 +515,7 @@ class ProductController extends Controller
             'rating' => 'required|integer|min:1|max:5',
             'review' => 'nullable|string|max:1000',
         ]);
-        if (Auth::id() !== $order->buyer_id) {
+        if (Auth::id() != $order->buyer_id) {
             abort(403, 'Akses Ditolak');
         }
         $store_id = $order->orderItems->first()->product->store_id;
@@ -542,7 +542,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if ($product->store_id !== Auth::user()->store->id) {
+        if ($product->store_id != Auth::user()->store->id) {
             abort(403);
         }
         foreach ($product->images as $image) {

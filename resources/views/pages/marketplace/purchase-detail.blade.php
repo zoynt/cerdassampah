@@ -184,20 +184,17 @@
             </div>
         </div>
 
-        {{-- Tombol Aksi --}}
-        {{-- Tombol Aksi (Kode Baru yang Lebih Rapi) --}}
         <div class="pt-2 flex flex-wrap justify-end items-center gap-3">
 
-            {{-- Tombol "Cetak" selalu ditampilkan, tapi kita beri urutan prioritas --}}
-            <a href="{{ route('marketplace.invoice.show', ['order' => $order->order_number]) }}"
-                class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-700 text-white hover:bg-gray-600 order-last sm:order-none">
-                Cetak Bukti Pembayaran
-            </a>
+            @if ($order->status != 'canceled')
+                <a href="{{ route('marketplace.invoice.show', ['order' => $order->order_number]) }}"
+                    class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-700 text-white hover:bg-gray-600 order-last sm:order-none">
+                    Cetak Bukti Pembayaran
+                </a>
+            @endif
 
-            {{-- Tombol khusus untuk status 'completed' --}}
-            @if (Auth::id() === $order->buyer_id)
 
-                {{-- Tombol khusus untuk status 'completed' --}}
+            @if (Auth::id() == $order->buyer_id)
                 @if ($order->status == 'completed')
                     @if ($hasReviewed)
                         <a href="{{ route('marketplace.rating.show', ['order' => $order->order_number]) }}"
@@ -211,9 +208,7 @@
                         </a>
                     @endif
 
-                    {{-- Tombol khusus untuk status 'pending' --}}
                 @elseif ($order->status == 'pending')
-                    {{-- Tombol "Bayar Sekarang" dan "Batalkan" tetap di sini karena hanya relevan untuk pembeli --}}
                     <form action="{{ route('marketplace.order.cancel', $order) }}" method="POST" class="w-full sm:w-auto"
                         onsubmit="return confirm('Apakah Anda yakin ingin membatalkan pesanan ini?');">
                         @csrf
@@ -227,11 +222,10 @@
                         class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-green-700 text-white hover:bg-green-600">
                         Bayar Sekarang
                     </button>
+                @elseif ($order->status == 'canceled')
 
-                    {{-- Tombol disabled untuk status lainnya (processing/canceled) --}}
                 @else
-                    <a
-                        class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-200 text-gray-500 cursor-not-allowed">
+                    <a class="w-full sm:w-auto text-center px-6 py-2.5 font-semibold rounded-lg shadow-sm bg-gray-200 text-gray-500 cursor-not-allowed">
                         Beri Ulasan
                     </a>
                 @endif

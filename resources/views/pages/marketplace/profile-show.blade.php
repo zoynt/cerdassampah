@@ -9,7 +9,7 @@
         <div class="flex flex-col sm:flex-row justify-end sm:items-center gap-4">
             {{-- <h1 class="text-3xl font-bold text-gray-800">{{ $store->name }}</h1> --}}
 
-            @if (Auth::check() && Auth::id() === $store->user_id)
+            @if (Auth::check() && Auth::id() == $store->user_id)
                 <a href="{{ route('store.profile.edit', $store) }}"
                     class="w-full sm:w-auto px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 text-sm flex items-center justify-center gap-2 transition-colors">
                     <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">

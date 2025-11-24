@@ -357,7 +357,7 @@
                         const searchMatch = product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
 
                         // [PERBAIKAN] Logika filter kategori diubah untuk membandingkan ID
-                        const categoryMatch = this.selectedCategory === '' || product.category_id === this
+                        const categoryMatch = this.selectedCategory === '' || product.category_id == this
                             .selectedCategory;
 
                         return searchMatch && categoryMatch;

@@ -72,7 +72,7 @@ class StoreProfileController extends Controller
 
     public function edit(Store $store)
     {
-        if (Auth::id() !== $store->user_id) {
+        if (Auth::id() != $store->user_id) {
             abort(403, 'AKSES DITOLAK');
         }
 
