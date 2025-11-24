@@ -24,45 +24,58 @@ class BankSampahUserController extends Controller
         // 1. Ambil SEMUA rekening user
         $allUserRekenings = RekeningBankSampahUser::where('user_id', $user->id)->get();
         
+        // =======================================================
+        // LOGIKA PENGECEKAN PENDAFTARAN
+        // =======================================================
+
+        // Kondisi A: Belum terdaftar di bank sampah manapun
+        if ($allUserRekenings->isEmpty()) {
+            // Redirect ke halaman jadwal bank sampah dengan pesan/popup khusus
+            return redirect()->route('banksampah-user')
+                ->with('show_registration_popup', true) // Session flash khusus untuk trigger popup
+                ->with('warning', 'Anda belum terdaftar di bank sampah manapun. Segera daftarkan diri Anda untuk menjadi pahlawan kota!');
+        }
+
         // 2. Ambil rekening/bank yang AKTIF saja
         $activeRekenings = $allUserRekenings->where('status', 'Aktif');
         $activeBankIds = $activeRekenings->pluck('bank_id');
         $daftarBank = Bank::whereIn('id', $activeBankIds)->orderBy('bank_name')->get();
 
-        // 3. Cek Kondisi
-        if ($allUserRekenings->isEmpty()) {
-            // User tidak punya rekening SAMA SEKALI
-            return view('pages.banksampah.informasi-belum-terdaftar');
-        }
-
+        // Kondisi B: Sudah mendaftar, tapi belum ada yang Aktif (semua Pending/Non-aktif)
         if ($activeRekenings->isEmpty()) {
-            // User punya rekening, tapi TIDAK ADA yang 'Aktif'
-            // [PERBAIKAN] Cek status rekening pertama yang non-aktif
-            $firstNonActiveRekening = $allUserRekenings->first();
+            $firstPendingRekening = $allUserRekenings->where('status', 'Pending')->first();
             
-            if ($firstNonActiveRekening->status == 'Pending') {
-                $message = 'Status nasabah Anda saat ini sedang menunggu persetujuan. Silakan hubungi pengelola bank sampah Anda.';
-            } else { // Asumsikan status lainnya adalah 'Tidak Aktif'
-                $message = 'Status nasabah Anda saat ini tidak aktif. Silakan hubungi pengelola bank sampah Anda.';
+            $message = 'Status nasabah Anda saat ini tidak aktif.';
+            if ($firstPendingRekening) {
+                $message = 'Pendaftaran Anda di ' . $firstPendingRekening->bank->bank_name . ' sedang menunggu persetujuan pengelola.';
             }
             
-            return redirect()->route('banksampah-user') // Redirect ke Jadwal Bank Sampah
-                ->with('error', $message); // Kirim pesan error yang spesifik
+            return redirect()->route('banksampah-user')
+                ->with('info', $message);
         }
 
-        // 4. Tentukan bank yang akan ditampilkan (Logika ini sudah benar)
-        $bankSampahTerpilih = ($bank && $daftarBank->contains($bank)) ? $bank : $daftarBank->first();
+        // =======================================================
+        // JIKA SUDAH AKTIF, TAMPILKAN HALAMAN INFORMASI
+        // =======================================================
+
+        // 4. Tentukan bank yang akan ditampilkan
+        // Jika ada parameter bank di URL & user aktif di bank tsb, gunakan itu. Jika tidak, pakai bank aktif pertama.
+        $bankSampahTerpilih = ($bank && $daftarBank->contains('id', $bank->id)) ? $bank : $daftarBank->first();
+        
+        // Ambil data rekening untuk bank terpilih
         $rekening = $activeRekenings->where('bank_id', $bankSampahTerpilih->id)->first();
         
         if (!$rekening) {
-             return redirect()->route('banksampah-user')->with('error', 'Gagal memuat data rekening. Silakan coba lagi.');
+             return redirect()->route('banksampah-user')->with('error', 'Data rekening tidak ditemukan.');
         }
 
-        // 5. Sisa logika untuk mengambil data transaksi (sudah benar)
+        // 5. Ambil data transaksi
         $queryTransaksi = BankTransaction::where('rekening_id', $rekening->id);
         $transaksiTerbaru = (clone $queryTransaksi)->with('details.wasteProduct.category')->latest()->take(5)->get();
         $totalMasuk = (clone $queryTransaksi)->where('transaction_type', 'pemasukan')->sum('transaction_amount');
         $totalKeluar = (clone $queryTransaksi)->where('transaction_type', 'penarikan')->sum('transaction_amount');
+        
+        // Data waktu untuk badge
         $pemasukanTerakhir = (clone $queryTransaksi)->where('transaction_type', 'pemasukan')->latest()->first();
         $penarikanTerakhir = (clone $queryTransaksi)->where('transaction_type', 'penarikan')->latest()->first();
         $waktuMasukTerakhir = $pemasukanTerakhir ? $pemasukanTerakhir->created_at->diffForHumans() : 'N/A';
