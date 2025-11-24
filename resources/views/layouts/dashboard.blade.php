@@ -79,7 +79,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round"
                                     d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V7a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
-                            Laporan & Histori
+                            Laporan
                         </span>
                         <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': reportOpen }" fill="none"
                             stroke="currentColor" viewBox="0 0 24 24">
@@ -121,7 +121,7 @@
                             fill="currentColor" viewBox="0 0 24 24" >
                             <path d="m20,3H4c-1.1,0-2,.9-2,2v10c0,1.1.9,2,2,2h7v3h-3v2h8v-2h-3v-3h7c1.1,0,2-.9,2-2V5c0-1.1-.9-2-2-2ZM4,15V5h16v10s-16,0-16,0Z"></path><path d="M10 13 15 10 10 7 10 13z"></path>
                             </svg>
-                            Edukasi & Scan
+                            Edukasi
                         </span>
                         <svg class="w-4 h-4 transition-transform" :class="{ 'rotate-180': educationOpen }" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>

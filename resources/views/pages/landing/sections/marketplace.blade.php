@@ -1,4 +1,4 @@
-<section class="relative z-10 mb-12 pb-12 bg-white">
+<section id="marketplace" class="relative z-10 mb-12 pb-12 bg-white">
     <div class="max-w-7xl mx-auto px-4">
         <div class="grid grid-cols-1 lg:grid-cols-4">
             <div class="hidden lg:block lg:col-span-3"></div>

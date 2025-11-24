@@ -3,8 +3,8 @@
 </p>
 
 <p align="center">
-  <a href="https://www.cerdassampah.id" target="_blank">
-    <img src="https://img.shields.io/badge/Kunjungi%20Website-Cerdassampah.id-28a745?style=for-the-badge" alt="Link Website">
+  <a href="https://www.CerdasSampah" target="_blank">
+    <img src="https://img.shields.io/badge/Kunjungi%20Website-CerdasSampah-28a745?style=for-the-badge" alt="Link Website">
   </a>
 </p>
 
@@ -18,7 +18,7 @@
 
 ## 🎯 Tentang Proyek
 
-**Cerdassampah.id** adalah solusi digital untuk tantangan pengelolaan sampah di perkotaan. Kami percaya bahwa dengan teknologi, edukasi yang tepat, dan partisipasi publik, kita bisa menciptakan lingkungan yang lebih bersih dan berkelanjutan.
+**CerdasSampah** adalah solusi digital untuk tantangan pengelolaan sampah di perkotaan. Kami percaya bahwa dengan teknologi, edukasi yang tepat, dan partisipasi publik, kita bisa menciptakan lingkungan yang lebih bersih dan berkelanjutan.
 
 **Tujuan utama kami:**
 * Meningkatkan kesadaran masyarakat dalam pemilahan sampah.

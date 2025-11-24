@@ -73,7 +73,7 @@
                     di Sekitarmu
                 </h3>
                 <p class="text-gray-600 !mt-0 mb-4 text-sm md:text-base leading-normal">
-                    Ada lebih dari 10 titik TPS, TPST-3R (Reduce, Reuse, Recycle) & TPS Liar terdaftar di CerdasSampah.id!
+                    Ada lebih dari 10 titik TPS, TPST-3R (Reduce, Reuse, Recycle) & TPS Liar terdaftar di CerdasSampah!
                 </p>
                 <div class="space-y-4">
                     <div class="bg-green-500 text-center text-white py-4 rounded-lg shadow-sm" data-aos="fade-up"

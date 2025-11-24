@@ -16,11 +16,11 @@
                 Lingkungan <span id="typed-kata" class="inline-block text-white"></span>
             </h1>
             <p class="text-sm sm:text-base md:text-lg mb-8 text-white/90">
-                CerdasSampah.id adalah aplikasi website berbasis Smart Environment yang mendukung pilar Smart City
+                CerdasSampah adalah aplikasi website berbasis Smart Environment yang mendukung pilar Smart City
                 melalui pengelolaan sampah yang inovatif dan partisipatif. Dirancang untuk meningkatkan kesadaran serta
                 keterlibatan masyarakat.
             </p>
-            <a href="{{ route('register') }}"
+            <a href="{{ route('login') }}"
                 class="inline-block bg-white text-green-700 font-semibold px-6 py-3 rounded-md shadow hover:bg-green-100 transition duration-300">
                 Masuk
             </a>

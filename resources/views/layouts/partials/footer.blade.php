@@ -7,7 +7,7 @@
       {{-- Logo --}}
       <div class="flex items-center gap-4 flex-wrap justify-center">
         <img src="{{ asset('img/logobiasa.png') }}" alt="Logo" class="h-20 md:h-14 sm:h-10">
-        <span class="text-3xl md:2xl sm:xl font-bold">CerdasSampah.id</span>
+        <span class="text-3xl md:2xl sm:xl font-bold">CerdasSampah</span>
       </div>
 
       {{-- Kontak --}}
@@ -40,9 +40,9 @@
 
     {{-- Tentang dan Sosial Media --}}
     <div style="font-size: 16px; line-height: 1.8;">
-      <strong style="display: block; margin-bottom: 10px;">Tentang CerdasSampah.id</strong>
+      <strong style="display: block; margin-bottom: 10px;">Tentang CerdasSampah</strong>
       <p style="margin: 0;">
-        CerdasSampah.id merupakan inisiatif berbasis teknologi yang mendukung penerapan konsep smart city,
+        CerdasSampah merupakan inisiatif berbasis teknologi yang mendukung penerapan konsep smart city,
         khususnya dalam pilar smart environment. Melalui fitur-fitur cerdas seperti pemetaan TPS, scan sampah,
         hingga edukasi interaktif, platform ini hadir untuk mendorong pengelolaan sampah yang lebih tertib,
         partisipatif, dan berkelanjutan.
@@ -74,7 +74,7 @@
 
     {{-- Copyright --}}
     <div style="text-align: center; margin-top: 35px; font-size: 16px;">
-      © Copyright 2025 <strong>CerdasSampah.id</strong> – All Rights Reserved.
+      © Copyright 2025 <strong>CerdasSampah</strong> – All Rights Reserved.
     </div>
   </div>
 

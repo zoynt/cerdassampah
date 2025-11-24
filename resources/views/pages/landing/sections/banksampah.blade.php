@@ -1,4 +1,4 @@
-<section class="relative z-10 mb-12 pb-12 bg-white">
+<section id="bank" class="relative z-10 mb-12 pb-12 bg-white">
     <div class="max-w-7xl mx-auto px-4">
         <div>
             <h2 class="text-xl font-bold text-green-900 tracking-wide mb-8 border-b-2 border-green-700 w-fit"
@@ -30,7 +30,7 @@
                     <p class="text-green-900 text-md md:text-lg mb-4">Setiap sampah terpilah yang kamu setor akan
                         berubah jadi tabungan. Semakin rajin menabung sampah, semakin banyak saldo dan manfaat yang bisa
                         kamu nikmati.</p>
-                    <a href="#"
+                    <a href="{{ route('banksampah-user') }}"
                         class="block mt-6 text-center lg:inline-block bg-white text-gray-800 font-bold py-3 px-6 rounded-lg shadow-xl hover:bg-gray-100 transition-colors duration-200">
                         Ayo Setorkan!
                     </a>

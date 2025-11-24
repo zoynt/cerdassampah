@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', 'Lokasi TPS - CerdasSampah.id')
+@section('title', 'Lokasi TPS - CerdasSampah')
 
 @section('content')
     <section class="hero-section">

@@ -16,7 +16,7 @@
         </h1>
         <div class="bg-white rounded-xl shadow-md p-8" data-aos="fade-up">
         <div class="flex flex-col items-center md:items-start sm:items-start">
-          <h3 class="text-xl text-white bg-green-600 font-semibold mb-4 p-4 inline-block rounded-xl text-center md:text-left sm:text-left">CerdasSampah.id</h3>
+          <h3 class="text-xl text-white bg-green-600 font-semibold mb-4 p-4 inline-block rounded-xl text-center md:text-left sm:text-left">CerdasSampah</h3>
           <p class="text-lg" style="text-align: justify;">CerdasSampah adalah platform digital yang dirancang untuk membantu masyarakat mengelola sampah dengan cara yang lebih cerdas, praktis, dan interaktif. Melalui berbagai fitur unggulan seperti pemindaian sampah, pemetaan lokasi TPS beserta jadwal pengangkutannya, game pilah sampah, hingga pelaporan TPS ilegal, CerdasSampah hadir untuk menghubungkan edukasi, teknologi, dan aksi nyata di lapangan.</p>
         </div>
         </div>
@@ -76,11 +76,11 @@
       </div>
     </div>
 
-    <!-- New Section: Tim CerdasSampah.id -->
+    <!-- New Section: Tim CerdasSampah -->
     <div class="max-w-7xl mx-auto px-6 lg:px-12 py-20">
         <div class="flex justify-center items-center w-full">
             <h3 class="text-xl font-semibold text-center mb-8 text-white bg-green-600 rounded-xl px-6 py-4" data-aos="zoom-in">
-                Tim CerdasSampah.id
+                Tim CerdasSampah
             </h3>
         </div>
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">

@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Login - CerdasSampah.id')
+@section('title', 'Login - CerdasSampah')
 
 @section('content')
     <div class="bg-white p-8 rounded-2xl shadow-xl w-full">

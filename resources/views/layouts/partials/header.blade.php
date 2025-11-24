@@ -6,13 +6,13 @@
         <img src="/img/logoputih.png" alt="Logo" class="h-8 w-8" /> -->
             <!-- <a href="/#beranda" class="px-4 py-2 rounded-md hover:bg-green-700 transition"></a> -->
             <!-- <img src="/img/textbs.png" alt="Logo" class="h-48 w-auto" /> -->
-            <!-- <span class="text-white font-bold text-lg">CerdasSampah.id</span>
+            <!-- <span class="text-white font-bold text-lg">CerdasSampah</span>
       </div> -->
             <div class="flex items-center space-x-3">
                 <!-- Membuat Logo menjadi Link ke Beranda -->
                 <a href="/#beranda" class="flex items-center">
                     <img src="/img/logoputih.png" alt="Logo" class="h-8 w-8" style="margin-right: 16px;" />
-                    <span class="text-white font-bold text-lg">CerdasSampah.id</span>
+                    <span class="text-white font-bold text-lg">CerdasSampah</span>
                 </a>
             </div>
 
@@ -25,7 +25,7 @@
 
             <!-- Navigation Menu (Desktop) -->
             <nav id="main-nav" class="hidden lg:flex flex-row items-center space-x-4 text-sm font-semibold text-white">
-                <a href="/" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Beranda</a>
+                <a href="/#beranda" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Beranda</a>
 
                 <!-- Dropdown -->
                 <div class="relative group">
@@ -42,6 +42,8 @@
                     <!-- Dropdown Menu -->
                     <div
                         class="absolute left-0 mt-2 w-44 bg-white text-gray-800 shadow-md rounded-md opacity-0 invisible group-hover:opacity-100 group-hover:visible transform scale-95 group-hover:scale-100 transition-all duration-200 ease-out z-20">
+                        <a href="/#marketplace" class="block px-6 py-2 hover:bg-green-100">Marketplace Daur Ulang</a>
+                        <a href="/#bank" class="block px-6 py-2 hover:bg-green-100">Bank Sampah Digital</a>
                         <a href="/#peta" class="block px-6 py-2 hover:bg-green-100">Peta TPS, TPS-T3R & TPS Liar</a>
                         <a href="/#scan" class="block px-6 py-2 hover:bg-green-100">Scan Sampah</a>
                         <a href="/#game" class="block px-6 py-2 hover:bg-green-100">Game Pilah Sampah</a>
