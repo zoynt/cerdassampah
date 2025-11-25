@@ -20,23 +20,25 @@ class BankImporter extends Importer
         return [
             ImportColumn::make('bank_name')
                 ->requiredMapping(),
-            ImportColumn::make('bank_longitude')
+            ImportColumn::make('longitude')
                 ->requiredMapping(),
-            ImportColumn::make('bank_latitude')
+            ImportColumn::make('latitude')
                 ->requiredMapping(),
-            ImportColumn::make('bank_address')
+            ImportColumn::make('address')
                 ->requiredMapping(),
-            ImportColumn::make('kecamatan')
+            ImportColumn::make('district')
                 ->requiredMapping(),
-            ImportColumn::make('bank_day')
+            ImportColumn::make('sub_district')
                 ->requiredMapping(),
-            ImportColumn::make('bank_start_time')
+            ImportColumn::make('operational_days')
                 ->requiredMapping(),
-            ImportColumn::make('bank_end_time')
+            ImportColumn::make('opening_hour')
                 ->requiredMapping(),
-            // ImportColumn::make('bank_no'),
-            ImportColumn::make('bank_description'),
-            ImportColumn::make('image'),
+            ImportColumn::make('closing_hour')
+                ->requiredMapping(),
+            // ImportColumn::make('phone_number'),
+            ImportColumn::make('description'),
+            ImportColumn::make('image_path'),
         ];
     }
 

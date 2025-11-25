@@ -33,7 +33,7 @@ class BankResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-home-modern';
     protected static ?string $navigationGroup = 'Lokasi Pengelola Sampah';
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Bank Sampah';
     protected static ?string $pluralModelLabel = 'Bank Sampah'; // Nama di semua tempat
 
@@ -180,7 +180,7 @@ class BankResource extends Resource
                 ->seconds(false)
                 ->required(),
             Textarea::make('description'),
-            FileUpload::make('image')
+            FileUpload::make('image_path')
                 ->image()
                 ->imageEditor()
                 ->Label('Gambar Bank'),
@@ -207,7 +207,10 @@ class BankResource extends Resource
             ->columns([
                 TextColumn::make('bank_name')->searchable()
                 ->wrap(),
-                TextColumn::make('district')->searchable(),
+                TextColumn::make('district')->searchable()
+                ->label('Kecamatan'),
+                TextColumn::make('sub_district')->searchable()
+                ->label('Kelurahan'),
                 TextColumn::make('operational_days')->searchable()
                 ->label('Hari Operasional')
                 ->wrap(),
