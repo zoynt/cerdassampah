@@ -126,7 +126,7 @@
                         @csrf
                         @method('PUT')
 
-                        @if($rekening->status == 'Tidak Aktif')
+                        @if($rekening->status == 'Tidak Aktif' || $rekening->status == 'Pending')
                             {{-- Tombol Aktifkan --}}
                             <input type="hidden" name="status" value="Aktif">
                             <button type="submit" class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-md">
