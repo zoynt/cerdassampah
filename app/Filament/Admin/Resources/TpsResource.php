@@ -119,10 +119,10 @@ private const DAYS_OPTIONS = [
                         } else {
                             $addressData = $data['address'] ?? [];
                             $set('tps_address', $data['display_name'] ?? 'Alamat tidak ditemukan');
-                            $set('kecamatan', $addressData['city_district']
-                                ?? $addressData['suburb']
-                                ?? $addressData['county']
-                                ?? null);
+                            // $set('kecamatan', $addressData['city_district']
+                            //     ?? $addressData['suburb']
+                            //     ?? $addressData['county']
+                            //     ?? null);
                             $set('address_json', $data);
                         }
                     } catch (\Exception $e) {
@@ -209,7 +209,7 @@ private const DAYS_OPTIONS = [
                 ->required()
                 ->columns(3)
                 ->gridDirection('row')
-                ->bulkToggleable(), // <-- Tambahkan baris ini 👍
+                ->bulkToggleable(),
 
                 Forms\Components\TextInput::make('tps_transport')
                 ->label('Transportasi')

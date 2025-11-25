@@ -31,6 +31,6 @@ class Tps extends Model
     }
 
     protected $casts = [
-        'tps_day' => 'array', // <-- KUNCI UTAMANYA DI SINI
+        'tps_day' => 'array',
     ];
 };

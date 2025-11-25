@@ -63,15 +63,15 @@ class BankResource extends Resource
 
                     // === LOGIKA KUNCI ALAMAT ===
                     if ($get('lock_address')) {
-                        $set('bank_latitude', $state['lat']);
-                        $set('bank_longitude', (string) $state['lng']);
+                        $set('latitude', $state['lat']);
+                        $set('longitude', (string) $state['lng']);
                         return; // Hentikan proses jika alamat terkunci
                     }
 
                     // === CEK HIDRASI DATA ===
                     if (
-                        (string) $state['lat'] === (string) $get('bank_latitude') &&
-                        (string) $state['lng'] === (string) $get('bank_longitude')
+                        (string) $state['lat'] === (string) $get('latitude') &&
+                        (string) $state['lng'] === (string) $get('longitude')
                     ) {
                         return;
                     }
@@ -80,8 +80,8 @@ class BankResource extends Resource
                     $latitude = $state['lat'];
                     $longitude = $state['lng'];
 
-                    $set('bank_latitude', $latitude);
-                    $set('bank_longitude', (string) $longitude);
+                    $set('latitude', $latitude);
+                    $set('longitude', (string) $longitude);
 
                     // === PANGGIL API UNTUK AMBIL ALAMAT ===
                     try {
@@ -98,62 +98,88 @@ class BankResource extends Resource
                         $data = $response->json();
 
                         if ($response->failed() || isset($data['error'])) {
-                            $set('bank_address', 'Alamat tidak dapat ditemukan.');
-                            $set('kecamatan', null);
+                            $set('address', 'Alamat tidak dapat ditemukan.');
+                            $set('district', null);
                         } else {
                             $addressData = $data['address'] ?? [];
-                            $set('bank_address', $data['display_name'] ?? 'Alamat tidak ditemukan');
-                            $set('kecamatan', $addressData['city_district']
-                                ?? $addressData['suburb']
-                                ?? $addressData['county']
-                                ?? null);
+                            $set('address', $data['display_name'] ?? 'Alamat tidak ditemukan');
+                            // $set('district', $addressData['city_district']
+                            //     ?? $addressData['suburb']
+                            //     ?? $addressData['county']
+                            //     ?? null);
                             $set('address_json', $data);
                         }
                     } catch (\Exception $e) {
                         $set('address', 'Gagal terhubung ke layanan peta.');
-                        $set('kecamatan', null);
+                        $set('district', null);
                         Log::error('Nominatim Connection Exception: ' . $e->getMessage());
                     }
                 })
                 ->afterStateHydrated(function ($state, $record, Set $set): void {
-                    if ($record?->bank_latitude && $record?->bank_longitude) {
+                    if ($record?->latitude && $record?->longitude) {
                         $set('location', [
-                            'lat' => $record->bank_latitude,
-                            'lng' => $record->bank_longitude,
+                            'lat' => $record->latitude,
+                            'lng' => $record->longitude,
                         ]);
                     }
                 }),
 
             // ===================== KOORDINAT =====================
-            Forms\Components\TextInput::make('bank_latitude')
+            Forms\Components\TextInput::make('latitude')
                 ->label('Latitude')
                 ->required(),
 
-            Forms\Components\TextInput::make('bank_longitude')
+            Forms\Components\TextInput::make('longitude')
                 ->label('Longitude')
                 ->required(),
 
             // ===================== ALAMAT =====================
-            Forms\Components\Textarea::make('bank_address')
+            Forms\Components\Textarea::make('address')
                 ->label('Alamat Lengkap (Otomatis/Manual)')
                 ->rows(3)
                 ->helperText('Alamat akan terisi otomatis dari peta, namun Anda bisa mengoreksinya jika perlu.')
                 ->required(),
-            TextInput::make('kecamatan')
+            TextInput::make('district')
                 ->required(),
 
             Forms\Components\Hidden::make('address_json'),
                 TextInput::make('bank_name')
                 ->required(),
-                TextInput::make('bank_day')
-                ->required(),
-            TimePicker::make('bank_start_time')
+                        Forms\Components\Select::make('kecamatan')
+                ->label('Kecamatan')
+                ->options([
+                    'banjarmasin utara'   => 'banjarmasin utara',
+                    'banjarmasin selatan' => 'banjarmasin selatan',
+                    'banjarmasin timur'   => 'banjarmasin timur',
+                    'banjarmasin barat'   => 'banjarmasin barat',
+                    'banjarmasin tengah'  => 'banjarmasin tengah',
+                ])
+                ->searchable()
+                ->helperText('Dipilih otomatis dari peta, namun Anda bisa memilih dari daftar jika perlu.'),
+
+            Forms\Components\CheckboxList::make('operational_days')
+                ->label('Hari Operasional')
+                ->options([
+                    'Senin' => 'Senin',
+                    'Selasa' => 'Selasa',
+                    'Rabu' => 'Rabu',
+                    'Kamis' => 'Kamis',
+                    'Jumat' => 'Jumat',
+                    'Sabtu' => 'Sabtu',
+                    'Minggu' => 'Minggu',
+                ])
+                ->required()
+                ->columns(3)
+                ->gridDirection('row')
+                ->bulkToggleable(),
+            
+            TimePicker::make('opening_hour')
                 ->seconds(false)
                 ->required(),
-            TimePicker::make('bank_end_time')
+            TimePicker::make('closing_hour')
                 ->seconds(false)
                 ->required(),
-            Textarea::make('bank_description'),
+            Textarea::make('description'),
             FileUpload::make('image')
                 ->image()
                 ->imageEditor()
@@ -181,22 +207,23 @@ class BankResource extends Resource
             ->columns([
                 TextColumn::make('bank_name')->searchable()
                 ->wrap(),
-                TextColumn::make('kecamatan')->searchable(),
-                TextColumn::make('bank_day')->searchable()
+                TextColumn::make('district')->searchable(),
+                TextColumn::make('operational_days')->searchable()
+                ->label('Hari Operasional')
                 ->wrap(),
-                TextColumn::make('bank_start_time')->searchable()
+                TextColumn::make('opening_hour')->searchable()
                 ->label('Buka')
                 ->dateTime('H:i'),
-                TextColumn::make('bank_end_time')->searchable()
+                TextColumn::make('closing_hour')->searchable()
                 ->label('Tutup')
                 ->dateTime('H:i'),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('kecamatan')
+                Tables\Filters\SelectFilter::make('district')
                     ->label('kecamatan')
                     ->options(
-                        // Ambil semua nilai unik dari kolom 'bank_kecamatan' dan jadikan pilihan
-                        Bank::query()->distinct()->pluck('kecamatan', 'kecamatan')->all()
+                        // Ambil semua nilai unik dari kolom 'bank_district' dan jadikan pilihan
+                        Bank::query()->distinct()->pluck('district', 'district')->all()
                     )
                 
             ])

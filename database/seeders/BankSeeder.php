@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use App\Models\Bank; // Menggunakan model untuk create() agar lebih aman
+use App\Models\Bank;
 
 class BankSeeder extends Seeder
 {
@@ -19,7 +19,7 @@ class BankSeeder extends Seeder
         DB::table('banks')->truncate();
         DB::statement('SET FOREIGN_KEY_CHECKS=1');
 
-        $allDays = ["Senin","Selasa","Rabu","Kamis","Jumat","Sabtu","Minggu"];
+        $allDays = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
         $now = Carbon::now();
 
         $banks = [
@@ -32,7 +32,7 @@ class BankSeeder extends Seeder
                 'address' => 'Alamat Bank Banjarmasin Utara',
                 'district' => 'banjarmasin utara',
                 'sub_district' => 'Sungai Andai', // Tambahkan kelurahan
-                'operational_days' => json_encode($allDays),
+                'operational_days' => $allDays,
                 'opening_hour' => '08:00:00',
                 'closing_hour' => '16:00:00',
                 'description' => 'Bank yang terletak di Banjarmasin Utara.',
@@ -51,7 +51,7 @@ class BankSeeder extends Seeder
                 'address' => 'Alamat Bank Banjarmasin Selatan',
                 'district' => 'banjarmasin selatan',
                 'sub_district' => 'Kelayan', // Tambahkan kelurahan
-                'operational_days' => json_encode($allDays),
+                'operational_days' => $allDays,
                 'opening_hour' => '08:30:00',
                 'closing_hour' => '17:00:00',
                 'description' => 'Bank yang terletak di Banjarmasin Selatan.',
@@ -70,7 +70,7 @@ class BankSeeder extends Seeder
                 'address' => 'Alamat Bank Banjarmasin Tengah',
                 'district' => 'banjarmasin tengah',
                 'sub_district' => 'Kertak Baru Ilir', // Tambahkan kelurahan
-                'operational_days' => json_encode($allDays),
+                'operational_days' => $allDays,
                 'opening_hour' => '09:00:00',
                 'closing_hour' => '17:30:00',
                 'description' => 'Bank yang terletak di Banjarmasin Tengah.',
@@ -89,7 +89,7 @@ class BankSeeder extends Seeder
                 'address' => 'Alamat Bank Banjarmasin Barat',
                 'district' => 'banjarmasin barat',
                 'sub_district' => 'Teluk Tiram', // Tambahkan kelurahan
-                'operational_days' => json_encode($allDays),
+                'operational_days' => $allDays,
                 'opening_hour' => '08:00:00',
                 'closing_hour' => '15:30:00',
                 'description' => 'Bank yang terletak di Banjarmasin Barat.',
@@ -108,7 +108,7 @@ class BankSeeder extends Seeder
                 'address' => 'Alamat Bank Banjarmasin Timur',
                 'district' => 'banjarmasin timur',
                 'sub_district' => 'Sungai Lulut', // Tambahkan kelurahan
-                'operational_days' => json_encode($allDays),
+                'operational_days' => $allDays,
                 'opening_hour' => '08:30:00',
                 'closing_hour' => '16:30:00',
                 'description' => 'Bank yang terletak di Banjarmasin Timur.',

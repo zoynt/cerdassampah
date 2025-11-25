@@ -6,15 +6,16 @@ use App\Models\Bank;
 use App\Models\Tps;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use App\Models\User; // <-- Jangan lupa import model User
-use App\Models\Report; // <-- Contoh import model lain jika diperlukan
+use App\Models\User;
+use App\Models\Report;
 use App\Models\Surung;
-use App\Filament\Admin\Resources\UserResource; // <-- Jangan lupa import resource User
-use App\Filament\Admin\Resources\TpsResource; // <-- Jangan lupa import resource User
-use App\Filament\Admin\Resources\SurungResource; // <-- Jangan lupa import resource User
-use App\Filament\Admin\Resources\BankResource; // <-- Jangan lupa import resource User
-use App\Filament\Admin\Resources\ReportResource; // <-- Jangan lupa import resource User
-
+use App\Filament\Admin\Resources\UserResource;
+use App\Filament\Admin\Resources\TpsResource;
+use App\Filament\Admin\Resources\SurungResource;
+use App\Filament\Admin\Resources\BankResource;
+use App\Filament\Admin\Resources\ReportResource;
+use App\Models\RekeningBankSampahUser;
+use App\Models\Store;
 
 class UserStatsOverview extends BaseWidget
 {
@@ -52,7 +53,12 @@ class UserStatsOverview extends BaseWidget
                 ->description('Laporan hari ini')
                 ->color('warning')
                 ->url(ReportResource::getUrl()),
-
+            // Stat::make('Total Toko Daur Ulang', Store::count())
+            //     ->description('Jumlah semua Toko Daur Ulang terdaftar')
+            //     ->color('success'),
+            // Stat::make('Total Rekening Bank Sampah ', RekeningBankSampahUser::count())
+            //     ->description('Jumlah semua rekening bank sampah terdaftar')
+            //     ->color('success'),
         ];
     }
 }
