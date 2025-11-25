@@ -1,7 +1,10 @@
 @extends('layouts.dashboard')
 
 @section('title', 'Jadwal Bank Sampah')
-  <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+
+@push('head')
+    <link rel="icon" type="image/png" href="{{ asset('img/logo.png') }}">
+@endpush
 
 @push('styles')
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -23,57 +26,45 @@
             <div id="map" class="w-full rounded-lg"></div>
         </div>
 
-        <div class="bg-white p-6 rounded-xl shadow-md">
-            <h2 class="text-xl font-semibold text-gray-700 mb-4">Filter Pencarian</h2>
+        {{-- Kartu Filter (Layout Diperbaiki) --}}
+        <div class="bg-white rounded-xl shadow-md p-6">
+            <h2 class="text-xl font-bold text-gray-800 mb-5">Filter Pencarian</h2>
             <form id="filter-form" action="{{ route('banksampah-user') }}" method="GET">
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                        <label for="kecamatan" class="block mb-2 text-sm font-medium text-gray-700">Kecamatan</label>
+                <div class="flex flex-wrap items-end gap-4">
+                    {{-- Filter Kecamatan --}}
+                    <div class="flex-grow w-full sm:w-auto">
+                        <label for="kecamatan" class="block mb-1 text-sm font-medium text-gray-700">Kecamatan</label>
                         <div class="relative">
-                            <select id="kecamatan" name="kecamatan"
-                                class="block w-full pl-4 pr-10 py-2.5 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <select id="kecamatan" name="kecamatan" class="custom-select block w-full h-11 pl-4 pr-10 py-2.5 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                 <option value="">Semua Kecamatan</option>
                                 @foreach ($kecamatans as $data)
-                                    <option value="{{ $data->district }}" @selected(request('kecamatan') == $data->district)>
-                                        {{ $data->district }}</option>
+                                    <option value="{{ $data->district }}" @selected(request('kecamatan') == $data->district)>{{ $data->district }}</option>
                                 @endforeach
                             </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-gray-700">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.24a.75.75 0 011.06.04l2.7 2.92 2.7-2.92a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
                         </div>
                     </div>
-
-                    <div>
-                        <label for="hari" class="block mb-2 text-sm font-medium text-gray-700">Hari</label>
+                    {{-- Filter Hari --}}
+                    <div class="flex-grow w-full sm:w-auto">
+                        <label for="hari" class="block mb-1 text-sm font-medium text-gray-700">Hari</label>
                         <div class="relative">
-                            <select id="hari" name="hari"
-                                class="block w-full pl-4 pr-10 py-2.5 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-green-500">
+                            <select id="hari" name="hari" class="custom-select block w-full h-11 pl-4 pr-10 py-2.5 text-gray-700 bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500">
                                 <option value="">Semua Hari</option>
                                 @foreach (['Senin', 'Selasa', 'Rabu', 'Kamis', 'Jumat', 'Sabtu', 'Minggu'] as $day)
-                                    <option value="{{ $day }}" @selected(request('hari') == $day)>{{ $day }}
-                                    </option>
+                                    <option value="{{ $day }}" @selected(request('hari') == $day)>{{ $day }}</option>
                                 @endforeach
                             </select>
-                            <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-4 text-gray-700">
-                                <svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                    <path fill-rule="evenodd" d="M10 3a.75.75 0 01.55.24l3.25 3.5a.75.75 0 11-1.1 1.02L10 4.852 7.3 7.76a.75.75 0 01-1.1-1.02l3.25-3.5A.75.75 0 0110 3zm-3.76 9.24a.75.75 0 011.06.04l2.7 2.92 2.7-2.92a.75.75 0 111.1 1.02l-3.25 3.5a.75.75 0 01-1.1 0l-3.25-3.5a.75.75 0 01.04-1.06z" clip-rule="evenodd" />
-                                </svg>
-                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="flex items-center justify-end mt-4">
-                    <a href="{{ route('banksampah-user') }}"
-                        class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100">
-                        Reset Filter
-                    </a>
+                    {{-- Tombol Aksi --}}
+                    <div class="flex items-center gap-2 w-full sm:w-auto">
+                        <button type="submit" class="h-11 w-full sm:w-auto text-white bg-green-600 hover:bg-green-700 font-medium rounded-lg text-sm px-6 text-center shadow-sm transition-colors"> Cari </button>
+                        <a href="{{ route('banksampah-user') }}" class="h-11 w-full sm:w-auto flex items-center justify-center px-5 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-lg hover:bg-gray-200 transition-colors"> Reset </a>
+                    </div>
                 </div>
             </form>
         </div>
 
+        {{-- Tabel Bank Sampah --}}
         <div class="bg-white rounded-xl shadow-md overflow-hidden">
             <div class="overflow-x-auto">
                 <table class="w-full text-sm text-left text-gray-600">
@@ -114,7 +105,8 @@
             const greenIcon = L.icon({
                 iconUrl: 'https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-green.png',
                 iconSize: [25, 41], iconAnchor: [12, 41], popupAnchor: [1, -34],
-                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png', shadowSize: [41, 41]
+                shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.7/images/marker-shadow.png',
+                shadowSize: [41, 41]
             });
 
             function updateMapAndTableInteractivity(locations) {
@@ -132,29 +124,37 @@
                 (locations || []).forEach(loc => {
                     const marker = L.marker([loc.lat, loc.lng], { icon: greenIcon }).addTo(map);
                     
-                    // Pastikan loc.slug ada, jika tidak, gunakan id sebagai fallback
-                    const detailUrl = `/bank-sampah/${loc.slug || loc.id}`;
-                    const setorUrl = `/bank-sampah/informasi?bank_id=${loc.id}`;
+                    const detailUrl = `/bank-sampah/profil/${loc.slug}`;
+                    const setorUrl = `/bank-sampah/item/${loc.slug}`;
 
-                    const popupContent =
-                        `<div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0">
+                    // ======================================================
+                    // [PERBAIKAN] Tambahkan <br> di tombol "Lihat Item"
+                    // ======================================================
+                    const popupContent = `
+                        <div class="w-64 rounded-lg overflow-hidden shadow-lg bg-white p-0">
                             <img class="w-full h-32 object-cover" src="${loc.image_url}" alt="Foto ${loc.nama}">
                             <div class="p-3">
                                 <div class="font-bold text-base mb-2 text-gray-800">${loc.nama}</div>
                                 <p class="text-gray-600 text-xs mb-2"><span class="font-semibold">Alamat:</span> ${loc.alamat || 'Tidak ada alamat.'}</p>
-                                <p class="text-gray-500 text-xs"><span class="font-semibold">Deskripsi: </span>${loc.deskripsi || ''}</p>
-                                
+                                <p class="text-gray-500 text-xs"><span class="font-semibold">Deskripsi: </span>${loc.deskripsi || 'Tidak ada deskripsi.'}</p>
                                 <div class="mt-4 grid grid-cols-2 gap-2">
-                                    <a href="${detailUrl}" class="block text-center w-full px-4 py-2 bg-white text-green-700 text-sm font-semibold rounded-lg border border-green-200 hover:bg-green-50 transition-colors duration-300">
-                                        Detail Bank
+                                    {{-- Tombol Detail Bank (Tetap sama) --}}
+                                    <a href="${detailUrl}"
+                                       class="h-full flex items-center justify-center text-center w-full px-4 py-2 bg-white text-green-700 text-sm font-semibold rounded-lg border border-green-200 hover:bg-green-50 transition-colors duration-200">
+                                        Detail<br>Bank {{-- Teks 2 baris --}}
                                     </a>
-                                    <a href="${setorUrl}" class="button-link block text-center w-full px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition-colors duration-300">
-                                        Setorkan Sampah
+                                    {{-- Tombol Lihat Item (Tambahkan <br>) --}}
+                                    <a href="${setorUrl}"
+                                       class="button-link h-full flex items-center justify-center text-center w-full px-4 py-2 bg-green-700 text-white text-sm font-semibold rounded-lg hover:bg-green-600 transition-colors duration-200">
+                                        Lihat<br>Item {{-- Tambahkan <br> di sini --}}
                                     </a>
                                 </div>
                             </div>
                         </div>`;
-                    
+                    // ======================================================
+                    // Akhir Perbaikan Tombol Popup
+                    // ======================================================
+                        
                     marker.bindPopup(popupContent);
                     allMarkers.push(marker);
                     markerObjectsById[loc.id] = marker;
@@ -163,7 +163,6 @@
                 document.querySelectorAll('.bank-row').forEach(row => {
                     row.replaceWith(row.cloneNode(true));
                 });
-                
                 document.querySelectorAll('.bank-row').forEach(row => {
                      row.addEventListener('click', function() {
                          const id = this.dataset.id;
@@ -177,6 +176,7 @@
 
             updateMapAndTableInteractivity(@json($bankLocations));
 
+            // Logika AJAX untuk filter
             const filterForm = document.getElementById('filter-form');
             
             function handleFilterChange() {
@@ -203,42 +203,17 @@
                     });
             }
 
+            // Trigger filter saat select berubah
             filterForm.querySelectorAll('select').forEach(select => {
                 select.addEventListener('change', handleFilterChange);
             });
 
+            // Trigger filter saat form disubmit (jika pakai tombol Cari)
              filterForm.addEventListener('submit', function(event) {
-                 event.preventDefault();
+                 event.preventDefault(); // Mencegah submit form standar
                  handleFilterChange();
              });
 
         });
     </script>
-
-    @if(session('show_registration_popup'))
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            Swal.fire({
-                title: 'Belum Terdaftar!',
-                text: "{{ session('warning') }}",
-                icon: 'info',
-                confirmButtonText: 'Siap, Daftar Sekarang!',
-                confirmButtonColor: '#15803d',
-                background: '#fff',
-                customClass: {
-                    popup: 'rounded-xl shadow-xl border border-green-100',
-                    title: 'text-green-800 font-bold',
-                    confirmButton: 'px-6 py-2 rounded-lg'
-                },
-                didOpen: () => {
-                    const iconElement = Swal.getIcon();
-                    if (iconElement) {
-                        iconElement.style.borderColor = '#15803d';
-                        iconElement.style.color = '#15803d';
-                    }
-                }
-            });
-        });
-    </script>
-    @endif
 @endpush
