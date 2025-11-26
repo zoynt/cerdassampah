@@ -61,7 +61,8 @@
                     {{-- ====================================================== --}}
                     <div class="mt-4 flex flex-col sm:flex-row gap-3 items-center justify-center">
 
-                        @auth
+                        {{-- @auth --}}
+                        @role('warga')
                             @if (!$sudahTerdaftar)
                                 {{-- 1. Tombol Daftar (Jika sama sekali belum ada rekening) --}}
                                 <form action="{{ route('digital.nasabah.daftar', $bank->slug) }}" method="POST" class="w-full sm:w-auto">
@@ -86,7 +87,8 @@
 
                             {{-- 4. Jika status 'Aktif', tidak perlu tampilkan apa-apa di sini --}}
                             @endif
-                        @endauth
+                        @endrole
+                        {{-- @endauth --}}
 
                         {{-- Tombol Lihat Info Bank Sampah (Selalu Tampil) --}}
                         <a href="{{ route('bank-sampah.profil.show', $bank->slug) }}"
