@@ -1,6 +1,6 @@
 @extends('layouts.dashboard')
 
-@section('title', 'Riwayat Transaksi')
+@section('title', $bankSampahTerpilih ? 'Riwayat Transaksi - ' . $bankSampahTerpilih->bank_name : 'Riwayat Transaksi')
 
 {{-- Favicon --}}
 @push('head')
