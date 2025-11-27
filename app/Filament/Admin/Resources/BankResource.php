@@ -26,6 +26,7 @@ use Filament\Actions\Exports\Enums\ExportFormat;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\BankResource\Pages;
 use App\Filament\Admin\Resources\BankResource\RelationManagers;
+use Dom\Text;
 
 class BankResource extends Resource
 {
@@ -35,7 +36,7 @@ class BankResource extends Resource
     protected static ?string $navigationGroup = 'Lokasi Pengelola Sampah';
     protected static ?int $navigationSort = 2;
     protected static ?string $navigationLabel = 'Bank Sampah';
-    protected static ?string $pluralModelLabel = 'Bank Sampah'; // Nama di semua tempat
+    protected static ?string $pluralModelLabel = 'Bank Sampah';
 
 
 
@@ -44,7 +45,7 @@ class BankResource extends Resource
     {
         return $form
             ->schema([
-                // ===================== TOGGLE KUNCI ALAMAT =====================
+            // ===================== TOGGLE KUNCI ALAMAT =====================
             Forms\Components\Toggle::make('lock_address')
                 ->label('Kunci Alamat')
                 ->default(true)
@@ -138,14 +139,11 @@ class BankResource extends Resource
                 ->label('Alamat Lengkap (Otomatis/Manual)')
                 ->rows(3)
                 ->helperText('Alamat akan terisi otomatis dari peta, namun Anda bisa mengoreksinya jika perlu.')
-                ->required(),
-            TextInput::make('district')
+                ->columnSpanFull()
                 ->required(),
 
             Forms\Components\Hidden::make('address_json'),
-                TextInput::make('bank_name')
-                ->required(),
-                        Forms\Components\Select::make('kecamatan')
+                Forms\Components\Select::make('district')
                 ->label('Kecamatan')
                 ->options([
                     'banjarmasin utara'   => 'banjarmasin utara',
@@ -157,6 +155,30 @@ class BankResource extends Resource
                 ->searchable()
                 ->helperText('Dipilih otomatis dari peta, namun Anda bisa memilih dari daftar jika perlu.'),
 
+            Forms\Components\TextInput::make('sub_district')
+                ->label('Kelurahan')
+                ->required(),
+
+            TextInput::make('bank_name')
+            ->required(),
+            Forms\Components\Select::make('user_id')
+                ->label('Pemilik (User)')
+                ->relationship('user', 'name')
+                ->searchable()
+                ->preload()
+                ->required()
+                ->visible(fn () => auth()->user()->hasRole('admin'))
+                ->native(false)
+                ->extraAttributes(['class' => 'relative z-[9999]'])
+                ->disabled(fn () => !auth()->user()->hasRole('admin')),            
+            TimePicker::make('opening_hour')
+                ->seconds(false)
+                ->label('Jam Buka')
+                ->required(),
+            TimePicker::make('closing_hour')
+                ->seconds(false)
+                ->label('Jam Tutup')
+                ->required(),
             Forms\Components\CheckboxList::make('operational_days')
                 ->label('Hari Operasional')
                 ->options([
@@ -172,18 +194,13 @@ class BankResource extends Resource
                 ->columns(3)
                 ->gridDirection('row')
                 ->bulkToggleable(),
-            
-            TimePicker::make('opening_hour')
-                ->seconds(false)
-                ->required(),
-            TimePicker::make('closing_hour')
-                ->seconds(false)
-                ->required(),
-            Textarea::make('description'),
             FileUpload::make('image_path')
                 ->image()
                 ->imageEditor()
                 ->Label('Gambar Bank'),
+                Textarea::make('description')
+                ->columnSpanFull()
+                ->label('Deskripsi'),
             ]);
     }
 
@@ -207,6 +224,9 @@ class BankResource extends Resource
             ->columns([
                 TextColumn::make('bank_name')->searchable()
                 ->wrap(),
+                TextColumn::make('user.username')->label('Pengelola')->searchable(),
+                TextColumn::make('phone_number')->searchable()
+                ->label('No. Telp'),
                 TextColumn::make('district')->searchable()
                 ->label('Kecamatan'),
                 TextColumn::make('sub_district')->searchable()

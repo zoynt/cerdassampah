@@ -97,11 +97,12 @@ class ReportResource extends Resource
                 ->limit(30),
                 Tables\Columns\TextColumn::make('status')
                 ->color(fn (string $state): string => match ($state) {
-                    'pending' => 'gray',
+                    'pending' => 'danger',
                     'proses' => 'warning',
                     'selesai' => 'success',
                     'rejected' => 'danger',
-                }),
+                })->badge()
+                ->alignCenter(),
                 Tables\Columns\TextColumn::make('waktu_lapor')->sortable()
                 ->dateTime('d M Y'),
             ])
