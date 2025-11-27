@@ -45,7 +45,7 @@ class UserStatsOverview extends BaseWidget
 
             Stat::make('Total Laporan TPS Liar', Report::count())
                 ->description('Jumlah semua laporan yang diterima')
-                ->descriptionIcon('heroicon-m-document-text')
+                // ->descriptionIcon('heroicon-m-document-text')
                 ->color('primary')
                 ->url(ReportResource::getUrl()),
 
@@ -53,12 +53,12 @@ class UserStatsOverview extends BaseWidget
                 ->description('Laporan hari ini')
                 ->color('warning')
                 ->url(ReportResource::getUrl()),
-            // Stat::make('Total Toko Daur Ulang', Store::count())
-            //     ->description('Jumlah semua Toko Daur Ulang terdaftar')
-            //     ->color('success'),
-            // Stat::make('Total Rekening Bank Sampah ', RekeningBankSampahUser::count())
-            //     ->description('Jumlah semua rekening bank sampah terdaftar')
-            //     ->color('success'),
+            Stat::make('Total Toko Daur Ulang', Store::count())
+                ->description('Jumlah semua Toko Daur Ulang terdaftar')
+                ->color('success'),
+            Stat::make('Total Rekening Bank Sampah ', RekeningBankSampahUser::count())
+                ->description('Jumlah semua rekening bank sampah terdaftar')
+                ->color('success'),
         ];
     }
 }
