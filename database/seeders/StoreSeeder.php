@@ -49,7 +49,7 @@ class StoreSeeder extends Seeder
                 'closing_hour' => '16:00',
             ],
             [
-                'user_id' => 3,
+                'user_id' => 13,
                 'name' => 'Kreasi Bekas Banjar',
                 'description' => 'Sedia barang bekas layak daur ulang, terutama logam dan kaca.',
                 'phone_number' => '083456789012',
