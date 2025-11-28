@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use Dom\Text;
 use Filament\Forms;
 use App\Models\Bank;
 use Filament\Tables;
@@ -9,6 +10,7 @@ use Filament\Forms\Get;
 use Filament\Forms\Set;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 use Filament\Resources\Resource;
 use Dotswan\MapPicker\Fields\Map;
 use Illuminate\Support\Facades\Log;
@@ -26,7 +28,6 @@ use Filament\Actions\Exports\Enums\ExportFormat;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Resources\BankResource\Pages;
 use App\Filament\Admin\Resources\BankResource\RelationManagers;
-use Dom\Text;
 
 class BankResource extends Resource
 {
@@ -160,7 +161,19 @@ class BankResource extends Resource
                 ->required(),
 
             TextInput::make('bank_name')
-            ->required(),
+                ->required()
+                ->maxLength(255)
+                ->live(onBlur: true) 
+                ->afterStateUpdated(function (Set $set, ?string $state) {
+                    $set('slug', Str::slug($state));
+                }),
+
+            TextInput::make('slug')
+                ->required()
+                ->maxLength(255)
+                ->readOnly() 
+                ->unique(ignoreRecord: true), 
+
             Forms\Components\Select::make('user_id')
                 ->label('Pemilik (User)')
                 ->relationship('user', 'name')
@@ -179,6 +192,10 @@ class BankResource extends Resource
                 ->seconds(false)
                 ->label('Jam Tutup')
                 ->required(),
+            FileUpload::make('image_path')
+                ->image()
+                ->imageEditor()
+                ->Label('Gambar Bank'),
             Forms\Components\CheckboxList::make('operational_days')
                 ->label('Hari Operasional')
                 ->options([
@@ -194,11 +211,7 @@ class BankResource extends Resource
                 ->columns(3)
                 ->gridDirection('row')
                 ->bulkToggleable(),
-            FileUpload::make('image_path')
-                ->image()
-                ->imageEditor()
-                ->Label('Gambar Bank'),
-                Textarea::make('description')
+            Textarea::make('description')
                 ->columnSpanFull()
                 ->label('Deskripsi'),
             ]);
