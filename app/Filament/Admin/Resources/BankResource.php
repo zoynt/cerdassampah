@@ -167,10 +167,10 @@ class BankResource extends Resource
                 ->searchable()
                 ->preload()
                 ->required()
-                ->visible(fn () => auth()->user()->hasRole('admin'))
+                // ->visible(fn () => auth()->user()->hasRole('admin'))
                 ->native(false)
-                ->extraAttributes(['class' => 'relative z-[9999]'])
-                ->disabled(fn () => !auth()->user()->hasRole('admin')),            
+                ->extraAttributes(['class' => 'relative z-[9999]']),
+                // ->disabled(fn () => !auth()->user()->hasRole('admin')),            
             TimePicker::make('opening_hour')
                 ->seconds(false)
                 ->label('Jam Buka')
