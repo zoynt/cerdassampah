@@ -123,6 +123,7 @@ class BankSeeder extends Seeder
         // Menggunakan insert() lebih cepat untuk seeder, tapi pastikan $fillable di Model Bank sudah benar
         // Jika ragu, gunakan loop foreach seperti di bawah:
         foreach ($banks as $bankData) {
+            $bankData['image_path'] =  'placehorderbanksampah.png';
             Bank::create($bankData);
         }
         

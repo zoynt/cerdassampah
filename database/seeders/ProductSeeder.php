@@ -213,5 +213,7 @@ class ProductSeeder extends Seeder
                 'updated_at' => now(),
             ],
         ]);
+
+        
     }
 }

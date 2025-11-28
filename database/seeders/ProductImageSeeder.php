@@ -18,7 +18,7 @@ class ProductImageSeeder extends Seeder
         foreach ($productIds as $id) {
             $images[] = [
                 'product_id' => $id,
-                'image_path' => 'img/cat1.jpeg', // Ganti dengan path gambar dummy Anda
+                'image_path' => 'products/300x300.svg', // Ganti dengan path gambar dummy Anda
                 'is_primary' => true,
                 'created_at' => now(),
                 'updated_at' => now(),

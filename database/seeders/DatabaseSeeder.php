@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
             OrderSeeder::class, 
             ProductImageSeeder::class,
             StoreReviewSeeder::class,
-            OrderItemSeeder::class,
+            // OrderItemSeeder::class,
             
             //MySalesHistorySeeder::class,
              RekeningBankSampahUserSeeder::class, // Bergantung pada User dan Bank

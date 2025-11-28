@@ -68,6 +68,7 @@ class StoreSeeder extends Seeder
         foreach ($stores as $storeData) {
             // Tambahkan slug secara otomatis
             $storeData['slug'] = Str::slug($storeData['name']);
+            $storeData['image_path'] =  'placehordertoko.png';
             Store::create($storeData);
         }
     }
