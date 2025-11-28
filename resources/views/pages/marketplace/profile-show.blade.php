@@ -6,6 +6,7 @@
 
 @section('content')
     <div class="space-y-6">
+        {{ Breadcrumbs::render() }}
         <div class="flex flex-col sm:flex-row justify-end sm:items-center gap-4">
             {{-- <h1 class="text-3xl font-bold text-gray-800">{{ $store->name }}</h1> --}}
 

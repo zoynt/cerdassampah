@@ -4,6 +4,7 @@
 
 @section('content')
     <div class="space-y-6">
+        {{ Breadcrumbs::render() }}
         <h1 class="text-xl md:text-3xl font-bold text-gray-800">{{ $store->name }}</h1>
 
         <div class="bg-white rounded-2xl shadow-lg">

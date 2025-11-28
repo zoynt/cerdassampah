@@ -339,6 +339,7 @@ class ProductController extends Controller
                 ->latest();
     $penjualansForJs = $query->get()->map(function($order) {
         $firstItem = $order->orderItems->first();
+        $bersih = $order->net_amount > 0 ? $order->net_amount : ($order->total_amount * 0.95);
         return [
             'order_id' => $order->id,
             'pembeli' => optional($order->buyer)->name ?? 'Pembeli Dihapus',
@@ -347,6 +348,7 @@ class ProductController extends Controller
             'jumlah_item' => $order->orderItems->sum('quantity'),
             'selling_unit' => optional($firstItem->product)->selling_unit,
             'total' => (int)$order->total_amount,
+            'total_bersih' => (int)$bersih,
             'status' => $order->status,
             'translated_status' => $order->translated_status,
             'detailUrl' => route('marketplace.purchase.detail', ['order' => $order->order_number])
@@ -358,19 +360,44 @@ class ProductController extends Controller
             ->whereHas('order', function ($q) {
                 $q->where('status', 'completed');
             });
-
         $totalProduk = (int) (clone $completedQuery)->sum('order_items.quantity');
-        $totalPenjualan = (clone $completedQuery)->sum(DB::raw('(order_items.price / products.weight_per_item) * order_items.quantity'));
-        $salesLast7Days = (clone $completedQuery)
-            ->where('order_items.created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
-            ->select(
-                DB::raw('DATE(order_items.created_at) as date'),
-                DB::raw('SUM((order_items.price / products.weight_per_item) * order_items.quantity) as total_sales')
-            )
-            ->groupBy('date')->orderBy('date', 'ASC')->get()->keyBy('date');
+        $totalPenjualanKotor = (clone $completedQuery)->sum(DB::raw('(order_items.price / products.weight_per_item) * order_items.quantity'));
+        $totalProduk = (int) (clone $completedQuery)->sum('order_items.quantity');
+        // $totalPenjualan = (clone $completedQuery)->sum(DB::raw('(order_items.price / products.weight_per_item) * order_items.quantity'));
+        $persentaseAdmin = 0.05; // 5%
+        $persentaseAdmin = $store->admin_fee / 100; 
+        // $hitungAdminFee = $totalPenjualan * $persentaseAdmin; 
+        // $hitungBersih = $totalPenjualan - $hitungAdminFee;
+        $totalBiayaAdmin = $totalPenjualanKotor * $persentaseAdmin;
+        $totalBersih = $totalPenjualanKotor - $totalBiayaAdmin;
+
+        $completedQueryGross = \App\Models\OrderItem::query()
+            ->join('products', 'order_items.product_id', '=', 'products.id') 
+            ->join('orders', 'order_items.order_id', '=', 'order_id')
+            ->where('products.store_id', $store->id) 
+            ->whereHas('order', function ($q) {
+                $q->where('status', 'completed');
+            });
+        // $salesLast7Days = (clone $completedQueryGross)
+        
+        $salesLast7Days = \App\Models\Order::query()
+        // $salesLast7Days = (clone $completedQueryGross)
+        ->where('seller_id', $store->user_id)
+        ->where('status', 'completed')
+        ->where('orders.created_at', '>=', Carbon::now()->subDays(6)->startOfDay())
+        ->select(
+            DB::raw('DATE(created_at) as date'),
+            // DB::raw('SUM((orders.price / products.weight_per_item) * orders.quantity) as total_sales')
+            // Rumus: Total Bayar - Admin Fee = Pendapatan Bersih
+            DB::raw('SUM(total_amount - admin_fee) as total_sales')
+        )
+        ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->get()
+            ->keyBy('date');
 
         $chartLabels = [];
-        $chartData = [];
+        $chartData = [];// Rumus: Total Bayar - Admin Fee = Pendapatan Bersih
         for ($i = 6; $i >= 0; $i--) {
             $date = Carbon::now()->subDays($i)->format('Y-m-d');
             $chartLabels[] = Carbon::parse($date)->translatedFormat('d M'); 
@@ -381,7 +408,9 @@ class ProductController extends Controller
         'penjualans' => $penjualansForJs,
         'kategoriList' => \App\Models\ProductCategory::pluck('name')->all(),
         'totalProduk' => $totalProduk,
-        'totalPenjualan' => 'Rp ' . number_format($totalPenjualan, 0, ',', '.'),
+        'totalPenjualan' => 'Rp ' . number_format($totalPenjualanKotor, 0, ',', '.'),
+        'totalBersih' => 'Rp ' . number_format($totalBersih, 0, ',', '.'),
+        'totalBiayaAdmin' => 'Rp ' . number_format($totalBiayaAdmin, 0, ',', '.'),
         'chartLabels' => $chartLabels,
         'chartData' => $chartData,
         ]);

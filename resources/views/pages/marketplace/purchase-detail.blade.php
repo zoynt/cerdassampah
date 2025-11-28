@@ -13,7 +13,8 @@
 
 @section('content')
     <div class="space-y-6">
-        <div class="flex items-center gap-4">
+        {{ Breadcrumbs::render() }}
+        {{-- <div class="flex items-center gap-4">
             <a href="{{ route('marketplace.history') }}"
                 class="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-md hover:bg-gray-100">
                 <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -22,7 +23,7 @@
                 </svg>
             </a>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Detail Pembelian</h1>
-        </div>
+        </div> --}}
         <div
             class="bg-green-700 text-white p-4 rounded-xl shadow-md flex justify-between items-center text-sm md:text-base font-semibold">
             <span>No Order</span>

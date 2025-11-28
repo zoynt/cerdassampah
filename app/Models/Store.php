@@ -16,6 +16,7 @@ class Store extends Model
         'description',
         'phone_number',
         'is_active',
+        'admin_fee',
         'latitude',
         'longitude',
         'address',
@@ -30,6 +31,7 @@ class Store extends Model
     protected $casts = [
         'is_active' => 'boolean',
         'operational_days' => 'array', 
+        'admin_fee' => 'decimal:2',
     ];
 
     public function user() { return $this->belongsTo(User::class); }

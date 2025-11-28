@@ -208,17 +208,17 @@ Breadcrumbs::for('marketplace.products.all', function (BreadcrumbTrail $trail) {
 });
 
 // Home > Marketplace > [Nama Toko]
-Breadcrumbs::for('marketplace.store.show', function (BreadcrumbTrail $trail, Store $store) {
-    $trail->parent('marketplace.products.all');
-    $trail->push($store->name, route('marketplace.store.show', $store));
-});
+// Breadcrumbs::for('marketplace.store.show', function (BreadcrumbTrail $trail, Store $store) {
+//     $trail->parent('marketplace.products.all');
+//     $trail->push($store->name, route('marketplace.store.show', $store));
+// });
 
 // Home > Marketplace > [Nama Toko] > [Nama Produk]
 // Asumsi $product_slug adalah ID atau slug dari model Product
 Breadcrumbs::for('marketplace.products.show', function (BreadcrumbTrail $trail, Store $store, $product_slug) {
     // Anda mungkin perlu mengambil data produk di sini jika $product_slug bukan objek
     // Untuk contoh ini, kita anggap $product_slug adalah string nama
-    $trail->parent('marketplace.store.show', $store);
+    $trail->parent('marketplace.products.all', $store);
     $trail->push($product_slug, route('marketplace.products.show', [$store, $product_slug]));
 });
 
@@ -304,3 +304,6 @@ Breadcrumbs::for('marketplace.riwayat', function (BreadcrumbTrail $trail, Store 
     $trail->parent('dashboard');
     $trail->push('Data Penjualan', route('marketplace.riwayat', $store));
 });
+// =================================================================
+// Transaksi (MARKETPLACE)
+// =================================================================

@@ -7,6 +7,7 @@
     @endpush
 
     @section('content')
+    
         <div x-data="marketplace()" x-init="$watch('searchQuery', () => { visibleItemsCount = itemsPerLoad });
         $watch('selectedCategory', () => { visibleItemsCount = itemsPerLoad });" x-cloak>
             <div class="space-y-6">

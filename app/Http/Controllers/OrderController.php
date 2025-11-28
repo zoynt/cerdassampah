@@ -137,22 +137,27 @@ class OrderController extends Controller
             return response()->json(['error' => 'Jumlah pembelian melebihi stok yang tersedia.'], 422);
         }
 
-        // 4. [PERBAIKAN UTAMA] Logika Perhitungan Harga yang Benar
         $divider = ($product->selling_unit === 'Buah' || $product->weight_per_item == 0) ? 1 : $product->weight_per_item;
         $numberOfUnits = $quantity / $divider;
         $totalAmount = $product->price * $numberOfUnits;
+        $feePercentage = $product->store->admin_fee / 100;
+        $adminFee = $totalAmount * $feePercentage;
+        $netAmount = $totalAmount - $adminFee;         
 
         // 5. Buat Order Baru dengan total yang benar
         $order = Order::create([
             'buyer_id' => $buyer->id,
             'seller_id' => $seller->id,
             'order_number' => 'ORD-' . strtoupper(uniqid()),
-            'total_amount' => $totalAmount, // <-- Menggunakan total yang sudah benar
+            'total_amount' => $totalAmount, 
+            'admin_fee' => $adminFee,      // Simpan fee
+            'net_amount' => $netAmount,    // Simpan bersih// <-- Menggunakan total yang sudah benar
             'status' => 'pending',
             'payment_status' => 'pending',
             'delivery_address' => $request->delivery_address,
             'delivery_latitude' => $request->delivery_latitude,
             'delivery_longitude' => $request->delivery_longitude,
+        
         ]);
 
         // 6. Buat Order Item
@@ -202,6 +207,7 @@ class OrderController extends Controller
             return response()->json(['error' => $e->getMessage()], 500);
         }
     }
+
     public function cancelOrder(Order $order)
     {
         // 1. Otorisasi: Pastikan hanya pembeli yang bisa membatalkan pesanannya sendiri.

@@ -7,7 +7,8 @@
 
 @section('content')
     <div class="space-y-6 md:space-y-8" x-data="productPage()">
-        <div class="flex items-center gap-4">
+        {{ Breadcrumbs::render() }}
+        {{-- <div class="flex items-center gap-4">
             <div x-data="{ tooltip: false }" class="relative inline-block">
                 <button onclick="window.history.back()" @mouseenter="tooltip = true" @mouseleave="tooltip = false"
                     class="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200">
@@ -22,7 +23,7 @@
                 </div>
             </div>
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Detail Produk</h1>
-        </div>
+        </div> --}}
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8 items-start">
             {{-- Kolom Kiri: Gambar Produk --}}
@@ -268,12 +269,12 @@
                     ulasan lebih banyak</button>
             </div>
         </div>
-        <div class="mt-8">
+        {{-- <div class="mt-8">
             <button onclick="window.history.back()"
                 class="block w-full text-center px-4 py-3 bg-green-700 text-white font-semibold rounded-lg shadow-md hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors duration-200">
                 Kembali
             </button>
-        </div>
+        </div> --}}
         {{-- Modal untuk Galeri Gambar --}}
         <div x-show="isModalOpen" @click.away="isModalOpen = false" x-transition
             class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75 p-4" style="display: none;">

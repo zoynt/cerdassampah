@@ -22,6 +22,7 @@
 
 @section('content')
     <div class="space-y-6">
+        {{ Breadcrumbs::render() }}
         <h1 class="text-xl md:text-3xl font-bold text-gray-800">Invoice {{ $order->order_number }}</h1>
         <div id="invoice-area" class="bg-white rounded-xl shadow-lg border overflow-hidden">
             <div class="bg-green-700 text-white p-6 md:p-8 text-center">
@@ -194,10 +195,10 @@
             </svg>
             Cetak Invoice
         </button>
-        <a href="{{ route('marketplace.purchase.detail', $order) }}"
+        {{-- <a href="{{ route('marketplace.purchase.detail', $order) }}"
             class="w-full sm:w-auto text-center px-5 py-2.5 bg-gray-200 text-gray-800 text-sm font-semibold rounded-lg hover:bg-gray-300">
             Kembali
-        </a>
+        </a> --}}
     </div>
 @endsection
 @push('scripts')

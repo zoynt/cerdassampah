@@ -19,6 +19,8 @@ class Order extends Model
         'payment_status',
         'snap_token',
         'payment_method',
+        'admin_fee',
+        'net_amount'
         ];
 
     public function buyer()

@@ -38,9 +38,10 @@
         </div>
     @else
         <div class="space-y-6">
+            {{ Breadcrumbs::render() }}
             {{-- Detail Pesanan --}}
             <div class="flex items-center gap-4">
-                <div x-data="{ tooltip: false }" class="relative inline-block">
+                {{-- <div x-data="{ tooltip: false }" class="relative inline-block">
                     <button onclick="window.history.back()" @mouseenter="tooltip = true" @mouseleave="tooltip = false"
                         class="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-md hover:bg-gray-100 transition-colors duration-200">
                         <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -52,7 +53,7 @@
                         class="absolute z-10 top-full mt-2 w-auto px-2 py-1 bg-gray-800 text-white text-xs rounded-md whitespace-nowrap">
                         Kembali
                     </div>
-                </div>
+                </div> --}}
                 <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Atur Pesanan</h1>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-md">

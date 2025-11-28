@@ -52,6 +52,7 @@ class SalesByStatusSheet implements FromQuery, WithHeadings, WithMapping, WithTi
             'Produk Dibeli',
             'Jumlah Item',
             'Total Harga',
+            'Total Bersih',
             'Status', // Menambahkan kolom status untuk kejelasan
         ];
     }
@@ -68,6 +69,7 @@ class SalesByStatusSheet implements FromQuery, WithHeadings, WithMapping, WithTi
             $order->orderItems->pluck('product.name')->join(', '),
             $order->orderItems->sum('quantity'),
             'Rp ' . number_format($order->total_amount, 0, ',', '.'),
+            'Rp ' . number_format($order->net_amount, 0, ',', '.'),
             ucfirst($order->status), // Menambahkan data status di setiap baris
         ];
     }

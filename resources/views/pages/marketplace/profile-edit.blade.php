@@ -39,6 +39,7 @@
 
 @section('content')
     <div class="space-y-6">
+        {{ Breadcrumbs::render() }}
         <form action="{{ $store->exists ? route('store.profile.update') : route('store.profile.store') }}" method="POST"
             enctype="multipart/form-data">
             @csrf
