@@ -56,6 +56,13 @@ class TpsImporter extends Importer
             }
         }
 
+        // default image jika tidak ada
+        if (empty($data['image'])) {
+            // Ganti string di bawah sesuai lokasi gambar default di storage kamu
+            $data['image'] = 'placehorderbanksampah.png'; 
+        }
+
+
         // 2. PROSES TPS DAY (Target: Menjadi Array PHP Murni)
         // Kita pakai metode "Pembersihan Manual" yang paling aman untuk CSV
         

@@ -58,6 +58,12 @@ public function resolveRecord(): ?Bank
             }
         }
 
+        // default image jika tidak ada
+        if (empty($data['image_path'])) {
+            // Ganti string di bawah sesuai lokasi gambar default di storage kamu
+            $data['image_path'] = 'placehorderbanksampah.png'; 
+        }
+
         // 2. Slug & User ID (Kode Anda sebelumnya)
         if (empty($data['slug']) && isset($data['bank_name'])) {
             $data['slug'] = Str::slug($data['bank_name']);
