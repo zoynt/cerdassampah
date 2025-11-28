@@ -2,17 +2,18 @@
 
 namespace App\Models;
 
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Spatie\Permission\Traits\HasRoles;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use App\Models\RekeningBankSampahUser; 
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Filament\Panel;
 use App\Models\Bank;
+use Spatie\Permission\Traits\HasRoles;
+use App\Models\RekeningBankSampahUser; 
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use App\Models\Store; // [FIX] Ditambahkan untuk relasi store()
-use App\Models\Order; // [FIX] Ditambahkan untuk relasi orders() & sales()
 use App\Models\StoreReview; // [FIX] Ditambahkan untuk relasi reviews()
 use App\Models\UserPoint; // [FIX] Ditambahkan untuk relasi userpoints()
+use App\Models\Order; // [FIX] Ditambahkan untuk relasi orders() & sales()
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -140,14 +141,8 @@ class User extends Authenticatable implements MustVerifyEmail
 
     public function canAccessPanel(Panel $panel): bool
     {
-        // OPSI 1: Izinkan hanya email tertentu (Paling Aman untuk awal)
-        // Ganti dengan email login Anda
-        // return $this->email === 'email.anda@gmail.com';
-
-        // OPSI 2: Jika Anda punya kolom role/is_admin di database
-        return $this->role == 'admin';
-        
-        // OPSI 3: HATI-HATI (Hanya untuk tes sebentar)
-        // return true;
+        // Gunakan logika yang sama persis dengan Middleware Anda
+        // Pastikan method hasRole() tersedia di model ini
+        return $this->hasRole('admin'); 
     }
 }
