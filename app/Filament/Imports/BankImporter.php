@@ -3,8 +3,9 @@
 namespace App\Filament\Imports;
 
 use App\Models\Bank;
-use Filament\Actions\Imports\ImportColumn;
+use Illuminate\Support\Str;
 use Filament\Actions\Imports\Importer;
+use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Models\Import;
 
 class BankImporter extends Importer
@@ -39,58 +40,59 @@ class BankImporter extends Importer
             // ImportColumn::make('phone_number'),
             ImportColumn::make('description'),
             ImportColumn::make('image_path'),
+            ImportColumn::make('is_active'),
         ];
     }
 
-        public function resolveRecord(): ?Bank
+public function resolveRecord(): ?Bank
     {
-        // Ambil data dari baris CSV saat ini
         $data = $this->data;
 
-        // 1. Proses kolom 'bank_day'
-        // Cek jika 'bank_day' ada dan merupakan string JSON
-        if (isset($data['bank_day']) && is_string($data['bank_day'])) {
-            // Decode string JSON menjadi array PHP
-            $decodedArray = json_decode($data['bank_day'], true);
-
-            // Jika decode berhasil (tidak ada error)
-            if (json_last_error() === JSON_ERROR_NONE) {
-                // Encode kembali menjadi string JSON yang bersih untuk disimpan ke database
-                $data['bank_day'] = json_encode($decodedArray);
-            } else {
-                // Jika decode gagal, atur nilainya menjadi null agar tidak error
-                $data['bank_day'] = null;
+        // 1. Sanitasi (Kode Anda sebelumnya)
+        $fieldsToClean = ['phone_number', 'description', 'image_path', 'sub_district'];
+        foreach ($fieldsToClean as $field) {
+            if (isset($data[$field])) {
+                if (trim($data[$field]) === '-' || trim($data[$field]) === '') {
+                    $data[$field] = null;
+                }
             }
         }
 
-        // 2. (Opsional) Sanitasi kolom lain jika ada placeholder seperti '-'
-        // $columnsToSanitize = [
-        //     'bank_no',
-        //     'bank_description',
-        //     'image',
-        // ];
+        // 2. Slug & User ID (Kode Anda sebelumnya)
+        if (empty($data['slug']) && isset($data['bank_name'])) {
+            $data['slug'] = Str::slug($data['bank_name']);
+        }
 
-        // foreach ($columnsToSanitize as $column) {
-        //     // Jika kolom berisi '-', ubah menjadi null
-        //     if (isset($data[$column]) && $data[$column] === '-') {
-        //         $data[$column] = null; // Pastikan kolom ini boleh NULL di database
-        //     }
-        // }
+        // 3. LOGIKA OPERATIONAL DAYS (CARA BARU - STRING MANIPULATION)
+        // Kita tidak peduli apakah itu valid JSON atau tidak. Kita hanya mau isinya.
+        
+        $opDaysRaw = $data['operational_days'] ?? '';
 
-        // 3. Buat record baru di database dengan data yang sudah diproses
-        // Pastikan properti $fillable di model Bank sudah sesuai
-        return Bank::create($data);
-    }
+        if (!empty($opDaysRaw)) {
+            // Langkah A: Buang semua karakter pengganggu (Kurung siku, kutip satu, kutip dua, garis miring)
+            // Input: "[""Senin"", ""Selasa""]" 
+            // Output: Senin, Selasa
+            $cleanString = str_replace(['[', ']', '"', "'", '\\'], '', $opDaysRaw);
+            
+            // Langkah B: Pecah berdasarkan Koma
+            $arrayDays = explode(',', $cleanString);
 
-    // public function resolveRecord(): ?Bank
-    // {
-    //     // return Bank::firstOrNew([
-    //     //     // Update existing records, matching them by `$this->data['column_name']`
-    //     //     'email' => $this->data['email'],
-    //     // ]);
+            // Langkah C: Bersihkan spasi di setiap item
+            // Output Final: ['Senin', 'Selasa'] (ARRAY MURNI)
+            $finalArray = array_map('trim', $arrayDays);
 
-    //     return new Bank();
-    // }
+            // Langkah D: Filter array kosong (jaga-jaga)
+            $data['operational_days'] = array_filter($finalArray);
+        } else {
+            $data['operational_days'] = [];
+        }
+
+        // 4. Simpan (Update or Create)
+        return Bank::updateOrCreate(
+            ['slug' => $data['slug']], 
+            $data
+        );
+    } 
 
     public static function getCompletedNotificationBody(Import $import): string
     {

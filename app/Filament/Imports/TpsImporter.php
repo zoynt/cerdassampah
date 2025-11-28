@@ -28,107 +28,69 @@ class TpsImporter extends Importer
             ImportColumn::make('tps_day')->requiredMapping(),
             ImportColumn::make('tps_start_time')->requiredMapping(),
             ImportColumn::make('tps_end_time')->requiredMapping(),
-            ImportColumn::make('tps_transport')->requiredMapping(),
-            ImportColumn::make('tps_description')->requiredMapping(),
-            ImportColumn::make('image')->requiredMapping(),
-            // ImportColumn::make('tps_name')
-            //     ->requiredMapping()
-            //     ->rules(['required', 'max:255']),
-            // ImportColumn::make('tps_longitude')
-            //     ->requiredMapping()
-            //     ->rules(['required', 'max:255']),
-            // ImportColumn::make('tps_latitude')
-            //     ->requiredMapping()
-            //     ->rules(['required', 'max:255']),
-            // ImportColumn::make('tps_address')
-            //     ->requiredMapping()
-            //     ->rules(['required', 'max:255']),
-            // ImportColumn::make('tps_status'),
-            // ImportColumn::make('kecamatan')
-            //     ->requiredMapping()
-            //     ->rules(['required']),
-            // ImportColumn::make('tps_day')
-            //     ->requiredMapping()
-            //     ->rules(['required']),
-            // ImportColumn::make('tps_start_time')
-            //     ->requiredMapping()
-            //     ->rules(['required']),
-            // ImportColumn::make('tps_end_time')
-            //     ->requiredMapping()
-            //     ->rules(['required']),
-            // ImportColumn::make('tps_transport')
-            //     ->requiredMapping()
-            //     ->rules(['required', 'max:255']),
-            // ImportColumn::make('tps_description'),
-            // ImportColumn::make('image')
-            //     ->rules(['max:255']),
+            ImportColumn::make('tps_transport'),
+            ImportColumn::make('tps_description'),
+            ImportColumn::make('image'),
         ];
     }
 
-    protected function mutateBeforeCreate(array $data): array
+    public function resolveRecord(): ?Tps
     {
-        // Cek jika tps_day tidak kosong
-        // if (!empty($data['tps_day'])) {
-        //     // BENAR: Gunakan json_decode untuk membaca string format JSON dari file
-        //     $data['tps_day'] = json_decode($data['tps_day'], true);
-        // } else {
-        //     $data['tps_day'] = null;
-        // }
+        $data = $this->data;
+
+        // 1. SANITASI: Ubah tanda '-' atau string kosong menjadi NULL
+        $columnsToSanitize = [
+            'tps_start_time',
+            'tps_end_time',
+            'tps_transport',
+            'tps_description',
+            'image'
+        ];
+
+        foreach ($columnsToSanitize as $column) {
+            // Cek jika ada datanya, lalu cek apakah isinya '-' atau kosong
+            if (isset($data[$column])) {
+                if (trim($data[$column]) === '-' || trim($data[$column]) === '') {
+                    $data[$column] = null;
+                }
+            }
+        }
+
+        // 2. PROSES TPS DAY (Target: Menjadi Array PHP Murni)
+        // Kita pakai metode "Pembersihan Manual" yang paling aman untuk CSV
         
-        // // Mengubah nilai '-' (jika masih ada) menjadi null
-        // if ($data['tps_start_time'] === '-') {
-        //     $data['tps_start_time'] = null;
-        // }
-        // if ($data['tps_end_time'] === '-') {
-        //     $data['tps_end_time'] = null;
-        // }
+        $rawDay = $data['tps_day'] ?? '';
 
-        return $data;
-    }
+        if (!empty($rawDay)) {
+            // A. Buang karakter kurung siku [], kutip ", kutip ', dan backslash \
+            // Input: "[""Senin"", ""Selasa""]" -> Output: Senin, Selasa
+            $cleanString = str_replace(['[', ']', '"', "'", '\\'], '', $rawDay);
+            
+            // B. Pecah menjadi array berdasarkan koma
+            $arrayDays = explode(',', $cleanString);
 
-public function resolveRecord(): ?Tps
-{
-    $data = $this->data;
-
-    // 1. Dekode JSON dari CSV, lalu LANGSUNG ENCODE KEMBALI menjadi string yang bersih
-    if (isset($data['tps_day']) && is_string($data['tps_day'])) {
-        // Langkah A: Ubah string CSV menjadi array PHP
-        $decodedArray = json_decode($data['tps_day'], true);
-        
-        if (json_last_error() === JSON_ERROR_NONE) {
-            // Langkah B: Encode kembali array PHP menjadi string JSON yang BERSIH
-            // Hasilnya akan menjadi: ["Senin", "Selasa", ...]
-            $data['tps_day'] = json_encode($decodedArray); 
+            // C. Bersihkan spasi di kiri/kanan text (trim) & filter yang kosong
+            $data['tps_day'] = array_values(array_filter(array_map('trim', $arrayDays)));
         } else {
-            $data['tps_day'] = null;
+            $data['tps_day'] = [];
         }
+
+        // 3. SIMPAN KE DATABASE
+        // Gunakan updateOrCreate agar tidak duplikat. 
+        // Saya asumsikan 'tps_name' adalah unik. Jika Anda punya kolom 'slug', lebih baik pakai slug.
+        
+        return Tps::updateOrCreate(
+            ['tps_name' => $data['tps_name']], // Kunci pencarian (biar tidak duplikat)
+            $data
+        );
     }
-
-    // 2. Ubah semua nilai '-' menjadi null atau string kosong sesuai kebutuhan database
-    $columnsToSanitize = [
-        'tps_start_time',
-        'tps_end_time',
-        'tps_transport',
-        'tps_description',
-        'image'
-    ];
-
-    foreach ($columnsToSanitize as $column) {
-        if (isset($data[$column]) && $data[$column] === '-') {
-            $data[$column] = null; // Pastikan kolom ini diizinkan NULL di database
-        }
-    }
-
-    // 3. Simpan data. Karena $casts dihapus, Laravel akan menyimpan string apa adanya.
-    return Tps::create($data);
-}
 
     public static function getCompletedNotificationBody(Import $import): string
     {
-        $body = 'Your tps import has completed and ' . number_format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
+        $body = 'TPS import completed. ' . number_format($import->successful_rows) . ' rows imported.';
 
         if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . number_format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
+            $body .= ' ' . number_format($failedRowsCount) . ' rows failed.';
         }
 
         return $body;
