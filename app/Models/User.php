@@ -137,4 +137,17 @@ class User extends Authenticatable implements MustVerifyEmail
         $label = $this->name ?: $this->username ?: 'User';
         return 'https://ui-avatars.com/api/?name=' . urlencode($label) . '&background=random';
     }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // OPSI 1: Izinkan hanya email tertentu (Paling Aman untuk awal)
+        // Ganti dengan email login Anda
+        // return $this->email === 'email.anda@gmail.com';
+
+        // OPSI 2: Jika Anda punya kolom role/is_admin di database
+        return $this->role == 'admin';
+        
+        // OPSI 3: HATI-HATI (Hanya untuk tes sebentar)
+        // return true;
+    }
 }
