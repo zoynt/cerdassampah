@@ -38,7 +38,7 @@ class TpsImporter extends Importer
     {
         $data = $this->data;
 
-        // 1. SANITASI: Ubah tanda '-' atau string kosong menjadi NULL
+        // 1. SANITASI YANG LEBIH KUAT
         $columnsToSanitize = [
             'tps_start_time',
             'tps_end_time',
@@ -47,51 +47,47 @@ class TpsImporter extends Importer
             'image'
         ];
 
+        // Daftar karakter yang dianggap "KOSONG"
+        // Kita masukkan strip biasa (-), En-dash (–), Em-dash (—), dan string "null"
+        $invalidValues = ['-', '–', '—', 'null', 'nan'];
+
         foreach ($columnsToSanitize as $column) {
-            // Cek jika ada datanya, lalu cek apakah isinya '-' atau kosong
             if (isset($data[$column])) {
-                if (trim($data[$column]) === '-' || trim($data[$column]) === '') {
+                // Bersihkan spasi, lalu ubah ke huruf kecil untuk pengecekan
+                $value = strtolower(trim($data[$column]));
+
+                // Cek apakah value ada di daftar invalid, ATAU string kosong
+                if (in_array($value, $invalidValues) || $value === '') {
                     $data[$column] = null;
                 }
             }
         }
 
-        // default image jika tidak ada
+        // --- CEK IMAGE DEFAULT ---
+        // Karena langkah di atas sudah mengubah '-' menjadi null, maka empty() akan bernilai true
         if (empty($data['image'])) {
-            // Ganti string di bawah sesuai lokasi gambar default di storage kamu
+            // Pastikan file ini ada di folder: storage/app/public/placehordertps.png
+            // Jika file ada di root storage, gunakan nama file saja. 
+            // Jika ingin rapi, masukkan ke folder tps/
             $data['image'] = 'placehordertps.png'; 
         }
 
-
-        // 2. PROSES TPS DAY (Target: Menjadi Array PHP Murni)
-        // Kita pakai metode "Pembersihan Manual" yang paling aman untuk CSV
-        
+        // 2. PROSES TPS DAY (Kode Anda Sudah Benar)
         $rawDay = $data['tps_day'] ?? '';
-
         if (!empty($rawDay)) {
-            // A. Buang karakter kurung siku [], kutip ", kutip ', dan backslash \
-            // Input: "[""Senin"", ""Selasa""]" -> Output: Senin, Selasa
             $cleanString = str_replace(['[', ']', '"', "'", '\\'], '', $rawDay);
-            
-            // B. Pecah menjadi array berdasarkan koma
             $arrayDays = explode(',', $cleanString);
-
-            // C. Bersihkan spasi di kiri/kanan text (trim) & filter yang kosong
             $data['tps_day'] = array_values(array_filter(array_map('trim', $arrayDays)));
         } else {
             $data['tps_day'] = [];
         }
 
-        // 3. SIMPAN KE DATABASE
-        // Gunakan updateOrCreate agar tidak duplikat. 
-        // Saya asumsikan 'tps_name' adalah unik. Jika Anda punya kolom 'slug', lebih baik pakai slug.
-        
+        // 3. SIMPAN
         return Tps::updateOrCreate(
-            ['tps_name' => $data['tps_name']], // Kunci pencarian (biar tidak duplikat)
+            ['tps_name' => $data['tps_name']], 
             $data
         );
     }
-
     public static function getCompletedNotificationBody(Import $import): string
     {
         $body = 'TPS import completed. ' . number_format($import->successful_rows) . ' rows imported.';
