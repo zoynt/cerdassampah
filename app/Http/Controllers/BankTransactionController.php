@@ -61,37 +61,159 @@ class BankTransactionController extends Controller
     /**
      * Menampilkan riwayat transaksi untuk NASABAH.
      */
+    // public function riwayat(Request $request, Bank $bank = null)
+    // {
+    //     $user = auth()->user();
+
+    //     // 1. Ambil ID bank tempat user punya rekening AKTIF.
+    //     $rekeningAktifBankIds = RekeningBankSampahUser::where('user_id', $user->id)
+    //                                                  ->where('status', 'Aktif')
+    //                                                  ->pluck('bank_id');
+
+    //     // 2. Ambil daftar bank HANYA dari ID di atas.
+    //     $daftarBank = Bank::whereIn('id', $rekeningAktifBankIds)
+    //                        ->orderBy('bank_name')
+    //                        ->get();
+
+    //     // 3. Cek apakah user punya rekening aktif. Jika tidak, redirect.
+    //     if ($daftarBank->isEmpty()) {
+    //         // Cek apakah user punya rekening TAPI tidak aktif
+    //         $hasInactiveRekenings = RekeningBankSampahUser::where('user_id', $user->id)->exists();
+    //         if ($hasInactiveRekenings) {
+    //             return redirect()->route('banksampah-user')
+    //                 ->with('error', 'Status nasabah Anda saat ini tidak aktif atau sedang menunggu persetujuan. Silakan hubungi pengelola bank sampah Anda.');
+    //         } else {
+    //             return redirect()->route('digital.informasi') 
+    //                 ->with('warning', 'Anda belum terdaftar sebagai nasabah di bank sampah manapun.');
+    //         }
+    //     }
+
+    //     // 4. Tentukan bank yang sedang dipilih.
+    //     $bankSampahTerpilih = ($bank && $daftarBank->contains($bank)) ? $bank : null;
+
+    //     // 5. Ambil ID Rekening yang relevan berdasarkan filter bank.
+    //     $rekeningQuery = RekeningBankSampahUser::where('user_id', $user->id);
+    //     if ($bankSampahTerpilih) {
+    //         $rekeningQuery->where('bank_id', $bankSampahTerpilih->id);
+    //     } else {
+    //          $rekeningQuery->whereIn('bank_id', $rekeningAktifBankIds);
+    //     }
+    //     $rekeningIds = $rekeningQuery->pluck('id');
+
+    //     // 6. Query utama untuk transaksi
+    //     $query = BankTransaction::whereIn('rekening_id', $rekeningIds)
+    //                              ->with('details.wasteProduct.category', 'rekening.bank');
+
+    //     // 7. Terapkan filter Tipe Transaksi jika ada.
+    //     if ($request->filled('tipe') && in_array($request->tipe, ['pemasukan', 'penarikan'])) {
+    //         $query->where('transaction_type', $request->tipe);
+    //     }
+
+    //     // 8. Hitung Statistik
+    //     $filteredTransactions = (clone $query)->get();
+    //     $totalTransaksiCount = $filteredTransactions->count();
+        
+    //     // Hitung Nominal hanya jika status 'Selesai' (atau 'pemasukan' yang biasanya langsung selesai)
+    //     $totalMasuk = $filteredTransactions->where('transaction_type', 'pemasukan')
+    //                                        ->where('status', 'Selesai')
+    //                                        ->sum('transaction_amount');
+                                           
+    //     $totalKeluar = $filteredTransactions->where('transaction_type', 'penarikan')
+    //                                         ->where('status', 'Selesai')
+    //                                         ->sum('transaction_amount');
+
+    //     // 9. Ambil data transaksi untuk tabel
+    //     $semuaTransaksi = $query->latest()->paginate(10)->withQueryString();
+
+    //     // 10. Hitung Saldo Saat Ini
+    //     $currentSaldo = RekeningBankSampahUser::whereIn('id', $rekeningIds)->sum('saldo');
+
+    //     // 11. Ambil info transaksi terakhir (Global)
+    //     $allUserAktifRekeningIds = RekeningBankSampahUser::where('user_id', $user->id)->whereIn('bank_id', $rekeningAktifBankIds)->pluck('id');
+    //     $pemasukanTerakhir = $allUserAktifRekeningIds->isNotEmpty() ? BankTransaction::whereIn('rekening_id', $allUserAktifRekeningIds)->where('transaction_type', 'pemasukan')->latest()->first() : null;
+    //     $penarikanTerakhir = $allUserAktifRekeningIds->isNotEmpty() ? BankTransaction::whereIn('rekening_id', $allUserAktifRekeningIds)->where('transaction_type', 'penarikan')->latest()->first() : null;
+
+    //     $waktuMasukTerakhir = $pemasukanTerakhir ? $pemasukanTerakhir->created_at->diffForHumans() : 'N/A';
+    //     $waktuKeluarTerakhir = $penarikanTerakhir ? $penarikanTerakhir->created_at->diffForHumans() : 'N/A';
+
+    //     return view('pages.banksampah.riwayat', [
+    //         'user' => $user,
+    //         'daftarBank' => $daftarBank,
+    //         'bankSampahTerpilih' => $bankSampahTerpilih,
+    //         'semuaTransaksi' => $semuaTransaksi,
+    //         'totalTransaksiCount' => $totalTransaksiCount,
+    //         'totalMasuk' => $totalMasuk,
+    //         'totalKeluar' => abs($totalKeluar),
+    //         'waktuSaldoTerakhir' => $currentSaldo,
+    //         'waktuMasukTerakhir' => $waktuMasukTerakhir,
+    //         'waktuKeluarTerakhir' => $waktuKeluarTerakhir,
+    //     ]);
+    // }
+
+    /**
+     * [PERBAIKAN] Menampilkan riwayat transaksi NASABAH.
+     * Sekarang menyertakan logika POPUP untuk status Pending/Non-aktif.
+     */
     public function riwayat(Request $request, Bank $bank = null)
     {
         $user = auth()->user();
 
-        // 1. Ambil ID bank tempat user punya rekening AKTIF.
-        $rekeningAktifBankIds = RekeningBankSampahUser::where('user_id', $user->id)
-                                                     ->where('status', 'Aktif')
-                                                     ->pluck('bank_id');
+        // 1. Ambil SEMUA rekening user untuk pengecekan status
+        $allUserRekenings = RekeningBankSampahUser::where('user_id', $user->id)->with('bank')->get();
 
-        // 2. Ambil daftar bank HANYA dari ID di atas.
-        $daftarBank = Bank::whereIn('id', $rekeningAktifBankIds)
-                           ->orderBy('bank_name')
-                           ->get();
+        // =======================================================
+        // LOGIKA PENGECEKAN STATUS (SAMA DENGAN INFORMASI AKUN)
+        // =======================================================
 
-        // 3. Cek apakah user punya rekening aktif. Jika tidak, redirect.
-        if ($daftarBank->isEmpty()) {
-            // Cek apakah user punya rekening TAPI tidak aktif
-            $hasInactiveRekenings = RekeningBankSampahUser::where('user_id', $user->id)->exists();
-            if ($hasInactiveRekenings) {
-                return redirect()->route('banksampah-user')
-                    ->with('error', 'Status nasabah Anda saat ini tidak aktif atau sedang menunggu persetujuan. Silakan hubungi pengelola bank sampah Anda.');
-            } else {
-                return redirect()->route('digital.informasi') 
-                    ->with('warning', 'Anda belum terdaftar sebagai nasabah di bank sampah manapun.');
-            }
+        // Kondisi A: Belum terdaftar sama sekali
+        if ($allUserRekenings->isEmpty()) {
+            return redirect()->route('banksampah-user')
+                ->with('show_registration_popup', true)
+                ->with('warning', 'Anda belum terdaftar di bank sampah manapun. Segera daftarkan diri Anda untuk menjadi pahlawan kota!');
         }
 
-        // 4. Tentukan bank yang sedang dipilih.
+        // 2. Ambil rekening yang AKTIF saja
+        $activeRekenings = $allUserRekenings->where('status', 'Aktif');
+
+        // Kondisi B: Punya rekening tapi TIDAK ADA yang Aktif (Pending atau Tidak Aktif)
+        if ($activeRekenings->isEmpty()) {
+            
+            // Cek apakah ada yang Pending
+            $pendingRekening = $allUserRekenings->where('status', 'Pending')->first();
+
+            if ($pendingRekening) {
+                // KASUS 1: MENUNGGU PERSETUJUAN (PENDING)
+                $waNumber = preg_replace('/[^0-9]/', '', $pendingRekening->bank->phone_number);
+                $waLink = "https://wa.me/{$waNumber}?text=" . urlencode("Halo admin {$pendingRekening->bank->bank_name}, saya ingin menanyakan status pendaftaran nasabah saya atas nama {$user->name}.");
+                
+                return redirect()->route('banksampah-user')
+                    ->with('show_pending_popup', true) // Trigger popup pending
+                    ->with('bank_name', $pendingRekening->bank->bank_name)
+                    ->with('wa_link', $waLink);
+            } else {
+                // KASUS 2: DINONAKTIFKAN (TIDAK AKTIF)
+                $inactiveRekening = $allUserRekenings->first(); 
+                $waNumber = preg_replace('/[^0-9]/', '', $inactiveRekening->bank->phone_number);
+                $waLink = "https://wa.me/{$waNumber}?text=" . urlencode("Halo admin {$inactiveRekening->bank->bank_name}, akun nasabah saya atas nama {$user->name} statusnya Tidak Aktif. Mohon informasinya.");
+
+                return redirect()->route('banksampah-user')
+                    ->with('show_inactive_popup', true) // Trigger popup inactive
+                    ->with('bank_name', $inactiveRekening->bank->bank_name)
+                    ->with('wa_link', $waLink);
+            }
+        }
+        
+        // =======================================================
+        // JIKA LOLOS CEK STATUS, LANJUTKAN TAMPILKAN RIWAYAT
+        // =======================================================
+
+        $rekeningAktifBankIds = $activeRekenings->pluck('bank_id');
+        $daftarBank = Bank::whereIn('id', $rekeningAktifBankIds)->orderBy('bank_name')->get();
+
+        // 3. Tentukan bank yang sedang dipilih.
         $bankSampahTerpilih = ($bank && $daftarBank->contains($bank)) ? $bank : null;
 
-        // 5. Ambil ID Rekening yang relevan berdasarkan filter bank.
+        // 4. Ambil ID Rekening yang relevan berdasarkan filter bank.
         $rekeningQuery = RekeningBankSampahUser::where('user_id', $user->id);
         if ($bankSampahTerpilih) {
             $rekeningQuery->where('bank_id', $bankSampahTerpilih->id);
@@ -100,16 +222,16 @@ class BankTransactionController extends Controller
         }
         $rekeningIds = $rekeningQuery->pluck('id');
 
-        // 6. Query utama untuk transaksi
+        // 5. Query utama untuk transaksi
         $query = BankTransaction::whereIn('rekening_id', $rekeningIds)
                                  ->with('details.wasteProduct.category', 'rekening.bank');
 
-        // 7. Terapkan filter Tipe Transaksi jika ada.
+        // 6. Terapkan filter Tipe Transaksi
         if ($request->filled('tipe') && in_array($request->tipe, ['pemasukan', 'penarikan'])) {
             $query->where('transaction_type', $request->tipe);
         }
 
-        // 8. Hitung Statistik
+        // 7. Hitung Statistik
         $filteredTransactions = (clone $query)->get();
         $totalTransaksiCount = $filteredTransactions->count();
         
@@ -122,13 +244,13 @@ class BankTransactionController extends Controller
                                             ->where('status', 'Selesai')
                                             ->sum('transaction_amount');
 
-        // 9. Ambil data transaksi untuk tabel
+        // 8. Ambil data transaksi
         $semuaTransaksi = $query->latest()->paginate(10)->withQueryString();
 
-        // 10. Hitung Saldo Saat Ini
+        // 9. Hitung Saldo Saat Ini
         $currentSaldo = RekeningBankSampahUser::whereIn('id', $rekeningIds)->sum('saldo');
 
-        // 11. Ambil info transaksi terakhir (Global)
+        // 10. Ambil info transaksi terakhir (Global)
         $allUserAktifRekeningIds = RekeningBankSampahUser::where('user_id', $user->id)->whereIn('bank_id', $rekeningAktifBankIds)->pluck('id');
         $pemasukanTerakhir = $allUserAktifRekeningIds->isNotEmpty() ? BankTransaction::whereIn('rekening_id', $allUserAktifRekeningIds)->where('transaction_type', 'pemasukan')->latest()->first() : null;
         $penarikanTerakhir = $allUserAktifRekeningIds->isNotEmpty() ? BankTransaction::whereIn('rekening_id', $allUserAktifRekeningIds)->where('transaction_type', 'penarikan')->latest()->first() : null;
@@ -138,7 +260,7 @@ class BankTransactionController extends Controller
 
         return view('pages.banksampah.riwayat', [
             'user' => $user,
-            'daftarBank' => $daftarBank,
+            'daftarBank' => $daftarBank, 
             'bankSampahTerpilih' => $bankSampahTerpilih,
             'semuaTransaksi' => $semuaTransaksi,
             'totalTransaksiCount' => $totalTransaksiCount,
@@ -310,8 +432,81 @@ class BankTransactionController extends Controller
     //     ));
     // }
 
+    /**
+     * Menampilkan riwayat PEMBAYARAN untuk PENGELOLA.
+     * Statistik Pengeluaran HANYA menghitung status 'Selesai'.
+     */
+    // public function riwayatPembayaran(Request $request)
+    // {
+    //     $bank = Auth::user()->bank;
+    //     if (!$bank) {
+    //         return redirect()->route('pengelola.bank-profil.edit')
+    //             ->with('warning', 'Anda harus melengkapi profil bank sampah Anda terlebih dahulu.');
+    //     }
+    //     $bankId = $bank->id;
+
+    //     // 2. Statistik
+    //     $basePaymentQuery = BankTransaction::where('transaction_type', 'penarikan')
+    //         ->whereHas('rekening', function ($q) use ($bankId) {
+    //             $q->where('bank_id', $bankId);
+    //         });
+
+    //     // [PERBAIKAN] Hitung Total Pengeluaran HANYA jika status 'Selesai'
+    //     $totalPengeluaran = abs($basePaymentQuery->clone()
+    //                                              ->where('status', 'Selesai') // Tambahkan filter ini
+    //                                              ->sum('transaction_amount'));
+
+    //     // Statistik lainnya tetap sama (opsional: bisa disesuaikan juga jika mau)
+    //     $pembayaranHariIni = $basePaymentQuery->clone()->where('status', 'Selesai')->whereDate('created_at', today())->count(); 
+    //     $totalTransaksiPenarikan = $basePaymentQuery->clone()->count(); // Total semua pengajuan (termasuk pending/gagal)
+        
+    //     $statuses = $basePaymentQuery->clone()->distinct()->pluck('status');
+    //     $methods = $basePaymentQuery->clone()->distinct()->pluck('description');
+
+    //     // 3. Query Dasar untuk list (TETAP SAMA)
+    //     $query = BankTransaction::query()->with('rekening.user');
+    //     $query->where('transaction_type', 'penarikan');
+    //     $query->whereHas('rekening', function ($q) use ($bankId) {
+    //         $q->where('bank_id', $bankId);
+    //     });
+
+    //     // 4. Filter (TETAP SAMA)
+    //     $query->when($request->input('search'), function ($q, $search) {
+    //         $q->whereHas('rekening.user', function ($userQuery) use ($search) {
+    //             $userQuery->where('name', 'like', "%{$search}%");
+    //         });
+    //     });
+    //     $query->when($request->input('metode'), fn($q, $metode) => $q->where('description', 'like', "%{$metode}%"));
+        
+    //     // 5. Ambil data berdasarkan filter status (TETAP SAMA)
+    //     $statusFilter = $request->input('status');
+
+    //     $paymentsPendingQuery = (clone $query)->where('status', 'Pending');
+    //     $paymentsLainQuery = (clone $query)->whereIn('status', ['Selesai', 'Gagal']);
+
+    //     if ($statusFilter == 'Selesai' || $statusFilter == 'Gagal') {
+    //         $paymentsPending = collect();
+    //         $payments = $paymentsLainQuery->where('status', $statusFilter)->latest('created_at')->paginate(10)->withQueryString();
+    //     } elseif ($statusFilter == 'Pending') {
+    //         $paymentsPending = $paymentsPendingQuery->latest('created_at')->paginate(10, ['*'], 'page_pending')->withQueryString();
+    //         $payments = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+    //     } else {
+    //         $paymentsPending = $paymentsPendingQuery->latest('created_at')->get();
+    //         $payments = $paymentsLainQuery->latest('created_at')->paginate(10)->withQueryString();
+    //     }
+        
+    //     return view('pages.banksampah.pengelola.pembayaran.index', compact(
+    //         'paymentsPending', 'payments', 'totalPengeluaran', 'pembayaranHariIni', 'totalTransaksiPenarikan', 'statuses', 'methods'
+    //     ));
+    // }
+
+    /**
+     * Menampilkan riwayat PEMBAYARAN untuk PENGELOLA.
+     * Gabungan: Filter status Pending/Selesai & Statistik yang benar.
+     */
     public function riwayatPembayaran(Request $request)
     {
+        // 1. Dapatkan info bank & user
         $bank = Auth::user()->bank;
         if (!$bank) {
             return redirect()->route('pengelola.bank-profil.edit')
@@ -319,32 +514,38 @@ class BankTransactionController extends Controller
         }
         $bankId = $bank->id;
 
-        // 2. Statistik
+        // 2. Statistik (Gunakan logika PERBAIKAN: filter 'Selesai' untuk nominal)
         $basePaymentQuery = BankTransaction::where('transaction_type', 'penarikan')
             ->whereHas('rekening', function ($q) use ($bankId) {
                 $q->where('bank_id', $bankId);
             });
 
-        // [PERBAIKAN] Hitung Total Pengeluaran HANYA jika status 'Selesai'
+        // Hitung Total Pengeluaran HANYA jika status 'Selesai'
         $totalPengeluaran = abs($basePaymentQuery->clone()
-                                                 ->where('status', 'Selesai') // Tambahkan filter ini
+                                                 ->where('status', 'Selesai')
                                                  ->sum('transaction_amount'));
 
-        // Statistik lainnya tetap sama (opsional: bisa disesuaikan juga jika mau)
-        $pembayaranHariIni = $basePaymentQuery->clone()->where('status', 'Selesai')->whereDate('created_at', today())->count(); 
-        $totalTransaksiPenarikan = $basePaymentQuery->clone()->count(); // Total semua pengajuan (termasuk pending/gagal)
+        // Hitung Pembayaran Hari Ini HANYA jika status 'Selesai'
+        $pembayaranHariIni = $basePaymentQuery->clone()
+                                              ->where('status', 'Selesai')
+                                              ->whereDate('created_at', today())
+                                              ->count();
+
+        // Total Transaksi menghitung SEMUA (termasuk pending/gagal)
+        $totalTransaksiPenarikan = $basePaymentQuery->clone()->count(); 
         
         $statuses = $basePaymentQuery->clone()->distinct()->pluck('status');
         $methods = $basePaymentQuery->clone()->distinct()->pluck('description');
 
-        // 3. Query Dasar untuk list (TETAP SAMA)
+
+        // 3. Query Dasar untuk List (Gunakan logika PEMISAHAN TABEL)
         $query = BankTransaction::query()->with('rekening.user');
         $query->where('transaction_type', 'penarikan');
         $query->whereHas('rekening', function ($q) use ($bankId) {
             $q->where('bank_id', $bankId);
         });
 
-        // 4. Filter (TETAP SAMA)
+        // 4. Filter
         $query->when($request->input('search'), function ($q, $search) {
             $q->whereHas('rekening.user', function ($userQuery) use ($search) {
                 $userQuery->where('name', 'like', "%{$search}%");
@@ -352,25 +553,41 @@ class BankTransactionController extends Controller
         });
         $query->when($request->input('metode'), fn($q, $metode) => $q->where('description', 'like', "%{$metode}%"));
         
-        // 5. Ambil data berdasarkan filter status (TETAP SAMA)
+        // 5. Ambil data berdasarkan filter status untuk DUA TABEL
         $statusFilter = $request->input('status');
 
+        // Query untuk PEMBAYARAN PENDING
         $paymentsPendingQuery = (clone $query)->where('status', 'Pending');
+        
+        // Query untuk PEMBAYARAN LAIN (Selesai & Gagal)
         $paymentsLainQuery = (clone $query)->whereIn('status', ['Selesai', 'Gagal']);
 
+        // 6. Logika Tampilan
         if ($statusFilter == 'Selesai' || $statusFilter == 'Gagal') {
-            $paymentsPending = collect();
+            // Jika filter "Selesai" atau "Gagal", tampilkan di tabel bawah
+            $paymentsPending = collect(); 
             $payments = $paymentsLainQuery->where('status', $statusFilter)->latest('created_at')->paginate(10)->withQueryString();
+
         } elseif ($statusFilter == 'Pending') {
+            // Jika filter "Pending", tampilkan di tabel atas
             $paymentsPending = $paymentsPendingQuery->latest('created_at')->paginate(10, ['*'], 'page_pending')->withQueryString();
-            $payments = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+            $payments = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10); 
+        
         } else {
+            // Jika filter "Semua Status" (default), tampilkan keduanya
             $paymentsPending = $paymentsPendingQuery->latest('created_at')->get();
             $payments = $paymentsLainQuery->latest('created_at')->paginate(10)->withQueryString();
         }
         
+        // 7. Kirim data ke view
         return view('pages.banksampah.pengelola.pembayaran.index', compact(
-            'paymentsPending', 'payments', 'totalPengeluaran', 'pembayaranHariIni', 'totalTransaksiPenarikan', 'statuses', 'methods'
+            'paymentsPending', 
+            'payments', 
+            'totalPengeluaran', 
+            'pembayaranHariIni', 
+            'totalTransaksiPenarikan', 
+            'statuses', 
+            'methods'
         ));
     }
 
