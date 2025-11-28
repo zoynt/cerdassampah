@@ -8,7 +8,7 @@
             <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Data Penjualan</h1>
 
             {{-- Kartu Statistik --}}
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="bg-blue-500 text-white p-4 rounded-2xl shadow-md flex items-center gap-4">
                     <div class="bg-white/20 p-3 rounded-xl">
                         <svg class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
