@@ -64,8 +64,18 @@
                         class="px-4 py-2 rounded-md hover:bg-green-700 transition font-bold">Ayo Laporkan!</a>
                 @endauth
 
+                {{-- <div class="h-6 w-px bg-white/70"></div>
+                <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a> --}}
                 <div class="h-6 w-px bg-white/70"></div>
-                <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a>
+
+                @auth
+                    <a href="{{ url('/dashboard') }}"
+                        class="px-4 py-2 rounded-md hover:bg-green-700 transition flex items-center gap-2">
+                        <span class="font-semibold leading-tight">Halo! {{ Auth::user()->username }}</span>
+                    </a>
+                @else
+                    <a href="{{ route('login') }}" class="px-4 py-2 rounded-md hover:bg-green-700 transition">Masuk</a>
+                @endauth
             </nav>
 
 
@@ -108,7 +118,8 @@
             @else
                 <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Ayo Laporkan!</a>
             @endauth
-            <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Masuk</a>
+            <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-green-100 rounded">Masuk</a> 
+            
         </div>
     </div>
 </header>

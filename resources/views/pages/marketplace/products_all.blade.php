@@ -9,7 +9,9 @@
     <style>
         /* [MODIFIKASI] Menetapkan rasio aspek agar tinggi konsisten */
         .mySwiper {
-            aspect-ratio: 16 / 8;
+            /*aspect-ratio: 16 / 8; */
+            height: 300px; 
+            width: 100%;
             /* Rasio untuk layar lebar */
         }
 
@@ -47,9 +49,9 @@
 @endpush
 
 @section('content')
-    <div x-data="marketplace()">
+    <div x-data="marketplace()" class="w-0 min-w-full flex-1 overflow-x-hidden">
         <div class="space-y-6">
-            <div class="swiper mySwiper rounded-xl shadow-md overflow-hidden relative z-0 w-full">
+            <div class="swiper mySwiper w-full overflow-hidden rounded-xl shadow-md relative z-0">
                 <div class="swiper-wrapper">
 
                     <div class="swiper-slide">
@@ -76,11 +78,11 @@
                                         Mau Jual Sampah Terpilahmu?
                                     </a>
 
-                                    <h2 class="text-lg sm:text-2xl md:text-3xl font-bold text-gray-800 leading-tight">
+                                    <h2 class="text-lg sm:text-2xl md:text-3xl lg:text-xl font-bold text-gray-800 leading-tight">
                                         Saatnya buka toko dan jadi penjual di Cerdas Sampah!
                                     </h2>
 
-                                    <p class="hidden md:block mt-1 text-gray-600">
+                                    <p class="hidden xl:block mt-1 text-gray-600">
                                         Jual sampah terpilahmu dengan mudah, dapatkan keuntungan, dan ikut serta menciptakan
                                         lingkungan yang lebih bersih.
                                     </p>
@@ -204,12 +206,8 @@
 
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Daftar Produk</h2>
-                {{-- Grid untuk mengatur jumlah kolom --}}
-                <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
                     <template x-for="product in displayProducts" :key="product.id">
-                        {{-- <a :href="`/marketplace/product/${product.id}` --}}
-                        {{-- <a href="{{ route('marketplace.products.show', $product->store->slug) }}" --}}
-                        {{-- <a :href="`/marketplace/product/${product.id}`" class="block group"> --}}
                             <a :href="`/${product.store_slug}/${product.slug}-${product.id}`" class="block group">
 
                             <div

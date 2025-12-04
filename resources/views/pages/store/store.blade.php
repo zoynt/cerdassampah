@@ -340,7 +340,7 @@
                     if (!this.products) return [];
                     return this.products.filter(product => {
                         const searchMatch = product.name.toLowerCase().includes(this.searchQuery.toLowerCase());
-                        const categoryMatch = this.selectedCategory === '' || product.category_id === this
+                        const categoryMatch = this.selectedCategory === '' || product.category_id == this
                             .selectedCategory;
                         return searchMatch && categoryMatch;
                     });
