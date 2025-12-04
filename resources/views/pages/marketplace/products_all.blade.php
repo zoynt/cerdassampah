@@ -206,7 +206,7 @@
 
             <div class="bg-white p-6 rounded-xl shadow-md">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Daftar Produk</h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-5">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-5">
                     <template x-for="product in displayProducts" :key="product.id">
                             <a :href="`/${product.store_slug}/${product.slug}-${product.id}`" class="block group">
 
