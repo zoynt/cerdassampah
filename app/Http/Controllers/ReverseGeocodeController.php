@@ -16,8 +16,10 @@ class ReverseGeocodeController extends Controller
             return response()->json(['error' => 'Missing parameters'], 400);
         }
 
+        $userAgent = 'SmartCityApp/1.0 (support@smartcity.viadigital.id)';
+
         $response = Http::withHeaders([
-            'User-Agent' => 'YourAppName/1.0' // WAJIB untuk akses Nominatim
+            'User-Agent' => $userAgent // WAJIB untuk akses Nominatim
         ])->get("https://nominatim.openstreetmap.org/reverse", [
             'lat' => $lat,
             'lon' => $lon,
