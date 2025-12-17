@@ -14,31 +14,27 @@ class UserpointController extends Controller
     //     $this->middleware(['auth', 'verified'])->only('store');
     // }
 
-public function store(Request $request)
-{
-    $validated = $request->validate([
-        'points' => ['required', 'integer', 'min:0'],
-    ]);
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'points' => ['required', 'integer', 'min:0'],
+        ]);
 
-    $userId = Auth::id();
+        //  LOGIKA QUEST GAME
+        $result = UserQuestController::tryCompleteGameQuest($validated['points']);
 
-    // cek apakah sudah ada baris user_id ini
-    $row = UserPoint::firstOrNew(['user_id' => $userId]);
+        if ($result === null) {
+            return response()->json([
+                'ok' => false,
+                'message' => 'Tidak ada misi game hari ini.'
+            ], 200);
+        }
 
-    // kalau baru, default points = 0
-    if (!$row->exists) {
-        $row->points = 0;
+        return response()->json([
+            'ok' => true,
+            'message' => $result['message'],
+            'points_awarded' => $result['points_awarded'],
+        ]);
     }
-
-    // tambahkan poin
-    $row->points += $validated['points'];
-    $row->save();
-
-    return response()->json([
-        'ok'          => true,
-        'id'          => $row->id,
-        'total_points'=> $row->points,
-    ]);
-}
 
 }
