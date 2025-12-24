@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="space-y-6">
-        {{ Breadcrumbs::render() }}
+        {{ Breadcrumbs::render('marketplace.products.edit', $product) }}
         <h1 class="text-3xl font-bold text-gray-800">Form Edit Produk</h1>
 
         @php

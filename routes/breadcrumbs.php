@@ -2,13 +2,14 @@
 
 // routes/breadcrumbs.php
 
-use Diglactic\Breadcrumbs\Breadcrumbs;
-use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
-use App\Models\User;
 use App\Models\Bank;
-use App\Models\BankTransaction;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Store;
+use Illuminate\Support\Str;
+use App\Models\BankTransaction;
+use Diglactic\Breadcrumbs\Breadcrumbs;
+use Diglactic\Breadcrumbs\Generator as BreadcrumbTrail;
 use App\Models\Product; // Asumsi Anda punya model Product
 
 // =================================================================
@@ -207,6 +208,7 @@ Breadcrumbs::for('marketplace.products.all', function (BreadcrumbTrail $trail) {
     $trail->push('Marketplace', route('marketplace.products.all'));
 });
 
+
 // Home > Marketplace > [Nama Toko]
 // Breadcrumbs::for('marketplace.store.show', function (BreadcrumbTrail $trail, Store $store) {
 //     $trail->parent('marketplace.products.all');
@@ -221,6 +223,7 @@ Breadcrumbs::for('marketplace.products.show', function (BreadcrumbTrail $trail, 
     $trail->parent('marketplace.products.all', $store);
     $trail->push($product_slug, route('marketplace.products.show', [$store, $product_slug]));
 });
+
 
 // Home > Marketplace > [Nama Toko] > [Nama Produk] > Checkout
 Breadcrumbs::for('marketplace.checkout', function (BreadcrumbTrail $trail, Store $store, $product_slug) {
@@ -292,12 +295,19 @@ Breadcrumbs::for('marketplace.products.create', function (BreadcrumbTrail $trail
 });
 
 // Home > Daftar Produk > Edit [Nama Produk]
-Breadcrumbs::for('marketplace.products.edit', function (BreadcrumbTrail $trail, $product_slug) {
-    // Asumsi $product_slug adalah slug. Anda mungkin perlu mengambil produk.
-    $product = Product::where('slug', $product_slug)->firstOrFail(); // Contoh
+Breadcrumbs::for('marketplace.products.edit', function (BreadcrumbTrail $trail, $product) {
     $trail->parent('marketplace.products.list');
-    $trail->push('Edit: ' . $product->name, route('marketplace.products.edit', $product_slug));
+    // Kita gunakan $product->slug_custom_anda atau generate ulang slugnya di sini
+    $trail->push('Edit: ' . $product->name, route('marketplace.products.edit', $product->name . '-' . $product->id));
 });
+// Breadcrumbs::for('marketplace.products.edit', function (BreadcrumbTrail $trail, $product_slug) {
+//     // Samakan logic-nya dengan Controller Anda
+//     $id = Str::of($product_slug)->afterLast('-');
+//     $product = Product::findOrFail($id); 
+
+//     $trail->parent('marketplace.products.list');
+//     $trail->push('Edit: ' . $product->name, route('marketplace.products.edit', $product_slug));
+// });
 
 // Home > Data Penjualan
 Breadcrumbs::for('marketplace.riwayat', function (BreadcrumbTrail $trail, Store $store) {
