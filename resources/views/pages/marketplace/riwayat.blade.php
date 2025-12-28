@@ -73,10 +73,13 @@
             </div>
 
             {{-- Filter & Export --}}
-            <div class="flex flex-col md:flex-row gap-4 justify-between items-end">
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-end w-full mb-6">
+
                 <div class="w-full md:w-1/3">
-                    <label for="kategori-filter-button" class="block text-sm font-medium text-gray-700 mb-1">Filter
-                        Kategori</label>
+                    <label for="kategori-filter-button" class="block text-sm font-medium text-gray-700 mb-1">
+                        Filter Kategori
+                    </label>
+
                     <div x-data="{ open: false }" @click.outside="open = false" class="relative">
                         <button @click="open = !open" id="kategori-filter-button"
                             class="w-full bg-white border border-gray-300 rounded-lg shadow-sm pl-4 pr-10 py-2.5 text-left text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 flex items-center justify-between">
@@ -87,28 +90,37 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                             </svg>
                         </button>
+
                         <div x-show="open" x-transition
                             class="absolute z-10 mt-1 w-full bg-white shadow-lg rounded-md border border-gray-200 max-h-60 overflow-auto"
                             style="display: none;">
                             <ul class="py-1 text-sm">
-                                <li><a href="#" @click.prevent="selectedCategory = ''; open = false"
+                                <li>
+                                    <a href="#" @click.prevent="selectedCategory = ''; open = false"
                                         class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                        :class="{ 'bg-green-100 text-green-800 font-semibold': selectedCategory === '' }">Semua
-                                        Kategori</a></li>
+                                        :class="{ 'bg-green-100 text-green-800 font-semibold': selectedCategory === '' }">
+                                        Semua Kategori
+                                    </a>
+                                </li>
                                 @foreach ($kategoriList as $kategori)
-                                    <li><a href="#"
+                                    <li>
+                                        <a href="#"
                                             @click.prevent="selectedCategory = '{{ $kategori }}'; open = false"
                                             class="block px-4 py-2 text-gray-700 hover:bg-gray-100"
-                                            :class="{ 'bg-green-100 text-green-800 font-semibold': selectedCategory === '{{ $kategori }}' }">{{ $kategori }}</a>
+                                            :class="{ 'bg-green-100 text-green-800 font-semibold': selectedCategory === '{{ $kategori }}' }">
+                                            {{ $kategori }}
+                                        </a>
                                     </li>
                                 @endforeach
                             </ul>
                         </div>
                     </div>
                 </div>
-                <div class="flex flex-col md:flex-row gap-4 w-full md:w-fit">
+
+                <div class="flex gap-4 w-full md:w-auto">
+
                     <a href="{{ route('marketplace.riwayat.export') }}"
-                        class="inline-flex items-center justify-center px-4 py-2.5 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 text-sm">
+                        class="inline-flex items-center justify-center px-4 py-2.5 bg-green-600 text-white font-semibold rounded-lg shadow-md hover:bg-green-700 text-sm w-full md:w-auto">
                         <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
                             stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -116,8 +128,10 @@
                         </svg>
                         <span>Export Excel</span>
                     </a>
-                    <a href="https://wa.me/{{ env('WA_Admin') }}?text=Halo%20Admin%20CerdasSampah,%20saya%20ingin%20melakukan%20penarikan%20uang%20marketplace" target="_blank"
-                        class="w-full md:w-48 text-center px-4 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-100 inline-flex items-center justify-center text-sm gap-2 ">
+
+                    <a href="https://wa.me/{{ env('WA_Admin') }}?text=Halo%20Admin%20CerdasSampah,%20saya%20ingin%20melakukan%20penarikan%20uang%20marketplace"
+                        target="_blank"
+                        class="inline-flex items-center justify-center px-4 py-2.5 bg-white border border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-100 text-sm gap-2 w-full md:w-auto">
                         <svg class="w-5 h-5 text-green-500" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
                             fill="currentColor" viewBox="0 0 448 512">
                             <path
@@ -126,6 +140,7 @@
                         <span>Penarikan Uang</span>
                     </a>
                 </div>
+
             </div>
 
             <div class="bg-white rounded-2xl shadow-lg">
