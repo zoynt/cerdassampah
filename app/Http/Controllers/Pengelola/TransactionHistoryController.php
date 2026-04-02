@@ -100,7 +100,7 @@ class TransactionHistoryController extends Controller
 
     public function show(BankTransaction $transaction)
     {
-        if ($transaction->rekening->bank_id !== Auth::user()->bank->id) {
+        if ($transaction->rekening->bank_id != Auth::user()->bank->id) {
             abort(403, 'Anda tidak memiliki izin untuk melihat transaksi ini.');
         }
         $transaction->load(['details.wasteProduct', 'rekening.user']);
@@ -109,7 +109,7 @@ class TransactionHistoryController extends Controller
 
     public function cetakStruk(BankTransaction $transaction)
     {
-        if ($transaction->rekening->bank_id !== Auth::user()->bank->id) {
+        if ($transaction->rekening->bank_id != Auth::user()->bank->id) {
             abort(403, 'Anda tidak memiliki izin untuk mencetak struk ini.');
         }
         $transaction->load(['details.wasteProduct', 'rekening.user']);
@@ -118,7 +118,7 @@ class TransactionHistoryController extends Controller
 
     public function destroy(BankTransaction $transaction)
     {
-        if ($transaction->rekening->bank_id !== Auth::user()->bank->id) {
+        if ($transaction->rekening->bank_id != Auth::user()->bank->id) {
             abort(403, 'Anda tidak memiliki izin untuk menghapus transaksi ini.');
         }
         $transaction->delete();
