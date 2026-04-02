@@ -94,9 +94,8 @@ class WastePriceController extends Controller
      */
     public function update(Request $request, BankWasteProduct $product)
     {
-        // [KEAMANAN YANG SUDAH BENAR]
         // Pengecekan ini adalah penyebab 403 jika datanya tidak cocok.
-        if ($product->bank_id !== Auth::user()->bank->id) {
+        if ($product->bank_id != Auth::user()->bank->id) {
             abort(403, 'ANDA TIDAK MEMILIKI IZIN UNTUK MENGUBAH DATA INI.');
         }
 
@@ -131,7 +130,7 @@ class WastePriceController extends Controller
     public function destroy(BankWasteProduct $product)
     {
         // [KEAMANAN YANG SUDAH BENAR]
-        if ($product->bank_id !== Auth::user()->bank->id) {
+        if ($product->bank_id != Auth::user()->bank->id) {
             abort(403, 'ANDA TIDAK MEMILIKI IZIN UNTUK MENGHAPUS DATA INI.');
         }
 
