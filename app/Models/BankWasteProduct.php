@@ -2,7 +2,6 @@
 
 namespace App\Models;
 use App\Models\BankWasteCategory;
-use App\Models\BankWasteProduct;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -30,5 +29,10 @@ class BankWasteProduct extends Model
     public function category() // <-- NAMA YANG BENAR
     {
         return $this->belongsTo(BankWasteCategory::class, 'waste_category_id');
+    }
+
+    public function transactionDetails()
+    {
+        return $this->hasMany(BankTransactionDetail::class, 'bank_waste_product_id');
     }
 }
