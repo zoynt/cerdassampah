@@ -83,7 +83,7 @@ class BankTransactionController extends Controller
     //             return redirect()->route('banksampah-user')
     //                 ->with('error', 'Status nasabah Anda saat ini tidak aktif atau sedang menunggu persetujuan. Silakan hubungi pengelola bank sampah Anda.');
     //         } else {
-    //             return redirect()->route('digital.informasi') 
+    //             return redirect()->route('digital.informasi')
     //                 ->with('warning', 'Anda belum terdaftar sebagai nasabah di bank sampah manapun.');
     //         }
     //     }
@@ -112,12 +112,12 @@ class BankTransactionController extends Controller
     //     // 8. Hitung Statistik
     //     $filteredTransactions = (clone $query)->get();
     //     $totalTransaksiCount = $filteredTransactions->count();
-        
+
     //     // Hitung Nominal hanya jika status 'Selesai' (atau 'pemasukan' yang biasanya langsung selesai)
     //     $totalMasuk = $filteredTransactions->where('transaction_type', 'pemasukan')
     //                                        ->where('status', 'Selesai')
     //                                        ->sum('transaction_amount');
-                                           
+
     //     $totalKeluar = $filteredTransactions->where('transaction_type', 'penarikan')
     //                                         ->where('status', 'Selesai')
     //                                         ->sum('transaction_amount');
@@ -177,7 +177,7 @@ class BankTransactionController extends Controller
 
         // Kondisi B: Punya rekening tapi TIDAK ADA yang Aktif (Pending atau Tidak Aktif)
         if ($activeRekenings->isEmpty()) {
-            
+
             // Cek apakah ada yang Pending
             $pendingRekening = $allUserRekenings->where('status', 'Pending')->first();
 
@@ -185,14 +185,14 @@ class BankTransactionController extends Controller
                 // KASUS 1: MENUNGGU PERSETUJUAN (PENDING)
                 $waNumber = preg_replace('/[^0-9]/', '', $pendingRekening->bank->phone_number);
                 $waLink = "https://wa.me/{$waNumber}?text=" . urlencode("Halo admin {$pendingRekening->bank->bank_name}, saya ingin menanyakan status pendaftaran nasabah saya atas nama {$user->name}.");
-                
+
                 return redirect()->route('banksampah-user')
                     ->with('show_pending_popup', true) // Trigger popup pending
                     ->with('bank_name', $pendingRekening->bank->bank_name)
                     ->with('wa_link', $waLink);
             } else {
                 // KASUS 2: DINONAKTIFKAN (TIDAK AKTIF)
-                $inactiveRekening = $allUserRekenings->first(); 
+                $inactiveRekening = $allUserRekenings->first();
                 $waNumber = preg_replace('/[^0-9]/', '', $inactiveRekening->bank->phone_number);
                 $waLink = "https://wa.me/{$waNumber}?text=" . urlencode("Halo admin {$inactiveRekening->bank->bank_name}, akun nasabah saya atas nama {$user->name} statusnya Tidak Aktif. Mohon informasinya.");
 
@@ -202,7 +202,7 @@ class BankTransactionController extends Controller
                     ->with('wa_link', $waLink);
             }
         }
-        
+
         // =======================================================
         // JIKA LOLOS CEK STATUS, LANJUTKAN TAMPILKAN RIWAYAT
         // =======================================================
@@ -234,12 +234,12 @@ class BankTransactionController extends Controller
         // 7. Hitung Statistik
         $filteredTransactions = (clone $query)->get();
         $totalTransaksiCount = $filteredTransactions->count();
-        
+
         // Hitung Nominal hanya jika status 'Selesai' (atau 'pemasukan' yang biasanya langsung selesai)
         $totalMasuk = $filteredTransactions->where('transaction_type', 'pemasukan')
                                            ->where('status', 'Selesai')
                                            ->sum('transaction_amount');
-                                           
+
         $totalKeluar = $filteredTransactions->where('transaction_type', 'penarikan')
                                             ->where('status', 'Selesai')
                                             ->sum('transaction_amount');
@@ -260,7 +260,7 @@ class BankTransactionController extends Controller
 
         return view('pages.banksampah.riwayat', [
             'user' => $user,
-            'daftarBank' => $daftarBank, 
+            'daftarBank' => $daftarBank,
             'bankSampahTerpilih' => $bankSampahTerpilih,
             'semuaTransaksi' => $semuaTransaksi,
             'totalTransaksiCount' => $totalTransaksiCount,
@@ -290,7 +290,7 @@ class BankTransactionController extends Controller
             ->where('user_id', '!=', $bankerUserId)
             ->with('user')
             ->get();
-        
+
         $nasabahs = $rekeningNasabahs->map(function ($rekening) {
             $rekening->user->rekening_id = $rekening->id;
             return $rekening->user;
@@ -393,13 +393,13 @@ class BankTransactionController extends Controller
     //         });
     //     });
     //     $query->when($request->input('metode'), fn($q, $metode) => $q->where('description', 'like', "%{$metode}%"));
-        
+
     //     // 5. Ambil data berdasarkan filter status
     //     $statusFilter = $request->input('status');
 
     //     // Query untuk PEMBAYARAN PENDING
     //     $paymentsPendingQuery = (clone $query)->where('status', 'Pending');
-        
+
     //     // Query untuk PEMBAYARAN LAIN (Selesai & Gagal)
     //     $paymentsLainQuery = (clone $query)->whereIn('status', ['Selesai', 'Gagal']);
 
@@ -413,21 +413,21 @@ class BankTransactionController extends Controller
     //         // Jika filter "Pending", tampilkan di tabel atas
     //         $paymentsPending = $paymentsPendingQuery->latest('created_at')->paginate(10, ['*'], 'page_pending')->withQueryString();
     //         $payments = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10); // Kosongkan tabel bawah
-        
+
     //     } else {
     //         // Jika filter "Semua Status" (default), tampilkan keduanya
     //         $paymentsPending = $paymentsPendingQuery->latest('created_at')->get();
     //         $payments = $paymentsLainQuery->latest('created_at')->paginate(10)->withQueryString();
     //     }
-        
+
     //     // 7. Kirim data ke view
     //     return view('pages.banksampah.pengelola.pembayaran.index', compact(
     //         'paymentsPending', // Data 'Pending'
     //         'payments',        // Data 'Selesai' & 'Gagal'
-    //         'totalPengeluaran', 
-    //         'pembayaranHariIni', 
-    //         'totalTransaksiPenarikan', 
-    //         'statuses', 
+    //         'totalPengeluaran',
+    //         'pembayaranHariIni',
+    //         'totalTransaksiPenarikan',
+    //         'statuses',
     //         'methods'
     //     ));
     // }
@@ -457,9 +457,9 @@ class BankTransactionController extends Controller
     //                                              ->sum('transaction_amount'));
 
     //     // Statistik lainnya tetap sama (opsional: bisa disesuaikan juga jika mau)
-    //     $pembayaranHariIni = $basePaymentQuery->clone()->where('status', 'Selesai')->whereDate('created_at', today())->count(); 
+    //     $pembayaranHariIni = $basePaymentQuery->clone()->where('status', 'Selesai')->whereDate('created_at', today())->count();
     //     $totalTransaksiPenarikan = $basePaymentQuery->clone()->count(); // Total semua pengajuan (termasuk pending/gagal)
-        
+
     //     $statuses = $basePaymentQuery->clone()->distinct()->pluck('status');
     //     $methods = $basePaymentQuery->clone()->distinct()->pluck('description');
 
@@ -477,7 +477,7 @@ class BankTransactionController extends Controller
     //         });
     //     });
     //     $query->when($request->input('metode'), fn($q, $metode) => $q->where('description', 'like', "%{$metode}%"));
-        
+
     //     // 5. Ambil data berdasarkan filter status (TETAP SAMA)
     //     $statusFilter = $request->input('status');
 
@@ -494,7 +494,7 @@ class BankTransactionController extends Controller
     //         $paymentsPending = $paymentsPendingQuery->latest('created_at')->get();
     //         $payments = $paymentsLainQuery->latest('created_at')->paginate(10)->withQueryString();
     //     }
-        
+
     //     return view('pages.banksampah.pengelola.pembayaran.index', compact(
     //         'paymentsPending', 'payments', 'totalPengeluaran', 'pembayaranHariIni', 'totalTransaksiPenarikan', 'statuses', 'methods'
     //     ));
@@ -532,8 +532,8 @@ class BankTransactionController extends Controller
                                               ->count();
 
         // Total Transaksi menghitung SEMUA (termasuk pending/gagal)
-        $totalTransaksiPenarikan = $basePaymentQuery->clone()->count(); 
-        
+        $totalTransaksiPenarikan = $basePaymentQuery->clone()->count();
+
         $statuses = $basePaymentQuery->clone()->distinct()->pluck('status');
         $methods = $basePaymentQuery->clone()->distinct()->pluck('description');
 
@@ -552,41 +552,64 @@ class BankTransactionController extends Controller
             });
         });
         $query->when($request->input('metode'), fn($q, $metode) => $q->where('description', 'like', "%{$metode}%"));
-        
+
         // 5. Ambil data berdasarkan filter status untuk DUA TABEL
         $statusFilter = $request->input('status');
 
         // Query untuk PEMBAYARAN PENDING
         $paymentsPendingQuery = (clone $query)->where('status', 'Pending');
-        
+
         // Query untuk PEMBAYARAN LAIN (Selesai & Gagal)
         $paymentsLainQuery = (clone $query)->whereIn('status', ['Selesai', 'Gagal']);
 
         // 6. Logika Tampilan
         if ($statusFilter == 'Selesai' || $statusFilter == 'Gagal') {
             // Jika filter "Selesai" atau "Gagal", tampilkan di tabel bawah
-            $paymentsPending = collect(); 
+            $paymentsPending = collect();
             $payments = $paymentsLainQuery->where('status', $statusFilter)->latest('created_at')->paginate(10)->withQueryString();
 
         } elseif ($statusFilter == 'Pending') {
             // Jika filter "Pending", tampilkan di tabel atas
             $paymentsPending = $paymentsPendingQuery->latest('created_at')->paginate(10, ['*'], 'page_pending')->withQueryString();
-            $payments = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10); 
-        
+            $payments = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 10);
+
         } else {
             // Jika filter "Semua Status" (default), tampilkan keduanya
             $paymentsPending = $paymentsPendingQuery->latest('created_at')->get();
             $payments = $paymentsLainQuery->latest('created_at')->paginate(10)->withQueryString();
         }
-        
+
+        Log::info('Riwayat pembayaran dimuat.', [
+            'actor_user_id' => Auth::id(),
+            'actor_bank_id' => $bankId,
+            'filters' => [
+                'search' => $request->input('search'),
+                'metode' => $request->input('metode'),
+                'status' => $request->input('status'),
+            ],
+            'stats' => [
+                'total_pengeluaran' => $totalPengeluaran,
+                'pembayaran_hari_ini' => $pembayaranHariIni,
+                'total_transaksi_penarikan' => $totalTransaksiPenarikan,
+            ],
+            'result_counts' => [
+                'pending' => $paymentsPending instanceof \Illuminate\Pagination\LengthAwarePaginator
+                    ? $paymentsPending->total()
+                    : $paymentsPending->count(),
+                'selesai_gagal' => $payments instanceof \Illuminate\Pagination\LengthAwarePaginator
+                    ? $payments->total()
+                    : $payments->count(),
+            ],
+        ]);
+
         // 7. Kirim data ke view
         return view('pages.banksampah.pengelola.pembayaran.index', compact(
-            'paymentsPending', 
-            'payments', 
-            'totalPengeluaran', 
-            'pembayaranHariIni', 
-            'totalTransaksiPenarikan', 
-            'statuses', 
+            'paymentsPending',
+            'payments',
+            'totalPengeluaran',
+            'pembayaranHariIni',
+            'totalTransaksiPenarikan',
+            'statuses',
             'methods'
         ));
     }
@@ -661,7 +684,7 @@ class BankTransactionController extends Controller
             return back()->with('error', 'Terjadi kesalahan saat menyimpan transaksi pembayaran.')->withInput();
         }
     }
-    
+
     /**
      * Menampilkan detail pembayaran untuk PENGELOLA.
      */
@@ -735,7 +758,20 @@ class BankTransactionController extends Controller
             'action' => 'required|in:Selesai,Gagal'
         ]);
 
+        Log::info('Bulk update pembayaran diminta.', [
+            'actor_user_id' => Auth::id(),
+            'actor_bank_id' => optional(Auth::user()->bank)->id,
+            'requested_action' => $request->input('action'),
+            'requested_ids' => $request->input('ids', []),
+            'requested_count' => is_array($request->input('ids')) ? count($request->input('ids')) : 0,
+        ]);
+
         if (!$request->has('ids') || empty($request->input('ids'))) {
+            Log::warning('Bulk update pembayaran tanpa ids.', [
+                'actor_user_id' => Auth::id(),
+                'actor_bank_id' => optional(Auth::user()->bank)->id,
+                'requested_action' => $request->input('action'),
+            ]);
             return back()->with('warning', 'Tidak ada transaksi yang dipilih.');
         }
 
@@ -747,6 +783,7 @@ class BankTransactionController extends Controller
         $newStatus = $request->input('action');
         $processedCount = 0;
         $errorMessages = [];
+        $skippedLogs = [];
 
         DB::beginTransaction();
         try {
@@ -778,21 +815,67 @@ class BankTransactionController extends Controller
                      elseif ($payment->transaction_type !== 'penarikan') $reason = "Bukan penarikan";
                      elseif ($payment->status !== 'Pending') $reason = "Status bukan Pending";
                      $errorMessages[] = "ID {$id}: {$reason}.";
+                     $skippedLogs[] = [
+                        'transaction_id' => $id,
+                        'reason' => $reason,
+                        'transaction_found' => (bool) $payment,
+                        'transaction_bank_id' => optional(optional($payment)->rekening)->bank_id,
+                        'transaction_status' => optional($payment)->status,
+                        'transaction_type' => optional($payment)->transaction_type,
+                     ];
                 }
             }
 
             DB::commit();
 
+            if (!empty($skippedLogs)) {
+                Log::warning('Bulk update pembayaran: transaksi dilewati.', [
+                    'actor_user_id' => Auth::id(),
+                    'actor_bank_id' => $bankId,
+                    'requested_action' => $newStatus,
+                    'requested_ids' => $transactionIds,
+                    'processed_count' => $processedCount,
+                    'skipped_count' => count($skippedLogs),
+                    'skipped' => $skippedLogs,
+                ]);
+            }
+
+            Log::info('Bulk update pembayaran selesai.', [
+                'actor_user_id' => Auth::id(),
+                'actor_bank_id' => $bankId,
+                'requested_action' => $newStatus,
+                'requested_count' => count($transactionIds),
+                'processed_count' => $processedCount,
+                'failed_count' => count($errorMessages),
+            ]);
+
             $successMessage = $processedCount . ' status transaksi berhasil diperbarui menjadi "' . $newStatus . '".';
             if (!empty($errorMessages)) {
                 $errorMessage = 'Beberapa transaksi gagal/dilewati: ' . implode('; ', $errorMessages);
+                Log::warning('Bulk update pembayaran: partial gagal/dilewati.', [
+                    'actor_user_id' => Auth::id(),
+                    'actor_bank_id' => $bankId,
+                    'requested_action' => $newStatus,
+                    'requested_count' => count($transactionIds),
+                    'processed_count' => $processedCount,
+                    'failed_count' => count($errorMessages),
+                    'failed_messages' => $errorMessages,
+                    'flash_message' => $errorMessage,
+                ]);
                 return redirect()->route('pengelola.pembayaran.index')->with('success', $successMessage)->with('warning', $errorMessage);
             }
             return redirect()->route('pengelola.pembayaran.index')->with('success', $successMessage);
 
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('Bulk update pembayaran gagal: ' . $e->getMessage());
+            Log::error('Bulk update pembayaran gagal.', [
+                'actor_user_id' => Auth::id(),
+                'actor_bank_id' => $bankId,
+                'requested_action' => $newStatus,
+                'requested_ids' => $transactionIds,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
             return redirect()->route('pengelola.pembayaran.index')->with('error', 'Terjadi kesalahan sistem saat memproses aksi massal.');
         }
     }

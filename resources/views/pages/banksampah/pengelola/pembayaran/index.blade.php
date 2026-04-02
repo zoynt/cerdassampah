@@ -44,25 +44,31 @@
     checkAllPending: false,
     lainIds: [],
     checkAllLain: false,
-    
+    hasPendingId(id) {
+        return this.pendingIds.includes(String(id));
+    },
+    hasLainId(id) {
+        return this.lainIds.includes(String(id));
+    },
+
     toggleAllPending() {
-        let currentIds = {{ $paymentsPending instanceof \Illuminate\Support\Collection ? $paymentsPending->pluck('id')->toJson() : $paymentsPending->getCollection()->pluck('id')->toJson() }};
+        let currentIds = {{ $paymentsPending instanceof \Illuminate\Support\Collection ? $paymentsPending->pluck('id')->toJson() : $paymentsPending->getCollection()->pluck('id')->toJson() }}.map(String);
         if (this.checkAllPending) { this.pendingIds = [...new Set([...this.pendingIds, ...currentIds])]; }
-        else { this.pendingIds = this.pendingIds.filter(id => !currentIds.includes(id)); }
+        else { this.pendingIds = this.pendingIds.filter(id => !currentIds.includes(String(id))); }
     },
     updateCheckAllPending() {
-        let currentIds = {{ $paymentsPending instanceof \Illuminate\Support\Collection ? $paymentsPending->pluck('id')->toJson() : $paymentsPending->getCollection()->pluck('id')->toJson() }};
+        let currentIds = {{ $paymentsPending instanceof \Illuminate\Support\Collection ? $paymentsPending->pluck('id')->toJson() : $paymentsPending->getCollection()->pluck('id')->toJson() }}.map(String);
         if (currentIds.length === 0) { this.checkAllPending = false; return; }
         this.checkAllPending = currentIds.every(id => this.pendingIds.includes(id));
     },
 
     toggleAllLain() {
-        let currentIds = {{ $payments->pluck('id')->toJson() }};
+        let currentIds = {{ $payments->pluck('id')->toJson() }}.map(String);
         if (this.checkAllLain) { this.lainIds = [...new Set([...this.lainIds, ...currentIds])]; }
-        else { this.lainIds = this.lainIds.filter(id => !currentIds.includes(id)); }
+        else { this.lainIds = this.lainIds.filter(id => !currentIds.includes(String(id))); }
     },
     updateCheckAllLain() {
-        let currentIds = {{ $payments->pluck('id')->toJson() }};
+        let currentIds = {{ $payments->pluck('id')->toJson() }}.map(String);
         if (currentIds.length === 0) { this.checkAllLain = false; return; }
         this.checkAllLain = currentIds.every(id => this.lainIds.includes(id));
     }
@@ -171,10 +177,10 @@
                     </thead>
                     <tbody>
                         @foreach($paymentsPending as $payment)
-                        <tr class="border-b hover:bg-yellow-50 transition-colors duration-200" :class="{ 'bg-yellow-50': pendingIds.includes({{ $payment->id }}) }">
+                        <tr class="border-b hover:bg-yellow-50 transition-colors duration-200" :class="{ 'bg-yellow-50': hasPendingId({{ $payment->id }}) }">
                             <td class="px-4 py-4">
                                 <input type="checkbox" x-model="pendingIds" value="{{ $payment->id }}" class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-offset-0 focus:ring-green-200 focus:ring-opacity-50 h-5 w-5">
-                                <input type="hidden" name="ids[]" value="{{ $payment->id }}" :disabled="!pendingIds.includes({{ $payment->id }})">
+                                <input type="hidden" name="ids[]" value="{{ $payment->id }}" :disabled="!hasPendingId({{ $payment->id }})">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $payment->created_at->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $payment->rekening->user->name ?? 'N/A' }}</td>
@@ -249,10 +255,10 @@
                     </thead>
                     <tbody>
                         @forelse($payments as $payment)
-                        <tr class="border-b hover:bg-green-50 transition-colors duration-200" :class="{ 'bg-green-50': lainIds.includes({{ $payment->id }}) }">
+                        <tr class="border-b hover:bg-green-50 transition-colors duration-200" :class="{ 'bg-green-50': hasLainId({{ $payment->id }}) }">
                             <td class="px-4 py-4">
                                 <input type="checkbox" x-model="lainIds" value="{{ $payment->id }}" class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-offset-0 focus:ring-green-200 focus:ring-opacity-50 h-5 w-5">
-                                <input type="hidden" name="ids[]" value="{{ $payment->id }}" :disabled="!lainIds.includes({{ $payment->id }})">
+                                <input type="hidden" name="ids[]" value="{{ $payment->id }}" :disabled="!hasLainId({{ $payment->id }})">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $payment->created_at->format('d/m/Y') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $payment->rekening->user->name ?? 'N/A' }}</td>
@@ -280,7 +286,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             @if ($payments->hasPages())
             <div class="p-4 border-t bg-gray-50">{{ $payments->links() }}</div>
             @endif
@@ -299,7 +305,7 @@
             // [PERBAIKAN] HAPUS Inisialisasi Select2 untuk filter
             // $('#filter-metode').select2({ ... });
             // $('#filter-status').select2({ ... });
-            
+
             // Inisialisasi Select2 untuk AKSI MASSAL (Ini sudah benar)
             $('#bulk-action-select-pending').select2({ placeholder: 'Pilih Aksi...', allowClear: false, dropdownParent: $('body'), minimumResultsForSearch: Infinity });
             $('#bulk-action-select-lain').select2({ placeholder: 'Pilih Aksi...', allowClear: false, dropdownParent: $('body'), minimumResultsForSearch: Infinity });
