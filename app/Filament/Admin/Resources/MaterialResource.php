@@ -27,6 +27,7 @@ class MaterialResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-book-open';
     protected static ?int $navigationSort = 4;
+    protected static ?string $navigationLabel = 'Materi';
 
 
     public static function form(Form $form): Form

@@ -11,10 +11,25 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SurungController;
 use App\Http\Controllers\LandingController;
 use App\Http\Controllers\ProfileController;
-// use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\UserpointController;
 use App\Http\Controllers\LeaderboardController;
 use App\Http\Controllers\ReverseGeocodeController;
+use App\Http\Controllers\BankSampahController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\StoreProfileController;
+use App\Http\Controllers\StoreController;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\MarketplaceProfileController;
+use App\Http\Controllers\BankSampahUserController;
+use App\Http\Controllers\BankTransactionController;
+use App\Http\Controllers\BankWasteProductController;
+use App\Http\Controllers\CompanyTransactionController;
+use App\Http\Controllers\RekeningBankSampahUserController;
+use App\Http\Controllers\Pengelola\WastePriceController;
+use App\Http\Controllers\Pengelola\TransactionHistoryController;
+use App\Http\Controllers\Pengelola\BankProfileController;
+
+
 
 // Landing Page
 // Route::get('/', function () {
@@ -34,10 +49,22 @@ Route::get('/reverse-geocode', ReverseGeocodeController::class);
 // Fitur Scan (publik form + proses)
 Route::get('/scan', fn () => view('pages.scan.scan'))->name('scan.form');
 Route::post('/scan', [ScanController::class, 'scan'])->name('scan.scan');
+// RUTE HALAMAN DETAIL PRODUK NON-LOGIN (TAMU)
+Route::get('/produk/{store:slug}/{product_slug}', [ProductController::class, 'showguest'])->name('guest.product.show');
+// Rute untuk halaman semua produk non-login (sudah ada)
+Route::get('/store', [ProductController::class, 'guest'])->name('store-user'); 
+Route::get('/smartcity', function () {
+    return view('pages.smartcity.index');
+})->name('smartcity.index'); 
+Route::get('/smartcity#smart', function () {
+    return view('pages.smartcity.index');
+})->name('smartcity.index.smart'); 
+Route::get('/smartcity-informasi', function () {
+    return view('pages.smartcity-informasi');
+})->name('smartcity.informasi');
 
-// ====== Auth ======
-// Area login (role admin|warga)
-Route::middleware(['auth', 'role:admin|warga'])->group(function () {
+
+Route::middleware(['auth'])->group(function () {
     // Dashboard & menu
     Route::get('/dashboard', fn () => view('pages.dashboard.dashboard'))->name('dashboard');
     Route::get('/scan-user', fn () => view('pages.dashboard.scan-sampah'))->name('scan-user');
@@ -47,6 +74,123 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::get('/surung-sintak', [SurungController::class, 'index'])->name('surung-sintak.index');
     Route::get('/banksampah-user', [BankController::class, 'index'])->name('banksampah-user');
     Route::get('/lokasi-tps', [TpsController::class, 'mapIndex'])->name('lokasi-tps.index');
+
+    // --- ROUTE BARU DITAMBAHKAN DI SINI ---
+    // Bank Sampah Digital
+    Route::get('/bank-sampah/informasi/{bank:slug?}', [BankSampahUserController::class, 'informasi'])->name('digital.informasi');
+    Route::get('/bank-sampah/riwayat/{bank:slug?}', [BankTransactionController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
+    Route::get('/bank-sampah/harga/{bank:slug?}', [BankWasteProductController::class, 'harga'])->middleware('auth')->name('digital.harga');
+    Route::get('/bank-sampah/tarik-saldo/{bank:slug}', [BankSampahUserController::class, 'showTarikSaldoForm'])->middleware('auth')->name('digital.tarik-saldo.form');
+    Route::post('/bank-sampah/tarik-saldo/{bank:slug}', [BankSampahUserController::class, 'storeTarikSaldo'])->middleware('auth')->name('digital.tarik-saldo.store');
+    // Route::get('/bank-sampah/tarik-saldo', [BankSampahUserController::class, 'showTarikSaldoForm'])->name('digital.tarik-saldo.form');
+    // Route::post('/bank-sampah/tarik-saldo', [BankSampahUserController::class, 'storeTarikSaldo'])->name('digital.tarik-saldo.store');
+    Route::get('/bank-sampah/{bank:slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/riwayat', [BankTransactionController::class, 'riwayat'])->middleware('auth')->name('digital.riwayat');
+    // Route::get('/bank-sampah/{bank:slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/{bankSampah}', [BankController::class, 'show'])->name('digital.banksampah.show');
+    // Route::get('/bank-sampah/{slug}', [BankController::class, 'show'])->name('digital.banksampah.show');
+
+    //Pengelola Bank Sampah
+    Route::get('/pengelola/data-nasabah', [RekeningBankSampahUserController::class, 'index'])->name('pengelola.nasabah.index');
+    Route::get('/pengelola/setoran/create', [BankTransactionController::class, 'create'])->name('pengelola.setoran.create');
+    Route::post('/pengelola/setoran', [BankTransactionController::class, 'store'])->name('pengelola.setoran.store');
+    Route::get('/pengelola/nasabah/{user}', [RekeningBankSampahUserController::class, 'show'])->name('pengelola.nasabah.show');
+    Route::put('/pengelola/nasabah/{user}', [RekeningBankSampahUserController::class, 'updateStatus'])->name('pengelola.nasabah.updateStatus');
+    Route::get('/pengelola/harga-sampah', [WastePriceController::class, 'index'])->name('pengelola.harga.index');
+    Route::post('/pengelola/harga-sampah', [WastePriceController::class, 'store'])->name('pengelola.harga.store');
+    Route::put('/pengelola/harga-sampah/{product}', [WastePriceController::class, 'update'])->name('pengelola.harga.update');
+    Route::delete('/pengelola/harga-sampah/{product}', [WastePriceController::class, 'destroy'])->name('pengelola.harga.destroy');
+    Route::get('/pengelola/riwayat-setoran', [TransactionHistoryController::class, 'index'])->name('pengelola.riwayat.index');
+    // Route::get('/pengelola/riwayat-setoran/{setoran}', [TransactionHistoryController::class, 'show'])->name('pengelola.riwayat.show');
+    // Ganti {setoran} menjadi {transaction:uuid}
+    Route::get('/pengelola/riwayat-setoran/{transaction:uuid}', [TransactionHistoryController::class, 'show'])
+        ->name('pengelola.riwayat.show');
+    Route::delete('/pengelola/riwayat-setoran/{transaction:uuid}', [TransactionHistoryController::class, 'destroy'])
+    ->name('pengelola.riwayat.destroy');
+    // Tambahkan rute untuk cetak struk
+    Route::get('/pengelola/riwayat-setoran/{transaction:uuid}/cetak', [TransactionHistoryController::class, 'cetakStruk'])
+        ->name('pengelola.riwayat.cetak');
+    Route::get('/pengelola/riwayat-pembayaran', [BankTransactionController::class, 'riwayatPembayaran'])
+    ->name('pengelola.pembayaran.index');
+    // Rute untuk menampilkan form pembayaran baru
+    Route::get('/pengelola/pembayaran/create', [BankTransactionController::class, 'createPembayaran'])->name('pengelola.pembayaran.create');
+    // Rute untuk memproses dan menyimpan data pembayaran baru
+    Route::post('/pengelola/pembayaran', [BankTransactionController::class, 'storePembayaran'])->name('pengelola.pembayaran.store');
+    Route::get('/pengelola/riwayat-pembayaran/{payment:uuid}', [BankTransactionController::class, 'showPembayaran'])
+    ->name('pengelola.pembayaran.show');
+    Route::patch('/pengelola/riwayat-pembayaran/{payment}', [BankTransactionController::class, 'updatePembayaran'])
+    ->name('pengelola.pembayaran.update');
+    Route::post('/pengelola/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+    ->name('pengelola.pembayaran.bulkUpdate');
+    Route::post('/pengelola/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+    ->name('pengelola.pembayaran.bulkUpdate');
+    Route::post('/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+     ->name('pengelola.pembayaran.bulkUpdate');
+     Route::post('/bank-sampah/{bank:slug}/daftar', [BankSampahUserController::class, 'daftarNasabah'])
+        ->name('digital.nasabah.daftar');
+
+    //
+    Route::get('/bank-sampah/profil/{bank:slug}', [BankProfileController::class, 'show'])->name('bank-sampah.profil.show');
+    Route::get('/bank-sampah/item/{bank:slug}', [BankProfileController::class, 'indexItems'])->name('bank-sampah.item.index');
+    Route::middleware(['auth', 'role:banker'])->prefix('pengelola')->name('pengelola.')->group(function () {
+        Route::get('/bank-profil', [BankProfileController::class, 'edit'])->name('bank-profil.edit');
+        Route::put('/bank-profil', [BankProfileController::class, 'update'])->name('bank-profil.update');
+        Route::post('/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+        ->name('pengelola.pembayaran.bulkUpdate');
+        Route::post('/riwayat-pembayaran/bulk-update', [BankTransactionController::class, 'bulkUpdateStatusPembayaran'])
+     ->name('pengelola.pembayaran.bulkUpdate');
+        Route::post('/data-nasabah/bulk-update-status', [RekeningBankSampahUserController::class, 'bulkUpdateStatusNasabah'])
+        ->name('nasabah.bulkUpdateStatus');
+    });
+
+    // Marketplace
+    Route::get('marketplace/store/{store:slug}', [StoreController::class, 'show'])
+    ->name('marketplace.store.show');
+    Route::get('/my-store/dashboard', [StoreProfileController::class, 'redirectToMyStore'])->name('mystore.dashboard');
+
+    // Route Marketplace Umum (Pembelian)
+    //Route::get('/marketplace/product', [ProductController::class, 'index'])->name('marketplace.products.all'); 
+    //Route::get('/marketplace/product/{product}', [ProductController::class, 'show'])->name('marketplace.products.show'); // Detail produk tunggal (diganti dari marketplace.product.detail)
+    //Route::get('/marketplace/checkout', [ProductController::class, 'showCheckout'])->name('marketplace.checkout');
+    //Route::get('/marketplace/pembelian/{order}', [OrderController::class, 'showPurchaseDetail'])->name('marketplace.purchase.detail');
+    // Route::post('/marketplace/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('marketplace.order.cancel');
+    // Route::post('/marketplace/checkout/{product}', [OrderController::class, 'placeOrder'])->name('marketplace.order.place');
+    // Route::get('/marketplace/invoice/{order}', [OrderController::class, 'showInvoice'])->name('marketplace.invoice.show');
+    // Route::get('/marketplace/history', [OrderController::class, 'purchaseHistory'])->name('marketplace.history');
+    // Route::get('/marketplace/rating/{order}', [ProductController::class, 'showRatingForm'])->name('marketplace.rating.show');
+    // Route::post('/marketplace/rating/{order}', [ProductController::class, 'storeRating'])->name('marketplace.rating.store');
+
+
+    // Route Marketplace Penjual (Seller/Toko)
+    
+
+    // Daftar Produk Toko Saya (List/Read)
+    //Route::get('/marketplace/products/list', [ProductController::class, 'storeProducts'])->name('marketplace.products.list');
+    
+    // Route Marketplace Umum (Pembelian)
+    Route::get('/marketplace/history', [OrderController::class, 'purchaseHistory'])->name('marketplace.history');
+    Route::get('/marketplace/product', [ProductController::class, 'index'])->name('marketplace.products.all'); 
+    Route::get('/{store:slug}/checkout/{product_slug}', [ProductController::class, 'showCheckout'])->name('marketplace.checkout');
+    Route::get('/marketplace/pembelian/{order:order_number}', [OrderController::class, 'showPurchaseDetail'])->name('marketplace.purchase.detail');
+    Route::post('/marketplace/orders/{order}/cancel', [OrderController::class, 'cancelOrder'])->name('marketplace.order.cancel');
+    Route::post('/{store:slug}/checkout/{product_slug}', [OrderController::class, 'placeOrder'])->name('marketplace.order.place');
+    Route::get('/marketplace/invoice/{order:order_number}', [OrderController::class, 'showInvoice'])->name('marketplace.invoice.show');
+    Route::get('/{store:slug}/{product_slug}', [ProductController::class, 'show'])->name('marketplace.products.show');
+    Route::get('/marketplace/rating/{order:order_number}', [ProductController::class, 'showRatingForm'])->name('marketplace.rating.show');
+    Route::post('/marketplace/rating/{order:order_number}', [ProductController::class, 'storeRating'])->name('marketplace.rating.store');
+    Route::post('/marketplace/orders/{order}/complete', [OrderController::class, 'markAsCompleted'])->name('marketplace.order.complete');
+
+    
+    // Profil Toko (Marketplace Profile)
+    Route::get('/store/profile/create', [StoreProfileController::class, 'create'])->name('store.profile.create'); 
+    Route::post('/store/profile', [StoreProfileController::class, 'store'])->name('store.profile.store'); 
+    Route::get('/store/profile/{store:slug}', [StoreProfileController::class, 'show'])->name('store.profile.show');
+    Route::get('/store/profile/{store:slug}/edit', [StoreProfileController::class, 'edit'])->name('store.profile.edit');
+    Route::put('/store/profile', [StoreProfileController::class, 'update'])->name('store.profile.update');
+
+    
+
 
     // Profil
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -68,11 +212,29 @@ Route::middleware(['auth', 'role:admin|warga'])->group(function () {
     Route::post('/api/game/points', [UserpointController::class, 'store'])
         ->name('game.points.store');
         
+
         // Leaderboard halaman web (bukan API)
         Route::get('/leaderboard', [LeaderboardController::class, 'index'])->name('leaderboard.index');
         Route::post('/leaderboard/fetch', [LeaderboardController::class, 'fetch'])->name('leaderboard.fetch');
 });
+// Route untuk penjual (seller)
+Route::middleware(['auth', 'role:seller'])->group(function () {
+    // Route::get('/my-store/dashboard', [StoreProfileController::class, 'redirectToMyStore'])->name('mystore.dashboard');
 
-   
+    // Produk
+    Route::get('/marketplace/products/list', [ProductController::class, 'storeProducts'])->name('marketplace.products.list');
+    Route::get('/marketplace/products/create', [ProductController::class, 'create'])->name('marketplace.products.create'); 
+    Route::post('/marketplace/products', [ProductController::class, 'store'])->name('marketplace.products.store'); 
+    Route::get('/marketplace/products/{product_slug}/edit', [ProductController::class, 'edit'])->name('marketplace.products.edit'); 
+    Route::put('/marketplace/products/{product_slug}', [ProductController::class, 'update'])->name('marketplace.products.update');
+
+    // Riwayat Penjualan
+    Route::get('/marketplace/riwayat/export', [ProductController::class, 'exportSalesHistory'])->name('marketplace.riwayat.export');
+    Route::get('/marketplace/riwayat/{store:slug}', [ProductController::class, 'riwayatPenjualan'])->name('marketplace.riwayat');
+    
+});
+
+
+
 
 require __DIR__.'/auth.php';

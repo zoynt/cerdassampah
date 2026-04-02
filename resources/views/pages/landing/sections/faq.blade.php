@@ -151,8 +151,8 @@
             'a' => 'Tidak. Game ini dibuat untuk semua usia sebagai media belajar yang seru. Melalui game ini, kamu bisa berlatih memilih sampah organik, anorganik, dan B3 dengan cara menyenangkan.',
           ],
           [
-            'q' => 'Bagaimana saya tahu kapan truk sampah akan datang ke TPS terdekat ?',
-            'a' => 'Kamu bisa melihat jadwal rute pengangkutan sampah langsung di dalam aplikasi. Informasi ini membantu kamu menyesuaikan waktu membuang sampah agar tidak terjadi penumpukan dan lingkungan tetap tertib dan bersih.',
+            'q' => 'Bisakah saya membuka Bank Sampah di wilayah saya?',
+            'a' => 'Tentu saja bisa! Jika daerahmu belum memiliki Bank Sampah, kamu dapat menjadi pengelola dan mendapatkan penghasilan tambahan. Cukup klik tombol “Daftar Mitra” di halaman bank sampah digital dan tim kami akan membantu proses pendaftarannya.',
           ],
         ];
       @endphp

@@ -13,7 +13,8 @@ return new class extends Migration
     {
         Schema::create('waste_types', function (Blueprint $table) {
             $table->id();
-            $table->enum('type_name', ['baterai','organik', 'kaca','logam', 'kertas', 'plastik', 'residu']);
+            $table->string('type_name', 50);
+            // $table->enum('type_name', ['baterai','organik', 'kaca','logam', 'kertas', 'plastik', 'residu']);
             $table->longText('waste_description')->nullable();
             $table->timestamps();
         });

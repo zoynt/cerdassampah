@@ -1,146 +1,191 @@
-import { jsx } from "react/jsx-runtime";
+import { jsx, jsxs } from "react/jsx-runtime";
 import { createInertiaApp } from "@inertiajs/react";
 import { createRoot } from "react-dom/client";
-import { DndContext, useDroppable, useDraggable } from "@dnd-kit/core";
+import { useState, useEffect } from "react";
+import { useSensors, useSensor, PointerSensor, TouchSensor, DndContext, useDroppable, useDraggable } from "@dnd-kit/core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faClock, faStar, faTimes, faLeaf, faRecycle, faBiohazard, faInfoCircle, faPlay, faTrophy, faUser, faGift, faRotate } from "@fortawesome/free-solid-svg-icons";
-window.axios = axios;
-window.axios.defaults.headers.common["X-Requested-With"] = "XMLHttpRequest";
-function CancelGameModal({ onCancel, onContinue }) {
-  return /* @__PURE__ */ jsx("div", { style: overlayStyle$3, children: /* @__PURE__ */ jsxs("div", { style: modalStyle$3, children: [
-    /* @__PURE__ */ jsx("h2", { style: titleStyle$3, children: "Batalkan Permainan?" }),
-    /* @__PURE__ */ jsxs("p", { style: messageStyle$1, children: [
-      "Apakah kamu yakin ingin membatalkan permainan?",
-      /* @__PURE__ */ jsx("br", {}),
-      "Progresmu tidak akan disimpan."
-    ] }),
-    /* @__PURE__ */ jsxs("div", { style: buttonContainerStyle$1, children: [
-      /* @__PURE__ */ jsx("button", { style: cancelButtonStyle, onClick: onCancel, children: "Ya, Batalkan" }),
-      /* @__PURE__ */ jsx("button", { style: continueButtonStyle, onClick: onContinue, children: "Lanjutkan Bermain" })
+import { faClock, faStar, faTimes, faLeaf, faRecycle, faBiohazard } from "@fortawesome/free-solid-svg-icons";
+const __variableDynamicImportRuntimeHelper = (glob, path, segs) => {
+  const v = glob[path];
+  if (v) {
+    return typeof v === "function" ? v() : Promise.resolve(v);
+  }
+  return new Promise((_, reject) => {
+    (typeof queueMicrotask === "function" ? queueMicrotask : setTimeout)(
+      reject.bind(
+        null,
+        new Error(
+          "Unknown variable dynamic import: " + path + (path.split("/").length !== segs ? ". Note that variables only represent file names one level deep." : "")
+        )
+      )
+    );
+  });
+};
+const CancelGameModal = ({ onCancel, onContinue }) => {
+  const overlayStyle = {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    background: "rgba(17, 24, 39, 0.6)",
+    backdropFilter: "blur(4px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    zIndex: 400
+  };
+  const modalStyle = {
+    background: "white",
+    padding: "32px",
+    borderRadius: "16px",
+    textAlign: "center",
+    boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+    width: "450px",
+    // DIUBAH: Lebar modal menjadi 500px
+    maxWidth: "90%"
+  };
+  const titleStyle = {
+    fontSize: "22px",
+    fontWeight: "600",
+    color: "#1f2937",
+    margin: "0 0 12px 0"
+  };
+  const textStyle = {
+    color: "#4b5563",
+    margin: "0 0 24px 0"
+  };
+  const buttonContainerStyle = {
+    display: "flex",
+    gap: "12px",
+    justifyContent: "center"
+  };
+  const buttonStyle = {
+    padding: "12px 24px",
+    // DIUBAH: Padding tombol lebih besar
+    fontSize: "16px",
+    fontWeight: "700",
+    // DIUBAH: Membuat teks tombol menjadi bold
+    border: "none",
+    borderRadius: "8px",
+    cursor: "pointer",
+    transition: "background-color 0.2s ease, transform 0.1s ease"
+    // Menambahkan transisi
+  };
+  const cancelButtonStyle = {
+    ...buttonStyle,
+    background: "#fee2e2",
+    color: "#dc2626",
+    "&:hover": {
+      background: "#fecaca",
+      // Efek hover
+      transform: "translateY(-2px)"
+      // Efek kecil saat hover
+    }
+  };
+  const continueButtonStyle = {
+    ...buttonStyle,
+    background: "#dcfce7",
+    color: "#166534",
+    "&:hover": {
+      background: "#a7f3d0",
+      // Efek hover
+      transform: "translateY(-2px)"
+      // Efek kecil saat hover
+    }
+  };
+  return /* @__PURE__ */ jsx("div", { style: overlayStyle, children: /* @__PURE__ */ jsxs("div", { style: modalStyle, children: [
+    /* @__PURE__ */ jsx("h2", { style: titleStyle, children: "Keluar dari Permainan?" }),
+    /* @__PURE__ */ jsx("p", { style: textStyle, children: "Apakah Anda yakin ingin keluar? Progres permainan ini akan hilang." }),
+    /* @__PURE__ */ jsxs("div", { style: buttonContainerStyle, children: [
+      /* @__PURE__ */ jsx(
+        "button",
+        {
+          style: cancelButtonStyle,
+          onClick: onCancel,
+          onMouseEnter: (e) => e.currentTarget.style.backgroundColor = cancelButtonStyle["&:hover"].background,
+          onMouseLeave: (e) => e.currentTarget.style.backgroundColor = cancelButtonStyle.background,
+          onMouseDown: (e) => e.currentTarget.style.transform = "translateY(0)",
+          onMouseUp: (e) => e.currentTarget.style.transform = "translateY(-2px)",
+          children: "Ya, Keluar"
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        "button",
+        {
+          style: continueButtonStyle,
+          onClick: onContinue,
+          onMouseEnter: (e) => e.currentTarget.style.backgroundColor = continueButtonStyle["&:hover"].background,
+          onMouseLeave: (e) => e.currentTarget.style.backgroundColor = continueButtonStyle.background,
+          onMouseDown: (e) => e.currentTarget.style.transform = "translateY(0)",
+          onMouseUp: (e) => e.currentTarget.style.transform = "translateY(-2px)",
+          children: "Lanjutkan Bermain"
+        }
+      )
     ] })
   ] }) });
-}
-const overlayStyle$3 = {
-  position: "fixed",
-  // <-- PERBAIKAN: Mengubah dari 'absolute' menjadi 'fixed'
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: "rgba(17, 24, 39, 0.6)",
-  backdropFilter: "blur(4px)",
-  WebkitBackdropFilter: "blur(4px)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 1e3
-};
-const modalStyle$3 = {
-  background: "white",
-  padding: "40px",
-  borderRadius: "20px",
-  width: "550px",
-  maxWidth: "90%",
-  textAlign: "center",
-  fontFamily: "'Poppins', sans-serif",
-  position: "relative",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
-};
-const titleStyle$3 = {
-  fontSize: "2em",
-  fontWeight: "bold",
-  marginBottom: "10px",
-  color: "#1f2937"
-};
-const messageStyle$1 = {
-  fontSize: "0.9em",
-  fontWeight: "300",
-  marginBottom: "30px",
-  color: "#4b5563",
-  lineHeight: "1.5"
-};
-const buttonContainerStyle$1 = {
-  display: "flex",
-  gap: "20px",
-  justifyContent: "center"
-};
-const baseButtonStyle$1 = {
-  padding: "12px 28px",
-  borderRadius: "10px",
-  fontSize: "0.95em",
-  fontWeight: "bold",
-  cursor: "pointer",
-  border: "none",
-  transition: "transform 0.2s ease, box-shadow 0.2s ease"
-};
-const cancelButtonStyle = {
-  ...baseButtonStyle$1,
-  background: "#ef4444",
-  color: "white"
-};
-const continueButtonStyle = {
-  ...baseButtonStyle$1,
-  background: "#22c55e",
-  color: "white"
 };
 const additionalTrashItemsLvl2 = [
-  { id: "item-9", name: "Plastik Makanan", type: "Anorganik", img: "https://cdn-icons-png.flaticon.com/512/1899/1899757.png" },
-  { id: "item-10", name: "Ranting Pohon", type: "Organik", img: "https://cdn-icons-png.flaticon.com/512/2927/2927909.png" },
-  { id: "item-11", name: "Kaleng Cat", type: "B3", img: "https://cdn-icons-png.flaticon.com/512/3233/3233959.png" },
-  { id: "item-12", name: "Kemasan Kaca", type: "Anorganik", img: "https://cdn-icons-png.flaticon.com/512/280/280053.png" },
-  { id: "item-13", name: "Ampas Kopi", type: "Organik", img: "https://cdn-icons-png.flaticon.com/512/820/820251.png" }
+  { id: "item-9", name: "Plastik Makanan", type: "Anorganik", img: "https://assets-a1.kompasiana.com/items/album/2024/09/17/bahan-tas-daur-ulang-66e94718ed64150b976ed172.png" },
+  { id: "item-10", name: "Ranting Pohon", type: "Organik", img: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYAG31MGqMohcla3qOW4JXimbsVZ_EQ5AzRw&s" },
+  { id: "item-11", name: "Kaleng Cat", type: "B3", img: "https://media.istockphoto.com/id/1433619092/id/foto/kaleng-cat-bekas.jpg?s=612x612&w=0&k=20&c=V0L4hy9cr_WLutoCIV3Ck1a7c0LBCM-0gz0EMyqOKtA=" },
+  { id: "item-12", name: "Kemasan Kaca", type: "Anorganik", img: "https://w7.pngwing.com/pngs/89/375/png-transparent-glass-bottle-fizzy-drinks-plastic-bottle-drink-glass-plastic-bottle-soft-drink.png" },
+  { id: "item-13", name: "Ampas Kopi", type: "Organik", img: "https://www.bitkaorigin.com/assets/myback/js/elFinder/files/bitka-aneka-manfaat-ampas-kopi-header.jpg" }
 ];
 const additionalTrashItemsLvl3 = [
-  { id: "item-14", name: "Puntung Rokok", type: "B3", img: "https://cdn-icons-png.flaticon.com/512/4844/4844781.png" },
-  { id: "item-15", name: "Kemasan Styrofoam", type: "Anorganik", img: "https://cdn-icons-png.flaticon.com/512/8661/8661706.png" },
-  { id: "item-16", name: "Sisa Nasi", type: "Organik", img: "https://cdn-icons-png.flaticon.com/512/3218/3218314.png" },
-  { id: "item-17", name: "Cairan Pembersih", type: "B3", img: "https://cdn-icons-png.flaticon.com/512/845/845579.png" },
-  { id: "item-18", name: "Plastik Kresek", type: "Anorganik", img: "https://cdn-icons-png.flaticon.com/512/1429/1429074.png" },
-  { id: "item-19", name: "Daun Kering", type: "Organik", img: "https://cdn-icons-png.flaticon.com/512/4117/4117621.png" },
-  { id: "item-20", name: "Kaleng Semprot", type: "B3", img: "https://cdn-icons-png.flaticon.com/512/121/121588.png" }
+  { id: "item-14", name: "Puntung Rokok", type: "B3", img: "https://citarumharum.jabarprov.go.id/eusina/uploads/2021/11/201603171342531_b.jpg" },
+  { id: "item-15", name: "Kemasan Styrofoam", type: "Anorganik", img: "https://img.inews.co.id/media/1200/files/inews_new/2018/05/02/stor1.jpg" },
+  { id: "item-16", name: "Sisa Nasi", type: "Organik", img: "https://static.promediateknologi.id/crop/0x0:0x0/0x0/webp/photo/p2/68/2025/02/11/IMG_6917-706007545.jpg" },
+  { id: "item-17", name: "Cairan Pembersih", type: "B3", img: "https://siopen.balangankab.go.id/storage/merchant/products/2024/03/16/f3e4ef1a1be994fecf66f122f409f6b5.jpg" },
+  { id: "item-18", name: "Plastik Kresek", type: "Anorganik", img: "https://blue.kumparan.com/image/upload/fl_progressive,fl_lossy,c_fill,f_auto,q_auto:best,w_640/v1513498394/ttobcfc3mgmpord9inan.jpg" },
+  { id: "item-19", name: "Daun Kering", type: "Organik", img: "https://blog.kliknclean.com/wp-content/uploads/post_image/6%20Kegunaan%20Daun%20Kering_files/image001.jpg" },
+  { id: "item-20", name: "Kaleng Semprot", type: "B3", img: "https://risetcdn.jatimtimes.com/images/2019/09/07/Kaleng-kaleng-mengandung-gas-mudah-terbakar-istaa451317e8fc1a35.md.jpg?quality=50" }
 ];
 const initialTrashItems = {
   unclassified: [
-    { id: "item-1", name: "Botol Plastik", type: "Anorganik", img: "https://cdn-icons-png.flaticon.com/512/179/179354.png" },
-    { id: "item-2", name: "Sisa Sayuran", type: "Organik", img: "https://cdn-icons-png.flaticon.com/512/125/125807.png" },
-    { id: "item-3", name: "Baterai Bekas", type: "B3", img: "https://cdn-icons-png.flaticon.com/512/1498/1498565.png" },
-    { id: "item-4", name: "Kertas Bekas", type: "Anorganik", img: "https://cdn-icons-png.flaticon.com/512/861/861214.png" },
-    { id: "item-5", name: "Lampu Neon", type: "B3", img: "https://cdn-icons-png.flaticon.com/512/2874/2874130.png" },
-    { id: "item-6", name: "Kulit Buah", type: "Organik", img: "https://cdn-icons-png.flaticon.com/512/887/887964.png" },
-    { id: "item-7", name: "Kardus", type: "Anorganik", img: "https://cdn-icons-png.flaticon.com/512/280/280047.png" },
-    { id: "item-8", name: "Kaleng Minuman", type: "Anorganik", img: "https://cdn-icons-png.flaticon.com/512/2764/2764835.png" }
+    { id: "item-1", name: "Botol Plastik", type: "Anorganik", img: "https://cdn.pixabay.com/photo/2020/05/04/10/31/the-bottle-5128607_1280.jpg" },
+    { id: "item-2", name: "Sisa Sayuran", type: "Organik", img: "https://asset.kompas.com/crops/0klZOkbAiD8vBkXLOh0inHHWe6k=/20x0:961x627/750x500/data/photo/2020/09/29/5f72f11b0b5ab.jpg" },
+    { id: "item-3", name: "Baterai Bekas", type: "B3", img: "https://www.fobuma.com/mini/blog/73/73-2_ti.jpg?v=1611171161" },
+    { id: "item-4", name: "Kertas Bekas", type: "Anorganik", img: "https://awsimages.detik.net.id/community/media/visual/2022/10/14/limbah-kertas-daur-ulang_169.jpeg?w=650" },
+    { id: "item-5", name: "Lampu Neon", type: "B3", img: "https://mtlb.co.id/wp-content/uploads/2025/06/Picture1.jpg" },
+    { id: "item-6", name: "Kulit Buah", type: "Organik", img: "https://www.riaumandiri.co/assets/berita/original/24496060889-foto_bermanfaat,_google.png" },
+    { id: "item-7", name: "Kardus", type: "Anorganik", img: "https://c.files.bbci.co.uk/35D1/production/_113877731_board-1.jpg" },
+    { id: "item-8", name: "Kaleng Minuman", type: "Anorganik", img: "https://media.istockphoto.com/id/458674645/id/foto/mendaur-ulang-kaleng-bekas.jpg?s=612x612&w=0&k=20&c=bFBfuXpWf2A6f_1AUQdAwm_sxMqDbJ9wnhIWLI7Xs6M=" }
   ]
 };
 const levelData = {
   1: { duration: 90, items: initialTrashItems.unclassified },
   2: { duration: 90, items: [...initialTrashItems.unclassified, ...additionalTrashItemsLvl2] },
-  3: { duration: 60, items: [...initialTrashItems.unclassified, ...additionalTrashItemsLvl2, ...additionalTrashItemsLvl3] }
+  3: { duration: 75, items: [...initialTrashItems.unclassified, ...additionalTrashItemsLvl2, ...additionalTrashItemsLvl3] }
 };
-function DroppedItemCard({ item }) {
-  return /* @__PURE__ */ jsxs("div", { style: droppedItemStyle, children: [
-    /* @__PURE__ */ jsx("img", { src: item.img, alt: item.name, style: { width: "28px", height: "28px", objectFit: "contain" } }),
-    /* @__PURE__ */ jsx("span", { style: { fontSize: "11px", fontWeight: "500", color: "#4b5563", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }, children: item.name })
-  ] });
-}
-function DraggableItem({ item }) {
-  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({ id: item.id, data: item });
+function ItemCard({ item, isSelected, onClick, isMobile }) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: item.id,
+    data: item,
+    disabled: isMobile
+  });
   const style = {
     transform: transform ? `translate3d(${transform.x}px, ${transform.y}px, 0)` : void 0,
-    zIndex: isDragging ? 100 : "auto",
+    zIndex: isDragging ? 100 : isSelected ? 90 : "auto",
     opacity: isDragging ? 0.7 : 1,
-    ...itemStyle
+    ...itemStyle,
+    border: isSelected ? "3px solid #3b82f6" : "1px solid #e5e7eb",
+    cursor: isMobile ? "pointer" : "grab"
   };
-  return /* @__PURE__ */ jsxs("div", { ref: setNodeRef, style, ...listeners, ...attributes, children: [
-    /* @__PURE__ */ jsx("div", { style: itemImageContainerStyle, children: /* @__PURE__ */ jsx("img", { src: item.img, alt: item.name, style: { width: "60px", height: "60px", objectFit: "contain", pointerEvents: "none" } }) }),
+  const props = isMobile ? { onClick } : { onClick, ...listeners, ...attributes };
+  return /* @__PURE__ */ jsxs("div", { ref: setNodeRef, style, ...props, children: [
+    /* @__PURE__ */ jsx("div", { style: itemImageContainerStyle, children: /* @__PURE__ */ jsx("img", { src: item.img, alt: item.name, style: { width: "60px", height: "60px", objectFit: "contain" } }) }),
     /* @__PURE__ */ jsx("p", { style: itemLabelStyle, children: item.name })
   ] });
 }
-function DroppableBin({ id, items, icon, color }) {
+function TrashBin({ id, items, icon, color, onClick, isMobile, hasSelectedItem }) {
   const { setNodeRef, isOver } = useDroppable({ id });
+  const isActiveTarget = isMobile && hasSelectedItem;
   const binDynamicStyle = {
     ...binStyle,
-    borderColor: isOver ? color : "#e5e7eb",
-    boxShadow: isOver ? `0 4px 14px 0 ${color}40` : "0 1px 2px 0 rgb(0 0 0 / 0.05)"
+    borderColor: isOver || isActiveTarget ? color : "#e5e7eb",
+    boxShadow: isOver || isActiveTarget ? `0 4px 14px 0 ${color}40` : "0 1px 2px 0 rgb(0 0 0 / 0.05)",
+    cursor: isMobile && hasSelectedItem ? "pointer" : "default"
   };
   return /* @__PURE__ */ jsxs("div", { style: binContainerStyle, children: [
     /* @__PURE__ */ jsxs("div", { style: binHeaderContainerStyle, children: [
@@ -150,13 +195,33 @@ function DroppableBin({ id, items, icon, color }) {
       ] }),
       /* @__PURE__ */ jsx("div", { style: { ...binHeaderDividerStyle, backgroundColor: color } })
     ] }),
-    /* @__PURE__ */ jsxs("div", { ref: setNodeRef, style: binDynamicStyle, children: [
-      items.length === 0 && /* @__PURE__ */ jsx("p", { style: { color: "#9ca3af", fontSize: "12px", textAlign: "center" }, children: "Letakkan sampah di sini" }),
+    /* @__PURE__ */ jsxs("div", { ref: setNodeRef, style: binDynamicStyle, onClick, children: [
+      items.length === 0 && /* @__PURE__ */ jsx("p", { style: { color: "#9ca3af", fontSize: "12px", textAlign: "center" }, children: isMobile ? "Klik di sini" : "Letakkan di sini" }),
       items.map((item) => /* @__PURE__ */ jsx(DroppedItemCard, { item }, item.id))
     ] })
   ] });
 }
-function PilahSampahGame({ onGameEnd }) {
+function DroppedItemCard({ item }) {
+  return /* @__PURE__ */ jsxs("div", { style: droppedItemStyle, children: [
+    /* @__PURE__ */ jsx("img", { src: item.img, alt: item.name, style: { width: "28px", height: "28px", objectFit: "contain" } }),
+    /* @__PURE__ */ jsx(
+      "span",
+      {
+        style: {
+          fontSize: "11px",
+          fontWeight: "500",
+          color: "#4b5563",
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis"
+        },
+        children: item.name
+      }
+    )
+  ] });
+}
+function PilahSampahGame({ onGameEnd = () => {
+} }) {
   const [currentLevel, setCurrentLevel] = useState(1);
   const [score, setScore] = useState(0);
   const [isGameActive, setIsGameActive] = useState(true);
@@ -165,130 +230,142 @@ function PilahSampahGame({ onGameEnd }) {
   const [unclassifiedItems, setUnclassifiedItems] = useState([]);
   const [levelScores, setLevelScores] = useState({});
   const [showCancelModal, setShowCancelModal] = useState(false);
-  const totalScore = Object.values(levelScores).reduce((sum, score2) => sum + score2, 0);
+  const [timeLeft, setTimeLeft] = useState(90);
+  const [trashItems, setTrashItems] = useState({ Organik: [], Anorganik: [], B3: [] });
+  const [isMobile, setIsMobile] = useState(false);
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const getCsrf = () => {
+    const meta = typeof document !== "undefined" ? document.querySelector('meta[name="csrf-token"]') : null;
+    if (meta == null ? void 0 : meta.content) return meta.content;
+    if (typeof document !== "undefined") {
+      const m = document.cookie.match(/XSRF-TOKEN=([^;]+)/);
+      if (m) return decodeURIComponent(m[1]);
+    }
+    return null;
+  };
+  const totalScore = Object.values(levelScores).reduce((sum, s) => sum + s, 0);
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
+  );
   useEffect(() => {
-    const initialItems = [...levelData[currentLevel].items];
-    setUnclassifiedItems(initialItems);
-    setTrashItems({
-      Organik: [],
-      Anorganik: [],
-      B3: []
-    });
-    setTimeLeft(levelData[currentLevel].duration);
-    setIsGameActive(true);
-    setMessage("");
-    setIsGameOver(false);
+    const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkIsMobile();
+    window.addEventListener("resize", checkIsMobile);
+    return () => window.removeEventListener("resize", checkIsMobile);
+  }, []);
+  useEffect(() => {
+    const currentLevelData = levelData[currentLevel];
+    if (currentLevelData) {
+      setUnclassifiedItems([...currentLevelData.items]);
+      setTrashItems({ Organik: [], Anorganik: [], B3: [] });
+      setTimeLeft(currentLevelData.duration);
+      setIsGameActive(true);
+      setMessage("");
+      setIsGameOver(false);
+      setSelectedItemId(null);
+    }
   }, [currentLevel]);
-  const [timeLeft, setTimeLeft] = useState(levelData[currentLevel].duration);
-  const [trashItems, setTrashItems] = useState({
-    Organik: [],
-    Anorganik: [],
-    B3: []
-  });
   useEffect(() => {
     if (!isGameActive || isGameOver || showCancelModal) return;
     if (timeLeft <= 0) {
       setIsGameActive(false);
-      if (unclassifiedItems.length > 0) {
-        setIsGameOver(true);
-        setMessage(`Waktu habis! Anda gagal menyelesaikan level ${currentLevel}.`);
-      } else {
-        if (currentLevel < 3) {
-          setMessage(`Level ${currentLevel} Selesai!`);
-        } else {
-          setMessage(`Selamat! Anda telah menyelesaikan semua level.`);
-          setIsGameOver(true);
-        }
-      }
-      return;
-    }
-    const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1e3);
-    return () => clearTimeout(timer);
-  }, [timeLeft, isGameActive, isGameOver, currentLevel, unclassifiedItems.length, showCancelModal]);
-  const handleNextLevel = () => {
-    setIsGameActive(true);
-    if (currentLevel < 3) {
-      setCurrentLevel((prev) => prev + 1);
-    } else {
+      setMessage(`Waktu habis! Anda gagal menyelesaikan level ${currentLevel}.`);
       setIsGameOver(true);
-    }
-  };
-  const handleEndGameAndSaveScore = async (finalScore) => {
-    const userId = 1;
-    const csrfTokenElement = document.querySelector('meta[name="csrf-token"]');
-    const csrfToken = csrfTokenElement ? csrfTokenElement.getAttribute("content") : null;
-    if (!csrfToken) {
-      console.error("CSRF token tidak ditemukan.");
-      onGameEnd();
       return;
     }
-    try {
-      console.log("Mencoba mengirim skor ke API...");
-      const response = await fetch("/api/save-score", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-TOKEN": csrfToken
-        },
-        body: JSON.stringify({
-          user_id: userId,
-          points: finalScore
-        })
-      });
-      console.log("Respons server diterima:", response);
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Gagal menyimpan skor:", response.status, errorText);
-        alert(`Gagal menyimpan skor. Server error: ${response.status} ${response.statusText}. Cek konsol untuk detail.`);
+    const timer = setTimeout(() => setTimeLeft((t) => t - 1), 1e3);
+    return () => clearTimeout(timer);
+  }, [timeLeft, isGameActive, isGameOver, showCancelModal, currentLevel]);
+  const processItemDrop = (item, binId) => {
+    if (!item) return;
+    const isCorrect = item.type === binId;
+    const newScore = score + (isCorrect ? 10 : -5);
+    setScore(newScore);
+    setUnclassifiedItems((prev) => prev.filter((i) => i.id !== item.id));
+    setTrashItems((prev) => ({ ...prev, [binId]: [...prev[binId], item] }));
+    if (unclassifiedItems.length === 1) {
+      setIsGameActive(false);
+      setLevelScores((prev) => ({ ...prev, [currentLevel]: newScore }));
+      if (currentLevel < 3) {
+        setMessage(`Level ${currentLevel} Selesai!`);
       } else {
-        const data = await response.json();
-        console.log("Skor berhasil disimpan:", data);
+        setMessage(`Selamat! Anda telah menyelesaikan semua level.`);
+        setIsGameOver(true);
       }
-    } catch (error) {
-      console.error("Terjadi kesalahan saat menghubungi server:", error);
-      alert("Terjadi kesalahan saat menghubungi server. Mohon periksa koneksi internet atau URL API.");
-    } finally {
-      onGameEnd();
     }
   };
   const handleDragEnd = (event) => {
-    if (!isGameActive) return;
+    if (isMobile || !isGameActive) return;
     const { over, active } = event;
-    if (!over) return;
-    const draggedItem = active.data.current;
-    const targetBin = over.id;
-    if (["Organik", "Anorganik", "B3"].includes(targetBin)) {
-      let newScore = score;
-      if (draggedItem.type === targetBin) {
-        newScore += 10;
-      } else {
-        newScore -= 5;
-      }
-      setScore(newScore);
-      const remainingItems = unclassifiedItems.filter((item) => item.id !== draggedItem.id);
-      setUnclassifiedItems(remainingItems);
-      setTrashItems((prev) => ({
-        ...prev,
-        [targetBin]: [...prev[targetBin], draggedItem]
-      }));
-      if (remainingItems.length === 0) {
-        setIsGameActive(false);
-        setLevelScores((prev) => ({ ...prev, [currentLevel]: newScore }));
-        if (currentLevel < 3) {
-          setMessage(`Level ${currentLevel} Selesai!`);
-        } else {
-          setMessage(`Selamat! Anda telah menyelesaikan semua level.`);
-          setIsGameOver(true);
-        }
-      }
+    if (over) {
+      processItemDrop(active.data.current, over.id);
     }
   };
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${minutes.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+  const handleItemClick = (itemId) => {
+    if (!isMobile || !isGameActive) return;
+    setSelectedItemId((prevId) => prevId === itemId ? null : itemId);
   };
-  return /* @__PURE__ */ jsx(DndContext, { onDragEnd: handleDragEnd, children: /* @__PURE__ */ jsxs("div", { style: gameContainerStyle, children: [
+  const handleBinClick = (binId) => {
+    if (!isMobile || !isGameActive || !selectedItemId) return;
+    const itemToMove = unclassifiedItems.find((it) => it.id === selectedItemId);
+    if (itemToMove) {
+      processItemDrop(itemToMove, binId);
+      setSelectedItemId(null);
+    }
+  };
+  const handleNextLevel = () => {
+    if (currentLevel < 3) setCurrentLevel((prev) => prev + 1);
+    else setIsGameOver(true);
+  };
+  const finalTotalPoints = totalScore + (levelScores[currentLevel] !== void 0 ? 0 : score);
+  const saveScore = async (finalTotalPoints2) => {
+    try {
+      const token = getCsrf();
+      if (!token) {
+        console.error("CSRF token tidak ditemukan");
+        return;
+      }
+      const res = await fetch("/api/game/points", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRF-TOKEN": token,
+          // ✅ gunakan token
+          "X-Requested-With": "XMLHttpRequest",
+          "Accept": "application/json"
+        },
+        credentials: "same-origin",
+        body: JSON.stringify({ points: finalTotalPoints2 })
+      });
+      if (!res.ok) {
+        const errorData = await res.json();
+        console.error("Gagal menyimpan skor:", errorData);
+        setMessage(`Gagal menyimpan skor: ${errorData.message || "Terjadi kesalahan."}`);
+      } else {
+        const data = await res.json();
+        console.log("Skor berhasil disimpan:", data);
+        setMessage(`Skor berhasil disimpan! Total poin Anda: ${data.total_points}`);
+      }
+    } catch (error) {
+      console.error("Terjadi kesalahan jaringan atau lainnya:", error);
+      setMessage(`Terjadi kesalahan: ${error.message}`);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+  const handleEndGameAndSaveScore = () => {
+    setIsSubmitting(true);
+    saveScore(finalTotalPoints);
+    onGameEnd();
+  };
+  const formatTime = (seconds) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+  return /* @__PURE__ */ jsx(DndContext, { onDragEnd: handleDragEnd, sensors, children: /* @__PURE__ */ jsxs("div", { style: gameContainerStyle, children: [
     !isGameActive && (unclassifiedItems.length === 0 || isGameOver) && /* @__PURE__ */ jsx("div", { style: popupOverlayStyle, children: /* @__PURE__ */ jsxs("div", { style: popupModalStyle, children: [
       /* @__PURE__ */ jsx("h2", { style: { color: isGameOver ? "#dc2626" : "#16a34a" }, children: isGameOver ? "Permainan Selesai!" : "Level Selesai!" }),
       /* @__PURE__ */ jsx("p", { children: message }),
@@ -298,14 +375,14 @@ function PilahSampahGame({ onGameEnd }) {
           currentLevel,
           ": ",
           /* @__PURE__ */ jsxs("b", { children: [
-            score,
+            levelScores[currentLevel] || score,
             " poin"
           ] })
         ] }),
         /* @__PURE__ */ jsxs("p", { children: [
           "Total Poin Anda: ",
           /* @__PURE__ */ jsxs("b", { children: [
-            totalScore,
+            finalTotalPoints,
             " poin"
           ] })
         ] })
@@ -313,16 +390,24 @@ function PilahSampahGame({ onGameEnd }) {
       currentLevel < 3 && !isGameOver ? /* @__PURE__ */ jsxs("button", { style: nextLevelButtonStyle, onClick: handleNextLevel, children: [
         "Lanjut ke Level ",
         currentLevel + 1
-      ] }) : /* @__PURE__ */ jsx("button", { style: exitGameButtonStyle, onClick: () => handleEndGameAndSaveScore(totalScore), children: "Selesai" })
+      ] }) : /* @__PURE__ */ jsx(
+        "button",
+        {
+          style: exitGameButtonStyle,
+          onClick: handleEndGameAndSaveScore,
+          disabled: isSubmitting,
+          children: isSubmitting ? "Menyimpan..." : "Selesai"
+        }
+      )
     ] }) }),
     showCancelModal && /* @__PURE__ */ jsx(
       CancelGameModal,
       {
-        onCancel: () => handleEndGameAndSaveScore(totalScore),
+        onCancel: handleEndGameAndSaveScore,
         onContinue: () => setShowCancelModal(false)
       }
     ),
-    /* @__PURE__ */ jsxs("div", { style: headerStyle$1, children: [
+    /* @__PURE__ */ jsxs("div", { style: headerStyle, children: [
       /* @__PURE__ */ jsx("div", { style: levelBoxStyle, children: /* @__PURE__ */ jsxs("span", { children: [
         "LEVEL ",
         currentLevel
@@ -341,13 +426,55 @@ function PilahSampahGame({ onGameEnd }) {
       /* @__PURE__ */ jsx("button", { style: exitButtonStyle, onClick: () => setShowCancelModal(true), children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faTimes }) })
     ] }),
     /* @__PURE__ */ jsxs("div", { style: binsContainerStyle, children: [
-      /* @__PURE__ */ jsx(DroppableBin, { id: "Organik", items: trashItems.Organik, icon: faLeaf, color: "#22c55e" }),
-      /* @__PURE__ */ jsx(DroppableBin, { id: "Anorganik", items: trashItems.Anorganik, icon: faRecycle, color: "#f59e0b" }),
-      /* @__PURE__ */ jsx(DroppableBin, { id: "B3", items: trashItems.B3, icon: faBiohazard, color: "#ef4444" })
+      /* @__PURE__ */ jsx(
+        TrashBin,
+        {
+          id: "Organik",
+          items: trashItems.Organik,
+          icon: faLeaf,
+          color: "#22c55e",
+          onClick: () => handleBinClick("Organik"),
+          isMobile,
+          hasSelectedItem: !!selectedItemId
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        TrashBin,
+        {
+          id: "Anorganik",
+          items: trashItems.Anorganik,
+          icon: faRecycle,
+          color: "#f59e0b",
+          onClick: () => handleBinClick("Anorganik"),
+          isMobile,
+          hasSelectedItem: !!selectedItemId
+        }
+      ),
+      /* @__PURE__ */ jsx(
+        TrashBin,
+        {
+          id: "B3",
+          items: trashItems.B3,
+          icon: faBiohazard,
+          color: "#ef4444",
+          onClick: () => handleBinClick("B3"),
+          isMobile,
+          hasSelectedItem: !!selectedItemId
+        }
+      )
     ] }),
     /* @__PURE__ */ jsxs("div", { style: itemsContainerStyle, children: [
-      /* @__PURE__ */ jsx("h3", { style: { width: "100%", textAlign: "center", color: "#444", marginBottom: "10px" }, children: "Pilih dan Geser Sampah di Bawah Ini" }),
-      unclassifiedItems.length > 0 ? unclassifiedItems.map((item) => /* @__PURE__ */ jsx(DraggableItem, { item }, item.id)) : /* @__PURE__ */ jsx("div", { style: messageBoxStyle, children: /* @__PURE__ */ jsx("p", { style: { fontSize: "18px", fontWeight: "500", color: "#22c55e" }, children: "🎉 Semua sampah telah diklasifikasikan! 🎉" }) })
+      /* @__PURE__ */ jsx("h3", { style: { width: "100%", textAlign: "center", color: "#444", marginBottom: "10px" }, children: isMobile ? "Pilih Sampah Lalu Klik Tempat Sampah" : "Pilih dan Geser Sampah" }),
+      unclassifiedItems.length > 0 ? unclassifiedItems.map((item) => /* @__PURE__ */ jsx(
+        ItemCard,
+        {
+          item,
+          isSelected: item.id === selectedItemId,
+          onClick: () => handleItemClick(item.id),
+          isMobile
+        },
+        item.id
+      )) : /* @__PURE__ */ jsx("div", { style: messageBoxStyle, children: /* @__PURE__ */ jsx("p", { style: { fontSize: "18px", fontWeight: "500", color: "#22c55e" }, children: "🎉 Semua sampah telah diklasifikasikan! 🎉" }) })
     ] })
   ] }) });
 }
@@ -363,716 +490,68 @@ const gameContainerStyle = {
   flexDirection: "column",
   boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
 };
-const popupOverlayStyle = { position: "absolute", top: 0, left: 0, right: 0, bottom: 0, background: "rgba(17, 24, 39, 0.6)", backdropFilter: "blur(4px)", WebkitBackdropFilter: "blur(4px)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 300 };
-const popupModalStyle = { background: "white", padding: "32px", borderRadius: "16px", textAlign: "center", boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)", width: "400px", maxWidth: "90%" };
+const popupOverlayStyle = {
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  bottom: 0,
+  background: "rgba(17, 24, 39, 0.6)",
+  backdropFilter: "blur(4px)",
+  WebkitBackdropFilter: "blur(4px)",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  zIndex: 300
+};
+const popupModalStyle = {
+  background: "white",
+  padding: "32px",
+  borderRadius: "16px",
+  textAlign: "center",
+  boxShadow: "0 25px 50px -12px rgb(0 0 0 / 0.25)",
+  width: "400px",
+  maxWidth: "90%"
+};
 const scoreDetailsStyle = { marginTop: "20px", padding: "16px", background: "#f3f4f6", borderRadius: "10px" };
-const nextLevelButtonStyle = { marginTop: "20px", padding: "12px 24px", fontSize: "16px", fontWeight: "600", color: "white", background: "#10b981", border: "none", borderRadius: "8px", cursor: "pointer" };
-const exitGameButtonStyle = { marginTop: "20px", padding: "12px 24px", fontSize: "16px", fontWeight: "600", color: "white", background: "#dc2626", border: "none", borderRadius: "8px", cursor: "pointer" };
-const headerStyle$1 = { display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px" };
-const infoBoxStyle = { display: "flex", alignItems: "center", gap: "8px", background: "white", color: "#1f2937", padding: "8px 16px", borderRadius: "12px", fontSize: "18px", fontWeight: "600", boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)" };
-const levelBoxStyle = { ...infoBoxStyle, background: "#dcfce7", color: "#16a34a" };
-const exitButtonStyle = { marginLeft: "auto", background: "#fee2e2", color: "#ef4444", border: "none", width: "40px", height: "40px", borderRadius: "50%", cursor: "pointer", fontSize: "18px", display: "flex", alignItems: "center", justifyContent: "center", transition: "background-color 0.2s ease", boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)" };
-const binsContainerStyle = { display: "flex", justifyContent: "space-around", gap: "20px", marginBottom: "20px", flex: 1 };
-const binContainerStyle = { flex: 1, background: "white", borderRadius: "16px", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)" };
-const binHeaderContainerStyle = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  padding: "12px 12px 0 12px"
-};
-const binHeaderStyle = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  gap: "10px",
-  background: "transparent",
-  width: "100%"
-};
-const binHeaderDividerStyle = {
-  height: "3px",
-  width: "100%",
-  borderRadius: "4px",
-  marginTop: "10px",
-  marginBottom: "20px"
-};
-const binTitleStyle = { margin: 0, color: "#111827", fontWeight: "600", fontSize: "16px" };
-const binStyle = { margin: "0 12px 12px 12px", background: "#f9fafb", borderRadius: "8px", padding: "12px", minHeight: "300px", border: "2px dashed #e5e7eb", display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", justifyContent: "flex-start", transition: "all 0.2s ease" };
-const itemsContainerStyle = { flexGrow: 1, display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start", gap: "16px", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "16px" };
-const itemStyle = {
-  width: "100px",
-  height: "110px",
-  background: "white",
-  borderRadius: "12px",
-  cursor: "grab",
-  border: "1px solid #e5e7eb",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-  transition: "all 0.2s ease",
-  userSelect: "none",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  padding: "8px"
-};
-const itemImageContainerStyle = {
-  marginBottom: "8px",
-  display: "flex",
-  justifyContent: "center"
-};
-const itemLabelStyle = {
-  margin: "0",
-  fontSize: "12px",
-  fontWeight: "600",
-  textAlign: "center",
-  color: "#1f2937"
-};
-const droppedItemStyle = { width: "90%", display: "flex", alignItems: "center", gap: "8px", background: "#f3f4f6", borderRadius: "6px", padding: "6px", border: "1px solid #e5e7eb", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" };
-const messageBoxStyle = { width: "100%", textAlign: "center", padding: "20px", background: "#dcfce7", borderRadius: "12px" };
-function HeroSection({ onStart, onShowHowToPlay, onShowTrashType }) {
-  return /* @__PURE__ */ jsxs("div", { style: heroContentStyle, children: [
-    /* @__PURE__ */ jsx("div", { style: imageContainerStyle, children: /* @__PURE__ */ jsx("img", { src: "img/logo.png", alt: "Trash Can Robot", style: { height: "150px" } }) }),
-    /* @__PURE__ */ jsx("h1", { style: gameTitleStyle, children: "Game Pilah Sampah" }),
-    /* @__PURE__ */ jsxs("div", { style: buttonContainerStyle, children: [
-      /* @__PURE__ */ jsxs("button", { style: secondaryButtonStyle, onClick: onShowHowToPlay, children: [
-        /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faInfoCircle, style: { marginRight: "8px" } }),
-        "Cara bermain"
-      ] }),
-      /* @__PURE__ */ jsxs("button", { style: primaryButtonStyle, onClick: onStart, children: [
-        /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faPlay, style: { marginRight: "8px" } }),
-        "MULAI"
-      ] }),
-      /* @__PURE__ */ jsxs("button", { style: secondaryButtonStyle, onClick: onShowTrashType, children: [
-        " ",
-        /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faRecycle, style: { marginRight: "8px" } }),
-        "Jenis Sampah"
-      ] })
-    ] })
-  ] });
-}
-const heroContentStyle = {
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  textAlign: "center",
-  width: "100%",
-  border: "1px solid rgba(255, 255, 255, 0.2)",
-  backdropFilter: "blur(10px)",
-  borderRadius: "20px",
-  padding: "50px 70px",
-  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-  backgroundColor: "white"
-};
-const imageContainerStyle = {
-  marginBottom: "20px"
-};
-const gameTitleStyle = {
-  fontSize: "min(6vw, 3em)",
-  fontWeight: "800",
-  marginBottom: "30px",
-  color: "#16a34a",
-  textShadow: "1px 1px 2px rgba(0,0,0,0.1)"
-};
-const buttonContainerStyle = {
-  display: "flex",
-  gap: "min(20px, 3vw)",
-  justifyContent: "center",
-  flexWrap: "wrap"
-};
-const baseButtonStyle = {
-  padding: "12px 24px",
-  borderRadius: "12px",
-  fontSize: "min(3vw, 1em)",
-  fontWeight: "bold",
-  cursor: "pointer",
-  border: "none",
-  boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
-  transition: "transform 0.3s ease, box-shadow 0.3s ease",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  // Perbaikan: Menengahkan konten secara horizontal
-  textTransform: "uppercase",
-  whiteSpace: "nowrap",
-  minWidth: "160px"
-  // Menetapkan lebar minimum agar tidak terlalu kecil
-};
-const primaryButtonStyle = {
-  ...baseButtonStyle,
-  background: "#10b981",
-  color: "white",
-  "&:hover": {
-    transform: "scale(1.05)",
-    boxShadow: "0 6px 16px rgba(0,0,0,0.3)"
-  }
-};
-const secondaryButtonStyle = {
-  ...baseButtonStyle,
-  background: "white",
-  color: "#1f2937",
-  "&:hover": {
-    transform: "scale(1.05)",
-    boxShadow: "0 6px 16px rgba(0,0,0,0.3)"
-  }
-};
-const dummyLeaderboard$1 = [
-  { username: "User 1", total_points: 1e3 },
-  { username: "User 2", total_points: 900 },
-  { username: "User 3", total_points: 800 },
-  { username: "User 4", total_points: 750 },
-  { username: "User 5", total_points: 700 },
-  { username: "User 6", total_points: 650 },
-  { username: "User 7", total_points: 600 },
-  { username: "User 8", total_points: 550 },
-  { username: "User 9", total_points: 500 },
-  { username: "User 10", total_points: 450 }
-];
-function LeaderboardSection() {
-  const [leaderboardData, setLeaderboardData] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 768);
-    window.addEventListener("resize", handleResize);
-    const fetchLeaderboard = async () => {
-      try {
-        const response = await fetch("/api/leaderboard");
-        if (!response.ok) {
-          throw new Error(`Server responded with status: ${response.status}`);
-        }
-        const data = await response.json();
-        setLeaderboardData(data);
-      } catch (error) {
-        console.error("Error fetching leaderboard data:", error);
-        setLeaderboardData(dummyLeaderboard$1);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchLeaderboard();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-  const rankedData = leaderboardData.map((item, index) => ({
-    ...item,
-    rank: index + 1
-  }));
-  const top3Rankings = rankedData.length > 0 ? [rankedData[1], rankedData[0], rankedData[2]] : [];
-  const otherRanks = rankedData.slice(3);
-  const renderRankedList = (data) => /* @__PURE__ */ jsx("div", { style: otherRanksContainerStyle$1, children: data.map((player) => /* @__PURE__ */ jsxs("div", { style: rankItemStyle$1, children: [
-    /* @__PURE__ */ jsx("span", { style: rankNumberStyle$1, children: player.rank }),
-    /* @__PURE__ */ jsxs("div", { style: { display: "flex", alignItems: "center", gap: "10px", flex: 1 }, children: [
-      /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faUser, style: rankIconStyle$1 }),
-      /* @__PURE__ */ jsx("span", { style: usernameStyle$1, children: player.username })
-    ] }),
-    /* @__PURE__ */ jsxs("span", { style: scoreStyle$1, children: [
-      /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faStar, style: { color: "#facc15", marginRight: "5px" } }),
-      player.total_points,
-      " Pts"
-    ] })
-  ] }, player.username)) });
-  const dynamicTitleMargin = isMobile ? "24px" : "64px";
-  return /* @__PURE__ */ jsxs("div", { style: leaderboardSectionStyle$1, children: [
-    /* @__PURE__ */ jsx("h2", { style: { ...leaderboardTitleStyle, marginBottom: dynamicTitleMargin }, children: "Leaderboard" }),
-    loading ? /* @__PURE__ */ jsx("p", { children: "Memuat Leaderboard..." }) : /* @__PURE__ */ jsxs(Fragment, { children: [
-      !isMobile && /* @__PURE__ */ jsx("div", { style: top3ContainerStyle$1, children: top3Rankings.map((player) => /* @__PURE__ */ jsxs("div", { style: top3CardStyle$1(player.rank), children: [
-        /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faTrophy, style: trophyStyle$1(player.rank) }),
-        /* @__PURE__ */ jsx("h3", { style: rankNumberTop3Style$1, children: player.rank }),
-        /* @__PURE__ */ jsx("div", { style: usernameIconContainerStyle$1, children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faUser, style: usernameIconStyle$1 }) }),
-        /* @__PURE__ */ jsx("p", { style: usernameTop3Style$1, children: player.username }),
-        /* @__PURE__ */ jsxs("p", { style: scoreTop3Style$1, children: [
-          player.total_points,
-          " Points"
-        ] })
-      ] }, player.username)) }),
-      renderRankedList(isMobile ? rankedData : otherRanks)
-    ] })
-  ] });
-}
-const leaderboardSectionStyle$1 = {
-  width: "100%",
-  padding: "min(50px, 5vw) min(70px, 8vw)",
-  background: "white",
-  borderRadius: "20px",
-  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-  textAlign: "center",
-  boxSizing: "border-box"
-};
-const leaderboardTitleStyle = {
-  color: "#16a34a",
-  fontSize: "min(5vw, 2em)",
-  fontWeight: "800",
-  textShadow: "1px 1px 2px rgba(0,0,0,0.1)"
-};
-const top3ContainerStyle$1 = {
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "flex-end",
-  gap: "min(20px, 3vw)",
-  marginBottom: "20px",
-  flexWrap: "wrap"
-};
-const top3CardStyle$1 = (rank) => ({
-  width: "min(120px, 25vw)",
-  padding: "16px 12px",
-  background: rank === 1 ? "#b91c1c" : rank === 2 ? "#a16207" : "#57534e",
-  color: "white",
-  borderRadius: "12px",
-  position: "relative",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  minHeight: rank === 1 ? "min(220px, 35vw)" : rank === 2 ? "min(200px, 30vw)" : "min(180px, 25vw)",
-  justifyContent: "space-between",
-  boxShadow: `0 10px 15px -3px rgba(0,0,0,${rank === 1 ? 0.2 : 0.1})`,
-  transition: "all 0.3s ease",
-  flex: "1 1 auto"
-});
-const rankNumberTop3Style$1 = {
-  margin: "0",
-  fontSize: "min(6vw, 2.5em)",
-  fontWeight: "800"
-};
-const usernameIconContainerStyle$1 = {
-  width: "50px",
-  height: "50px",
-  borderRadius: "50%",
-  background: "rgba(255,255,255,0.2)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center"
-};
-const usernameIconStyle$1 = {
-  fontSize: "2em",
-  color: "white"
-};
-const usernameTop3Style$1 = {
-  margin: "0",
-  fontWeight: "bold",
-  fontSize: "min(3vw, 1em)"
-};
-const scoreTop3Style$1 = {
-  margin: "4px 0 0",
-  fontSize: "min(2.5vw, 0.8em)",
-  color: "#facc15"
-};
-const trophyStyle$1 = (rank) => ({
-  fontSize: "min(7vw, 3em)",
-  color: rank === 1 ? "#facc15" : rank === 2 ? "#e5e7eb" : "#a16207",
-  position: "absolute",
-  top: "min(-4vw, -20px)",
-  left: "50%",
-  transform: "translateX(-50%)",
-  filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.2))"
-});
-const otherRanksContainerStyle$1 = {
-  background: "white",
-  padding: "10px",
-  borderRadius: "12px",
-  border: "1px solid rgba(0,0,0,0.1)"
-};
-const rankItemStyle$1 = {
-  display: "flex",
-  alignItems: "center",
-  background: "rgba(243, 244, 246, 0.5)",
-  borderRadius: "8px",
-  padding: "10px 15px",
-  justifyContent: "space-between",
-  marginBottom: "5px",
-  flexWrap: "wrap"
-};
-const rankNumberStyle$1 = {
-  fontWeight: "bold",
-  color: "#1f2937",
-  width: "20px",
-  textAlign: "center"
-};
-const usernameStyle$1 = {
-  flex: 1,
-  textAlign: "left",
-  color: "#1f2937",
-  fontWeight: "bold",
-  whiteSpace: "nowrap",
-  overflow: "hidden",
-  textOverflow: "ellipsis"
-};
-const rankIconStyle$1 = {
-  fontSize: "1em",
-  color: "#1f2937"
-};
-const scoreStyle$1 = {
-  fontWeight: "bold",
-  color: "#facc15",
-  fontSize: "0.9em"
-};
-function RewardSection() {
-  const dummyRewards = [
-    { id: 1, name: "Reward 1", points: 1e3 },
-    { id: 2, name: "Reward 2", points: 2e3 },
-    { id: 3, name: "Reward 3", points: 3e3 }
-  ];
-  return /* @__PURE__ */ jsxs("div", { style: rewardSectionStyle$1, children: [
-    /* @__PURE__ */ jsx("h2", { style: { color: "#16a34a", fontSize: "min(5vw, 2em)", fontWeight: "800", marginBottom: "20px" }, children: "Klaim Reward" }),
-    /* @__PURE__ */ jsx("div", { style: rewardBoxesContainerStyle$1, children: dummyRewards.map((reward) => /* @__PURE__ */ jsxs("div", { style: rewardBoxStyle$1, children: [
-      /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faGift, style: giftIconStyle$1 }),
-      /* @__PURE__ */ jsx("p", { style: { margin: "0", fontWeight: "bold", fontSize: "min(3vw, 1em)" }, children: reward.name }),
-      /* @__PURE__ */ jsxs("p", { style: { margin: "4px 0", fontSize: "min(2.5vw, 0.9em)", color: "#6b7280" }, children: [
-        reward.points,
-        " pts"
-      ] }),
-      /* @__PURE__ */ jsx("button", { style: claimButtonStyle$1, children: "Klaim" })
-    ] }, reward.id)) })
-  ] });
-}
-const rewardSectionStyle$1 = {
-  width: "100%",
-  padding: "min(50px, 5vw) min(70px, 8vw)",
-  backgroundColor: "white",
-  borderRadius: "20px",
-  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-  textAlign: "center",
-  boxSizing: "border-box"
-};
-const rewardBoxesContainerStyle$1 = {
-  display: "flex",
-  justifyContent: "center",
-  gap: "min(20px, 3vw)",
+const nextLevelButtonStyle = {
   marginTop: "20px",
-  flexWrap: "wrap"
+  padding: "12px 24px",
+  fontSize: "16px",
+  fontWeight: "600",
+  color: "white",
+  background: "#10b981",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer"
 };
-const rewardBoxStyle$1 = {
-  flex: "1 1 min(200px, 25vw)",
+const exitGameButtonStyle = {
+  marginTop: "20px",
+  padding: "12px 24px",
+  fontSize: "16px",
+  fontWeight: "600",
+  color: "white",
+  background: "#dc2626",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer"
+};
+const headerStyle = { display: "flex", alignItems: "center", gap: "16px", marginBottom: "20px", flexWrap: "wrap" };
+const infoBoxStyle = {
+  display: "flex",
+  alignItems: "center",
+  gap: "8px",
   background: "white",
-  borderRadius: "12px",
-  padding: "20px",
-  border: "1px solid #e5e7eb",
-  textAlign: "center",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.1)"
-};
-const giftIconStyle$1 = {
-  fontSize: "min(10vw, 3em)",
-  color: "#10b981",
-  marginBottom: "10px"
-};
-const claimButtonStyle$1 = {
-  marginTop: "10px",
+  color: "#1f2937",
   padding: "8px 16px",
-  background: "#10b981",
-  color: "white",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer",
-  fontWeight: "bold",
-  transition: "background-color 0.3s ease",
-  fontSize: "min(2.5vw, 0.9em)",
-  "&:hover": {
-    backgroundColor: "#059669"
-  }
+  borderRadius: "12px",
+  fontSize: "18px",
+  fontWeight: "600",
+  boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
 };
-function HowToPlayModal({ onClose }) {
-  return /* @__PURE__ */ jsx("div", { style: overlayStyle$2, children: /* @__PURE__ */ jsxs("div", { style: modalStyle$2, children: [
-    /* @__PURE__ */ jsx("button", { style: closeButtonStyle$1, onClick: onClose, children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faTimes }) }),
-    /* @__PURE__ */ jsx("h2", { style: titleStyle$2, children: "Cara Bermain" }),
-    /* @__PURE__ */ jsx("p", { style: subtitleStyle$1, children: "Yuk, pelajari dulu cara bermainnya agar kamu siap jadi pahlawan lingkungan" }),
-    /* @__PURE__ */ jsxs("ol", { style: listStyle$1, children: [
-      /* @__PURE__ */ jsx("li", { children: "Seret (drag) atau klik sampah yang muncul di layar." }),
-      /* @__PURE__ */ jsx("li", { children: "Arahkan ke tempat sampah yang sesuai dengan jenisnya." }),
-      /* @__PURE__ */ jsx("li", { children: "Setiap sampah yang dimasukkan dengan benar akan menambah poin." }),
-      /* @__PURE__ */ jsx("li", { children: "Hati-hati! Memasukkan ke tempat yang salah akan mengurangi poin." }),
-      /* @__PURE__ */ jsx("li", { children: "Selesaikan semua sampah dalam waktu yang tersedia." })
-    ] }),
-    /* @__PURE__ */ jsx("button", { style: backButtonStyle$1, onClick: onClose, children: "Kembali" })
-  ] }) });
-}
-const overlayStyle$2 = {
-  position: "fixed",
-  // Perbaikan: Mengubah ke fixed agar memenuhi seluruh layar
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: "rgba(0, 0, 0, 0.6)",
-  backdropFilter: "blur(5px)",
-  WebkitBackdropFilter: "blur(5px)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 1e3
-};
-const modalStyle$2 = {
-  background: "white",
-  padding: "30px 40px",
-  borderRadius: "20px",
-  width: "400px",
-  maxWidth: "90%",
-  textAlign: "center",
-  color: "#1f2937",
-  fontFamily: "'Poppins', sans-serif",
-  position: "relative",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
-};
-const closeButtonStyle$1 = {
-  position: "absolute",
-  top: "10px",
-  right: "10px",
-  background: "none",
-  border: "none",
-  color: "#4b5563",
-  fontSize: "20px",
-  cursor: "pointer"
-};
-const titleStyle$2 = {
-  fontSize: "2em",
-  fontWeight: "bold",
-  marginBottom: "8px",
-  color: "#16a34a",
-  textShadow: "1px 1px 2px rgba(0,0,0,0.1)"
-};
-const subtitleStyle$1 = {
-  fontSize: "0.9em",
-  fontWeight: "300",
-  marginBottom: "20px",
-  color: "#4b5563"
-};
-const listStyle$1 = {
-  textAlign: "left",
-  fontSize: "0.9em",
-  lineHeight: "1.8",
-  marginBottom: "30px",
-  paddingLeft: "20px",
-  color: "#1f2937",
-  listStyleType: "decimal"
-};
-const backButtonStyle$1 = {
-  background: "#10b981",
-  color: "white",
-  padding: "10px 24px",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  fontWeight: "bold",
-  transition: "transform 0.2s ease",
-  "&:hover": {
-    transform: "scale(1.05)"
-  }
-};
-function TrashTypeModal({ onClose }) {
-  return /* @__PURE__ */ jsx("div", { style: overlayStyle$1, children: /* @__PURE__ */ jsxs("div", { style: modalStyle$1, children: [
-    /* @__PURE__ */ jsx("button", { style: closeButtonStyle, onClick: onClose, children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faTimes }) }),
-    /* @__PURE__ */ jsx("h2", { style: titleStyle$1, children: "Jenis Sampah" }),
-    /* @__PURE__ */ jsx("p", { style: subtitleStyle, children: "Memisahkan sampah ke dalam tiga jenis tempat sampah yang benar" }),
-    /* @__PURE__ */ jsxs("ol", { style: listStyle, children: [
-      /* @__PURE__ */ jsxs("li", { children: [
-        /* @__PURE__ */ jsx("div", { style: listItemHeaderStyle, children: /* @__PURE__ */ jsx("span", { style: { color: "#16a34a", fontWeight: "bold" }, children: "Organik" }) }),
-        /* @__PURE__ */ jsx("p", { style: listItemDescriptionStyle, children: "Sampah yang bisa terurai, seperti sisa makanan, daun, kulit buah." })
-      ] }),
-      /* @__PURE__ */ jsxs("li", { children: [
-        /* @__PURE__ */ jsx("div", { style: listItemHeaderStyle, children: /* @__PURE__ */ jsx("span", { style: { color: "#f59e0b", fontWeight: "bold" }, children: "Anorganik" }) }),
-        /* @__PURE__ */ jsx("p", { style: listItemDescriptionStyle, children: "Sampah yang sulit terurai, seperti plastik, botol minum, kertas." })
-      ] }),
-      /* @__PURE__ */ jsxs("li", { children: [
-        /* @__PURE__ */ jsxs("div", { style: listItemHeaderStyle, children: [
-          /* @__PURE__ */ jsx("span", { style: { color: "#ef4444", fontWeight: "bold" }, children: "B3" }),
-          " (Bahan Berbahaya & Beracun)"
-        ] }),
-        /* @__PURE__ */ jsx("p", { style: listItemDescriptionStyle, children: "Sampah berbahaya seperti baterai, kaca pecah, obat kadaluarsa." })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsx("button", { style: backButtonStyle, onClick: onClose, children: "Kembali" })
-  ] }) });
-}
-const overlayStyle$1 = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: "rgba(0, 0, 0, 0.6)",
-  backdropFilter: "blur(5px)",
-  WebkitBackdropFilter: "blur(5px)",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 1e3
-};
-const modalStyle$1 = {
-  background: "white",
-  padding: "30px 40px",
-  borderRadius: "20px",
-  width: "400px",
-  maxWidth: "90%",
-  textAlign: "center",
-  color: "#1f2937",
-  fontFamily: "'Poppins', sans-serif",
-  position: "relative",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
-};
-const closeButtonStyle = {
-  position: "absolute",
-  top: "10px",
-  right: "10px",
-  background: "none",
-  border: "none",
-  color: "#4b5563",
-  fontSize: "20px",
-  cursor: "pointer"
-};
-const titleStyle$1 = {
-  fontSize: "2em",
-  fontWeight: "bold",
-  marginBottom: "8px",
-  color: "#16a34a",
-  textShadow: "1px 1px 2px rgba(0,0,0,0.1)"
-};
-const subtitleStyle = {
-  fontSize: "0.9em",
-  fontWeight: "300",
-  marginBottom: "20px",
-  color: "#4b5563"
-};
-const listStyle = {
-  textAlign: "left",
-  fontSize: "0.9em",
-  lineHeight: "1.8",
-  marginBottom: "30px",
-  paddingLeft: "20px",
-  color: "#1f2937",
-  listStyleType: "decimal"
-};
-const listItemHeaderStyle = {
-  display: "block",
-  // Mengubah display agar setiap judul memiliki baris sendiri
-  fontWeight: "bold"
-};
-const listItemDescriptionStyle = {
-  display: "block",
-  // Mengubah display agar setiap deskripsi memiliki baris sendiri
-  margin: 0,
-  lineHeight: "1.4"
-};
-const backButtonStyle = {
-  background: "#10b981",
-  color: "white",
-  padding: "10px 24px",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  fontSize: "0.9em",
-  fontWeight: "bold",
-  transition: "transform 0.2s ease",
-  "&:hover": {
-    transform: "scale(1.05)"
-  }
-};
-function StartScreen({ onStart }) {
-  const [showHowToPlayModal, setShowHowToPlayModal] = useState(false);
-  const [showTrashTypeModal, setShowTrashTypeModal] = useState(false);
-  const handleShowHowToPlayModal = () => setShowHowToPlayModal(true);
-  const handleCloseHowToPlayModal = () => setShowHowToPlayModal(false);
-  const handleShowTrashTypeModal = () => setShowTrashTypeModal(true);
-  const handleCloseTrashTypeModal = () => setShowTrashTypeModal(false);
-  return /* @__PURE__ */ jsxs("div", { style: containerStyle, children: [
-    /* @__PURE__ */ jsx(
-      HeroSection,
-      {
-        onStart,
-        onShowHowToPlay: handleShowHowToPlayModal,
-        onShowTrashType: handleShowTrashTypeModal
-      }
-    ),
-    /* @__PURE__ */ jsx(LeaderboardSection, {}),
-    /* @__PURE__ */ jsx(RewardSection, {}),
-    showHowToPlayModal && /* @__PURE__ */ jsx(HowToPlayModal, { onClose: handleCloseHowToPlayModal }),
-    showTrashTypeModal && /* @__PURE__ */ jsx(TrashTypeModal, { onClose: handleCloseTrashTypeModal })
-  ] });
-}
-const containerStyle = {
-  fontFamily: "'Poppins', sans-serif",
-  width: "100%",
-  boxSizing: "border-box",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  gap: "24px"
-};
-const dummyLeaderboard = [
-  { rank: 1, username: "User1", score: 1e3 },
-  { rank: 2, username: "User2", score: 900 },
-  { rank: 3, username: "User3", score: 800 },
-  { rank: 4, username: "User4", score: 750 },
-  { rank: 5, username: "User5", score: 700 },
-  { rank: 6, username: "User6", score: 650 },
-  { rank: 7, username: "User7", score: 600 },
-  { rank: 8, username: "User8", score: 550 },
-  { rank: 9, username: "User9", score: 500 },
-  { rank: 10, username: "User10", score: 450 }
-];
-function EndScreen({ score, onRestart }) {
-  const dummyRewards = [
-    { id: 1, name: "Reward 1", points: 1e3 },
-    { id: 2, name: "Reward 2", points: 2e3 },
-    { id: 3, name: "Reward 3", points: 3e3 }
-  ];
-  return /* @__PURE__ */ jsxs("div", { style: endScreenContainerStyle, children: [
-    /* @__PURE__ */ jsx("div", { style: headerStyle, children: /* @__PURE__ */ jsx("button", { style: backButtonEndScreenStyle, onClick: onRestart, children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faTimes }) }) }),
-    /* @__PURE__ */ jsxs("div", { style: leaderboardSectionStyle, children: [
-      /* @__PURE__ */ jsx("h2", { style: { marginBottom: "20px", color: "#111" }, children: "Leaderboard" }),
-      /* @__PURE__ */ jsx("div", { style: top3ContainerStyle, children: dummyLeaderboard.slice(0, 3).map((player, index) => /* @__PURE__ */ jsxs("div", { style: top3CardStyle(player.rank), children: [
-        /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faTrophy, style: trophyStyle(player.rank) }),
-        /* @__PURE__ */ jsx("h3", { style: rankNumberTop3Style, children: player.rank }),
-        /* @__PURE__ */ jsx("div", { style: usernameIconContainerStyle, children: /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faUser, style: usernameIconStyle }) }),
-        /* @__PURE__ */ jsx("p", { style: usernameTop3Style, children: player.username }),
-        /* @__PURE__ */ jsxs("p", { style: scoreTop3Style, children: [
-          player.score,
-          " Points"
-        ] })
-      ] }, player.rank)) }),
-      /* @__PURE__ */ jsx("div", { style: otherRanksContainerStyle, children: dummyLeaderboard.slice(3).map((player) => /* @__PURE__ */ jsxs("div", { style: rankItemStyle, children: [
-        /* @__PURE__ */ jsx("span", { style: rankNumberStyle, children: player.rank }),
-        /* @__PURE__ */ jsxs("div", { style: { display: "flex", alignItems: "center", gap: "10px", flex: 1 }, children: [
-          /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faUser, style: rankIconStyle }),
-          /* @__PURE__ */ jsx("span", { style: usernameStyle, children: player.username })
-        ] }),
-        /* @__PURE__ */ jsxs("span", { style: scoreStyle, children: [
-          /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faStar, style: { color: "#facc15", marginRight: "5px" } }),
-          player.score,
-          " Pts"
-        ] })
-      ] }, player.rank)) })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { style: rewardSectionStyle, children: [
-      /* @__PURE__ */ jsx("h2", { style: { color: "#333" }, children: "Klaim Reward" }),
-      /* @__PURE__ */ jsx("div", { style: rewardBoxesContainerStyle, children: dummyRewards.map((reward) => /* @__PURE__ */ jsxs("div", { style: rewardBoxStyle, children: [
-        /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faGift, style: giftIconStyle }),
-        /* @__PURE__ */ jsx("p", { style: { margin: "0" }, children: reward.name }),
-        /* @__PURE__ */ jsxs("p", { style: { margin: "4px 0" }, children: [
-          reward.points,
-          " pts"
-        ] }),
-        /* @__PURE__ */ jsx("button", { style: claimButtonStyle, children: "Klaim" })
-      ] }, reward.id)) })
-    ] })
-  ] });
-}
-const endScreenContainerStyle = {
-  background: "linear-gradient(to bottom, #dcfce7, #f0fdf4)",
-  padding: "40px",
-  borderRadius: "24px",
-  fontFamily: "'Poppins', sans-serif",
-  height: "100%",
-  boxSizing: "border-box",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  boxShadow: "0 10px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1)"
-};
-const headerStyle = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "flex-end",
-  width: "100%",
-  marginBottom: "20px"
-};
-const backButtonEndScreenStyle = {
+const levelBoxStyle = { ...infoBoxStyle, background: "#dcfce7", color: "#16a34a" };
+const exitButtonStyle = {
+  marginLeft: "auto",
   background: "#fee2e2",
   color: "#ef4444",
   border: "none",
@@ -1080,286 +559,34 @@ const backButtonEndScreenStyle = {
   height: "40px",
   borderRadius: "50%",
   cursor: "pointer",
-  fontSize: "18px"
-};
-const leaderboardSectionStyle = {
-  borderRadius: "16px",
-  padding: "20px",
-  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-  marginBottom: "20px",
-  textAlign: "center",
-  backgroundColor: "#f0fdf4",
-  width: "100%",
-  maxWidth: "960px"
-};
-const top3ContainerStyle = {
-  display: "flex",
-  justifyContent: "space-around",
-  alignItems: "flex-end",
-  marginBottom: "20px"
-};
-const top3CardStyle = (rank) => ({
-  width: "120px",
-  padding: "16px 12px",
-  background: rank === 1 ? "#b91c1c" : rank === 2 ? "#a16207" : "#57534e",
-  color: "white",
-  borderRadius: "12px",
-  position: "relative",
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  transform: rank === 1 ? "scale(1.15) translateY(-20px)" : "scale(1)",
-  zIndex: rank === 1 ? 10 : 1,
-  boxShadow: `0 10px 15px -3px rgba(0,0,0,${rank === 1 ? 0.2 : 0.1})`
-});
-const rankNumberTop3Style = {
-  margin: "0",
-  fontSize: "2.5em",
-  fontWeight: "800"
-};
-const usernameIconContainerStyle = {
-  width: "50px",
-  height: "50px",
-  borderRadius: "50%",
-  background: "rgba(255,255,255,0.2)",
+  fontSize: "18px",
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
-  marginBottom: "8px"
+  transition: "background-color 0.2s ease",
+  boxShadow: "0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1)"
 };
-const usernameIconStyle = {
-  fontSize: "2em",
-  color: "white"
-};
-const usernameTop3Style = {
-  margin: "0",
-  fontWeight: "bold",
-  fontSize: "1em"
-};
-const scoreTop3Style = {
-  margin: "4px 0 0",
-  fontSize: "0.8em",
-  color: "#facc15"
-};
-const trophyStyle = (rank) => ({
-  fontSize: "3em",
-  color: rank === 1 ? "#facc15" : rank === 2 ? "#e5e7eb" : "#a16207",
-  position: "absolute",
-  top: "-20px",
-  left: "50%",
-  transform: "translateX(-50%)",
-  filter: "drop-shadow(0 2px 2px rgba(0,0,0,0.2))"
+const binsContainerStyle = { display: "flex", justifyContent: "space-around", gap: "20px", marginBottom: "20px", flex: 1 };
+const binContainerStyle = { flex: 1, background: "white", borderRadius: "16px", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)", display: "flex", flexDirection: "column" };
+const binHeaderContainerStyle = { display: "flex", flexDirection: "column", alignItems: "center", padding: "12px 12px 0 12px" };
+const binHeaderStyle = { display: "flex", alignItems: "center", justifyContent: "center", gap: "10px", background: "transparent", width: "100%" };
+const binHeaderDividerStyle = { height: "3px", width: "100%", borderRadius: "4px", marginTop: "10px", marginBottom: "10px" };
+const binTitleStyle = { margin: 0, color: "#111827", fontWeight: "600", fontSize: "16px" };
+const binStyle = { flex: 1, margin: "0 12px 12px 12px", background: "#f9fafb", borderRadius: "8px", padding: "12px", minHeight: "200px", border: "2px dashed #e5e7eb", display: "flex", flexDirection: "column", gap: "8px", alignItems: "center", justifyContent: "flex-start", transition: "all 0.2s ease" };
+const itemsContainerStyle = { flexGrow: 1, display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "flex-start", gap: "16px", background: "rgba(255,255,255,0.8)", padding: "20px", borderRadius: "16px" };
+const itemStyle = { width: "100px", height: "110px", background: "white", borderRadius: "12px", border: "1px solid #e5e7eb", boxShadow: "0 1px 3px rgba(0,0,0,0.1)", transition: "all 0.2s ease", userSelect: "none", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "8px" };
+const itemImageContainerStyle = { marginBottom: "8px", display: "flex", justifyContent: "center", alignItems: "center", height: "60px" };
+const itemLabelStyle = { margin: "0", fontSize: "12px", fontWeight: "600", textAlign: "center", color: "#1f2937" };
+const droppedItemStyle = { width: "90%", display: "flex", alignItems: "center", gap: "8px", background: "#f3f4f6", borderRadius: "6px", padding: "6px", border: "1px solid #e5e7eb", boxShadow: "0 1px 2px rgba(0,0,0,0.05)" };
+const messageBoxStyle = { width: "100%", textAlign: "center", padding: "20px", background: "#dcfce7", borderRadius: "12px" };
+createInertiaApp({
+  resolve: (name) => __variableDynamicImportRuntimeHelper(/* @__PURE__ */ Object.assign({ "./Pages/Test.jsx": () => import("./assets/Test-BhSTr3gF.js") }), `./Pages/${name}.jsx`, 3),
+  // Sesuaikan dengan nama halaman yang ada
+  setup({ el, App, props }) {
+    const root = createRoot(el);
+    root.render(/* @__PURE__ */ jsx(App, { ...props }));
+  }
 });
-const otherRanksContainerStyle = {
-  background: "#fee2e2",
-  padding: "10px",
-  borderRadius: "12px",
-  border: "2px solid #ef4444"
+export {
+  PilahSampahGame as P
 };
-const rankItemStyle = {
-  display: "flex",
-  alignItems: "center",
-  background: "#fef2f2",
-  borderRadius: "8px",
-  padding: "10px 15px",
-  justifyContent: "space-between",
-  marginBottom: "5px"
-};
-const rankNumberStyle = {
-  fontWeight: "bold",
-  color: "#6b7280",
-  width: "20px",
-  textAlign: "center"
-};
-const usernameStyle = {
-  flex: 1,
-  textAlign: "left",
-  color: "#333",
-  fontWeight: "bold"
-};
-const rankIconStyle = {
-  fontSize: "1em",
-  color: "#9ca3af"
-};
-const scoreStyle = {
-  fontWeight: "bold",
-  color: "#facc15",
-  fontSize: "0.9em"
-};
-const rewardSectionStyle = {
-  background: "white",
-  borderRadius: "16px",
-  padding: "20px",
-  boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-  textAlign: "center",
-  backgroundColor: "#f0fdf4",
-  width: "100%",
-  maxWidth: "960px",
-  marginTop: "20px"
-};
-const rewardBoxesContainerStyle = {
-  display: "flex",
-  justifyContent: "space-around",
-  gap: "20px",
-  marginTop: "20px"
-};
-const rewardBoxStyle = {
-  flex: 1,
-  background: "#f9fafb",
-  borderRadius: "12px",
-  padding: "20px",
-  border: "1px solid #e5e7eb",
-  textAlign: "center"
-};
-const giftIconStyle = {
-  fontSize: "3em",
-  color: "#22c55e",
-  marginBottom: "10px"
-};
-const claimButtonStyle = {
-  marginTop: "10px",
-  padding: "8px 16px",
-  background: "#10b981",
-  color: "white",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer",
-  fontWeight: "bold"
-};
-function FullscreenPrompt({ onContinue }) {
-  return /* @__PURE__ */ jsx("div", { style: overlayStyle, children: /* @__PURE__ */ jsxs("div", { style: modalStyle, children: [
-    /* @__PURE__ */ jsx("h2", { style: titleStyle, children: "Putar Layar untuk Bermain!" }),
-    /* @__PURE__ */ jsx(FontAwesomeIcon, { icon: faRotate, style: iconStyle }),
-    /* @__PURE__ */ jsx("p", { style: messageStyle, children: "Untuk pengalaman terbaik, putar perangkat Anda ke mode lanskap dan klik tombol di bawah ini." }),
-    /* @__PURE__ */ jsx("button", { style: buttonStyle, onClick: onContinue, children: "Mulai Fullscreen" })
-  ] }) });
-}
-const overlayStyle = {
-  position: "fixed",
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  background: "rgba(0,0,0,0.8)",
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "center",
-  alignItems: "center",
-  zIndex: 9999
-};
-const modalStyle = {
-  background: "white",
-  padding: "40px",
-  borderRadius: "20px",
-  width: "350px",
-  maxWidth: "90%",
-  textAlign: "center",
-  fontFamily: "'Poppins', sans-serif",
-  position: "relative",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.3)"
-};
-const titleStyle = {
-  fontSize: "1.8em",
-  fontWeight: "bold",
-  marginBottom: "10px",
-  color: "#1f2937"
-};
-const iconStyle = {
-  fontSize: "5em",
-  color: "#4b5563",
-  margin: "20px 0",
-  transform: "rotate(90deg)"
-};
-const messageStyle = {
-  fontSize: "0.9em",
-  fontWeight: "400",
-  marginBottom: "30px",
-  color: "#4b5563",
-  lineHeight: "1.5"
-};
-const buttonStyle = {
-  padding: "12px 28px",
-  borderRadius: "10px",
-  fontSize: "1em",
-  fontWeight: "bold",
-  cursor: "pointer",
-  border: "none",
-  background: "#10b981",
-  color: "white",
-  transition: "transform 0.2s ease, box-shadow 0.2s ease"
-};
-function GameWrapper() {
-  const [gameState, setGameState] = useState("start");
-  const [finalScore, setFinalScore] = useState(0);
-  const [gameKey, setGameKey] = useState(0);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [isLandscape, setIsLandscape] = useState(window.innerWidth > window.innerHeight);
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      setIsLandscape(window.innerWidth > window.innerHeight);
-    };
-    window.addEventListener("resize", handleResize);
-    window.addEventListener("orientationchange", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener("orientationchange", handleResize);
-    };
-  }, []);
-  const handleStartGame = () => {
-    setGameState("playing");
-    setGameKey((prevKey) => prevKey + 1);
-  };
-  const handleEndGame = () => {
-    setFinalScore(0);
-    setGameState("start");
-  };
-  const handleRestartGame = () => {
-    setGameState("start");
-    setFinalScore(0);
-  };
-  const handleFullscreen = () => {
-    const elem = document.documentElement;
-    if (elem.requestFullscreen) {
-      elem.requestFullscreen();
-    } else if (elem.webkitRequestFullscreen) {
-      elem.webkitRequestFullscreen();
-    }
-    if (screen.orientation.lock) {
-      screen.orientation.lock("landscape").catch((err) => {
-        console.error("Gagal mengunci orientasi layar:", err);
-      });
-    }
-  };
-  const gameProps = {
-    onGameEnd: handleEndGame
-  };
-  const wrapperStyle = {
-    background: "linear-gradient(to bottom, #dcfce7, #f0fdf4)",
-    minHeight: "100vh",
-    fontFamily: "'Poppins', sans-serif",
-    padding: "24px",
-    boxSizing: "border-box"
-  };
-  if (gameState === "playing" && isMobile && !isLandscape) {
-    return /* @__PURE__ */ jsx(FullscreenPrompt, { onContinue: handleFullscreen });
-  }
-  switch (gameState) {
-    case "playing":
-      return /* @__PURE__ */ jsx("div", { style: wrapperStyle, children: /* @__PURE__ */ jsx(PilahSampahGame, { ...gameProps }, gameKey) });
-    case "end":
-      return /* @__PURE__ */ jsx("div", { style: wrapperStyle, children: /* @__PURE__ */ jsx(EndScreen, { score: finalScore, onRestart: handleRestartGame }) });
-    case "start":
-    default:
-      return /* @__PURE__ */ jsx("div", { style: wrapperStyle, children: /* @__PURE__ */ jsx(StartScreen, { onStart: handleStartGame }) });
-  }
-}
-window.Alpine = Alpine;
-Alpine.start();
-const container = document.getElementById("pilah-sampah");
-if (container) {
-  const root = createRoot(container);
-  root.render(
-    /* @__PURE__ */ jsx(React.StrictMode, { children: /* @__PURE__ */ jsx(GameWrapper, {}) })
-  );
-}

@@ -14,8 +14,8 @@ class RolePermissionSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-public function run(): void
-{
+    public function run(): void
+    {
 
     app()[\Spatie\Permission\PermissionRegistrar::class]->forgetCachedPermissions();
 
@@ -38,6 +38,18 @@ public function run(): void
 
         // Guest (opsional, biasanya tanpa login)
         'view_public_tps_map',
+
+        // seller
+        'create products',
+        'edit products',
+        'delete products',
+        'view products',
+        'view sales',
+
+        // Pengelola Bank Sampah
+        'manage_bank_sampah',
+        'manage_transactions',
+        'view_bank_sampah_reports',
     ];
 
     // Buat permission kalau belum ada
@@ -96,5 +108,46 @@ public function run(): void
         ]
     );
     $warga->assignRole($wargaRole);
-}
+
+    $sellerRole = Role::create(['name' => 'seller']);
+    $sellerRole->givePermissionTo([
+        'create products',
+        'edit products',
+        'delete products',
+        'view products',
+        'view sales'
+    ]);
+
+    $seller = User::firstOrCreate(
+    ['email' => 'seller@mail.test'],
+        [
+            'name' => 'Seller User',
+            'username' => 'seller',
+            'password' => bcrypt('password123'),
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
+        ]
+    );
+    $seller->assignRole($sellerRole);
+
+    $bankRole = Role::firstOrCreate(['name' => 'banker']);
+    $bankRole->syncPermissions([
+        'manage_bank_sampah',
+        'manage_transactions',
+        'view_bank_sampah_reports',
+    ]);
+
+    $banker = User::firstOrCreate(
+        ['email' => 'banker@mail.test'],
+        [
+            'name' => 'Bank Sampah User',
+            'username' => 'banker',
+            'password' => bcrypt('password123'),
+            'email_verified_at' => now(),
+            'remember_token' => Str::random(10),
+        ]
+    );
+    $banker->assignRole($bankRole);
+
+    }
 }

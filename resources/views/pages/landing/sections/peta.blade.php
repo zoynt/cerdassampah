@@ -57,23 +57,23 @@
             <div class="flex justify-end">
                 <h2 class="text-xl font-bold text-green-900 tracking-wide mb-2 border-b-2 border-green-700 w-fit"
                     data-aos="fade-down">
-                    Peta TPS, TPS-T3R & TPS Liar
+                    Peta TPS, TPST-3R & TPS Liar
                 </h2>
             </div>
         </div>
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
             <div class="lg:col-span-3 border-4 border-green-400 rounded-xl overflow-hidden shadow-md mb-6"
                 data-aos="zoom-in">
-                <div id="leaflet-map" class="w-full h-[400px] sm:h-[450px] md:h-[500px]"></div>
+                <div id="leaflet-map" class="w-full h-[400px] sm:h-[600px] md:h-[500px]"></div>
             </div>
             <div class="lg:col-span-1 text-gray-800 mt-6 lg:mt-0 space-y-5" data-aos="fade-left">
                 <h3 class="text-xl md:text-2xl leading-tight align-middle mb-4">
                     Temukan Lokasi
-                    <span class="highlight-animate">TPS, TPS-T3R & TPS Liar</span>
+                    <span class="highlight-animate">TPS, TPST-3R & TPS Liar</span>
                     di Sekitarmu
                 </h3>
                 <p class="text-gray-600 !mt-0 mb-4 text-sm md:text-base leading-normal">
-                    Ada lebih dari 10 titik TPS, TPS-T3R & TPS Liar terdaftar di Website CerdasSampah.id!
+                    Ada lebih dari 10 titik TPS, TPST-3R (Reduce, Reuse, Recycle) & TPS Liar terdaftar di CerdasSampah!
                 </p>
                 <div class="space-y-4">
                     <div class="bg-green-500 text-center text-white py-4 rounded-lg shadow-sm" data-aos="fade-up"

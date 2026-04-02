@@ -1,6 +1,6 @@
 @extends('layouts.guest')
 
-@section('title', 'Login - CerdasSampah.id')
+@section('title', 'Login - CerdasSampah')
 
 @section('content')
 

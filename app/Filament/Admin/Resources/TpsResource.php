@@ -119,10 +119,10 @@ private const DAYS_OPTIONS = [
                         } else {
                             $addressData = $data['address'] ?? [];
                             $set('tps_address', $data['display_name'] ?? 'Alamat tidak ditemukan');
-                            $set('kecamatan', $addressData['city_district']
-                                ?? $addressData['suburb']
-                                ?? $addressData['county']
-                                ?? null);
+                            // $set('kecamatan', $addressData['city_district']
+                            //     ?? $addressData['suburb']
+                            //     ?? $addressData['county']
+                            //     ?? null);
                             $set('address_json', $data);
                         }
                     } catch (\Exception $e) {
@@ -187,13 +187,13 @@ private const DAYS_OPTIONS = [
 
             TimePicker::make('tps_start_time')
                 ->label('Tanggal Mulai')
-                ->seconds(false)
-                ->required(),
+                // ->required()
+                ->seconds(false),
 
             TimePicker::make('tps_end_time')
                 ->label('Jam Selesai')
-                ->seconds(false)
-                ->required(),
+                ->seconds(false),
+                // ->required(),
 
             Forms\Components\CheckboxList::make('tps_day')
                 ->label('Hari Operasional')
@@ -206,25 +206,25 @@ private const DAYS_OPTIONS = [
                     'Sabtu' => 'Sabtu',
                     'Minggu' => 'Minggu',
                 ])
-                ->required()
+                // ->required()
                 ->columns(3)
                 ->gridDirection('row')
-                ->bulkToggleable(), // <-- Tambahkan baris ini 👍
+                ->bulkToggleable(),
 
                 Forms\Components\TextInput::make('tps_transport')
                 ->label('Transportasi')
-                ->required()
+                // ->required()
                 ->maxLength(255),
 
             Forms\Components\Textarea::make('tps_description')
                 ->label('Deskripsi TPS')
-                ->required()
+                // ->required()
                 ->maxLength(300),
 
             // ===================== UPLOAD GAMBAR =====================
             FileUpload::make('image')
                 ->image()
-                // ->imageEditor()
+                ->imageEditor()
                 ->label('Gambar TPS'),
         ]);
     }
