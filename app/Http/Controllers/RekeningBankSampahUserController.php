@@ -12,6 +12,7 @@ use App\Models\Bank; // Pastikan use Bank ada
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class RekeningBankSampahUserController extends Controller
@@ -118,21 +119,21 @@ class RekeningBankSampahUserController extends Controller
             $nasabahBaru = collect();
             // Paginasi hanya nasabah aktif di tabel bawah
             $nasabahs = $nasabahLamaQuery->where('status', 'Aktif')->latest('created_at')->paginate(5)->withQueryString();
-        
+
         } elseif ($statusFilter == 'Tidak Aktif') {
             // FILTER: HANYA TIDAK AKTIF
             // Kosongkan nasabah baru
             $nasabahBaru = collect();
             // Paginasi hanya nasabah tidak aktif di tabel bawah
             $nasabahs = $nasabahLamaQuery->where('status', 'Tidak Aktif')->latest('created_at')->paginate(5)->withQueryString();
-        
+
         } elseif ($statusFilter == 'Pending') {
             // FILTER: HANYA PENDING
             // Paginasi hanya nasabah pending di tabel atas
             $nasabahBaru = $nasabahBaruQuery->latest('created_at')->paginate(5, ['*'], 'page_baru')->withQueryString();
             // Kosongkan tabel bawah
             $nasabahs = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 5);
-        
+
         } else {
             // FILTER: "Semua Status" (null atau "")
             // Tampilkan SEMUA pending (get()) di tabel atas
@@ -174,7 +175,7 @@ class RekeningBankSampahUserController extends Controller
         // ... (Kode asli Anda untuk method 'store' ada di sini) ...
         // Debug: Tampilkan semua data yang dikirim dari form
         // // dd($request->all()); // Hapus dd() untuk production
-         
+
         // Kode untuk production nanti:
         $validator = Validator::make($request->all(), [
             // [SARAN] Sebaiknya 'rekening_number' digenerate otomatis, bukan dari input
@@ -223,7 +224,7 @@ class RekeningBankSampahUserController extends Controller
         // 4. Ambil data lain seperti biasa (menggunakan kode asli Anda)
         $totalTransaksi = $rekening->transactions()->count();
         $transaksiTerakhir = $rekening->transactions()->latest()->take(3)->get();
-        
+
         // 5. Kirim data ke view
         return view('pages.banksampah.pengelola.nasabah.show', compact('user', 'rekening', 'totalTransaksi', 'transaksiTerakhir'));
     }
@@ -288,7 +289,7 @@ class RekeningBankSampahUserController extends Controller
         $request->validate([
             'status' => 'required|in:Aktif,Tidak Aktif', // Menggunakan status dari kode asli Anda
         ]);
-        
+
         // 1. Dapatkan bank milik banker
         $bank = Auth::user()->bank;
         if (!$bank) { abort(403, 'Anda tidak memiliki bank sampah.'); }
@@ -302,11 +303,11 @@ class RekeningBankSampahUserController extends Controller
              // Menggunakan route('pengelola.nasabah.index') dari kode asli Anda
              return redirect()->route('pengelola.nasabah.index')->with('error', 'Gagal memperbarui status. Nasabah tidak ditemukan di bank Anda.');
         }
-        
+
         // 4. Update status jika rekening ditemukan
         $rekening->status = $request->status;
         $rekening->save();
-        
+
         // 5. Redirect ke halaman index (daftar nasabah) setelah update
         return redirect()->route('pengelola.nasabah.index')->with('success', 'Status nasabah berhasil diperbarui!');
     }

@@ -44,7 +44,7 @@
     checkAllBaru: false,
     aktifIds: [],
     checkAllAktif: false,
-    
+
     // Fungsi untuk tabel NASABAH BARU
     toggleAllBaru() {
         let currentIds = {{ $nasabahBaru instanceof \Illuminate\Support\Collection ? $nasabahBaru->pluck('id')->toJson() : $nasabahBaru->getCollection()->pluck('id')->toJson() }};
@@ -67,6 +67,48 @@
         let currentIds = {{ $nasabahs->pluck('id')->toJson() }};
         if (currentIds.length === 0) { this.checkAllAktif = false; return; }
         this.checkAllAktif = currentIds.every(id => this.aktifIds.includes(id));
+    },
+
+    // Handle Form Submission - Tabel Baru
+    submitFormBaru(e) {
+        let selectedAction = document.getElementById('bulk-action-select-baru').value;
+        if (!selectedAction) {
+            e.preventDefault();
+            alert('Pilih aksi terlebih dahulu!');
+            return;
+        }
+        // Tambahkan hidden input ids yang dipilih
+        let form = e.target;
+
+        // Tambahkan hidden inputs untuk ids yang dipilih
+        this.baruIds.forEach(id => {
+            let idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'ids[]';
+            idInput.value = id;
+            form.appendChild(idInput);
+        });
+    },
+
+    // Handle Form Submission - Tabel Aktif
+    submitFormAktif(e) {
+        let selectedAction = document.getElementById('bulk-action-select-aktif').value;
+        if (!selectedAction) {
+            e.preventDefault();
+            alert('Pilih aksi terlebih dahulu!');
+            return;
+        }
+        // Tambahkan hidden input ids yang dipilih
+        let form = e.target;
+
+        // Tambahkan hidden inputs untuk ids yang dipilih
+        this.aktifIds.forEach(id => {
+            let idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = 'ids[]';
+            idInput.value = id;
+            form.appendChild(idInput);
+        });
     }
 }" x-init="
     $watch('baruIds', () => updateCheckAllBaru());
@@ -121,7 +163,7 @@
 
     {{-- Form 1: Tabel Data Nasabah Baru (Pending) --}}
     @if($nasabahBaru->isNotEmpty())
-    <form action="{{ route('pengelola.nasabah.bulkUpdateStatus') }}" method="POST">
+    <form action="{{ route('pengelola.nasabah.bulkUpdateStatus') }}" method="POST" @submit="submitFormBaru">
         @csrf
         {{-- Bar Aksi Massal (Nasabah Baru - Kuning) --}}
         <div x-show="baruIds.length > 0" x-transition class="bg-yellow-50 border-yellow-200 rounded-xl shadow-sm py-3 px-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 action-bar" x-cloak>
@@ -166,7 +208,6 @@
                         <tr class="border-b hover:bg-yellow-50 transition-colors duration-200" :class="{ 'bg-yellow-50': baruIds.includes({{ $rekening->id }}) }">
                             <td class="px-4 py-4">
                                 <input type="checkbox" x-model="baruIds" value="{{ $rekening->id }}" class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-offset-0 focus:ring-green-200 focus:ring-opacity-50 h-5 w-5">
-                                <input type="hidden" name="ids[]" value="{{ $rekening->id }}" :disabled="!baruIds.includes({{ $rekening->id }})">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $rekening->rekening_number ?? 'N/A' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $rekening->user->name ?? 'N/A' }}</td>
@@ -195,7 +236,7 @@
 
 
     {{-- Form 2: Tabel Data Nasabah (Aktif & Tidak Aktif) --}}
-    <form action="{{ route('pengelola.nasabah.bulkUpdateStatus') }}" method="POST">
+    <form action="{{ route('pengelola.nasabah.bulkUpdateStatus') }}" method="POST" @submit="submitFormAktif">
         @csrf
         {{-- Bar Aksi Massal (Nasabah Lama) --}}
         <div x-show="aktifIds.length > 0" x-transition class="bg-green-50 border-green-200 rounded-xl shadow-sm py-3 px-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-6 action-bar" x-cloak>
@@ -242,7 +283,6 @@
                         <tr class="border-b hover:bg-green-50 transition-colors duration-200" :class="{ 'bg-green-50': aktifIds.includes({{ $rekening->id }}) }">
                             <td class="px-4 py-4">
                                 <input type="checkbox" x-model="aktifIds" value="{{ $rekening->id }}" class="rounded border-gray-300 text-green-600 shadow-sm focus:border-green-300 focus:ring focus:ring-offset-0 focus:ring-green-200 focus:ring-opacity-50 h-5 w-5">
-                                <input type="hidden" name="ids[]" value="{{ $rekening->id }}" :disabled="!aktifIds.includes({{ $rekening->id }})">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700">{{ $rekening->rekening_number ?? 'N/A' }}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $rekening->user->name ?? 'N/A' }}</td>
@@ -270,7 +310,7 @@
                     </tbody>
                 </table>
             </div>
-            
+
             @if ($nasabahs->hasPages())
             <div class="p-4 border-t bg-gray-50"> {{ $nasabahs->links() }} </div>
             @endif
@@ -287,9 +327,28 @@
     {{-- <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script> --}}
     <script>
         $(document).ready(function() {
-            // Inisialisasi Select2
-            $('#bulk-action-select-baru').select2({ placeholder: 'Pilih Aksi...', allowClear: false, dropdownParent: $('body'), minimumResultsForSearch: Infinity });
-            $('#bulk-action-select-aktif').select2({ placeholder: 'Pilih Aksi...', allowClear: false, dropdownParent: $('body'), minimumResultsForSearch: Infinity });
+            // Inisialisasi Select2 untuk dropdown aksi
+            $('#bulk-action-select-baru').select2({
+                placeholder: 'Pilih Aksi...',
+                allowClear: false,
+                dropdownParent: $('body'),
+                minimumResultsForSearch: Infinity,
+                templateResult: function(data) {
+                    if (!data.id) return data.text;
+                    return $('<span>' + data.text + '</span>');
+                }
+            });
+
+            $('#bulk-action-select-aktif').select2({
+                placeholder: 'Pilih Aksi...',
+                allowClear: false,
+                dropdownParent: $('body'),
+                minimumResultsForSearch: Infinity,
+                templateResult: function(data) {
+                    if (!data.id) return data.text;
+                    return $('<span>' + data.text + '</span>');
+                }
+            });
         });
         // Script Alpine.js sudah ada di dalam x-data
         document.addEventListener('alpine:init', () => {
